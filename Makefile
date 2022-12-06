@@ -25,7 +25,7 @@ test_%: $(EDIR)/test_%
 	valgrind --leak-check=full --track-origins=yes ./$^
 
 test_cov_%: test_%
-	gcov $(ODIR)/$(patsubst test_%,%,$^)
+	gcov -b $(ODIR)/$(patsubst test_%,%,$^)
 	mv *.gcov cov
 
 test_all: $(TESTS)
