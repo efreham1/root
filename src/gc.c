@@ -28,14 +28,3 @@ void h_delete(heap_t *h)
   free(h->memoryBlock);
   free(h);
 }
-
-int main()
-{
-  // printf("size of a char: %ld \n", sizeof(char));
-  
-  heap_t *h = h_init(2,false,5.0);
-  
-  h_delete(h);
-    
-  return 0;
-}

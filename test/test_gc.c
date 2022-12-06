@@ -24,8 +24,6 @@ void test_create_destroy(void)
   CU_ASSERT_PTR_NOT_NULL(h);
   
   h_delete(h);
-    
-  return 0;
 
 }
 
@@ -37,7 +35,7 @@ int main()
 
 	// We then create an empty test suite and specify the name and
 	// the init and cleanup functions
-	CU_pSuite my_test_suite = CU_add_suite("Tests for db functions", init_suite, clean_suite);
+	CU_pSuite my_test_suite = CU_add_suite("Tests for gc functions", init_suite, clean_suite);
 	if (my_test_suite == NULL)
 	{
 		// If the test suite could not be added, tear down CUnit and exit
@@ -51,7 +49,7 @@ int main()
 	// the test in question. If you want to add another test, just
 	// copy a line below and change the information
 
-	if (test_create_destroy()||
+	if (CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL||
 	    0)
 	{
 		// If adding any of the tests fails, we tear down CUnit and exit
