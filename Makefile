@@ -29,8 +29,10 @@ test_cov_%: test_%
 	mv *.gcov cov
 
 test_all: $(TESTS)
-	$(patsubst %,make test_cov_% && ,$(MODULES)) true
+	$(patsubst %,valgrind --leak-check=full --track-origins=yes ./% && ,$(TESTS)) true
 
+test_cov_all: $(TESTS)
+	$(patsubst %,make test_cov_% && ,$(MODULES)) true
 clean:
 	rm -rf exe/*
 	rm -rf obj/*
