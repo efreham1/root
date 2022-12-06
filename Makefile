@@ -30,10 +30,12 @@ test_cov_%: test_%
 
 test_all: $(TESTS)
 	$(patsubst %,valgrind --leak-check=full --track-origins=yes ./% && ,$(TESTS)) true
-	gcovr -x obj/cov.xml
 
 test_cov_all: $(TESTS)
-	$(patsubst %,make test_cov_% && ,$(MODULES)) true
+	make test_all
+	gcovr -b obj
+	gcovr obj
+	gcovr -x obj/cov.xml
 clean:
 	rm -rf exe/*
 	rm -rf obj/*
