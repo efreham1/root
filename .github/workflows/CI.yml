@@ -34,7 +34,7 @@ jobs:
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
         # A comma separated list of code coverage files to analyse. Also supports using glob patterns to match multiple files.
-        filename: cov/*gcov
+        filename: cov/*
         # Fail if overall Line Rate below lower threshold - true / false (default).
         fail_below_min: true
         # Output Format - markdown or text (default).
