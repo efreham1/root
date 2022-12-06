@@ -35,7 +35,7 @@ test_cov_all: $(TESTS)
 	make test_all
 	gcovr -b obj
 	gcovr obj
-	gcovr -x obj/cov.xml
+	gcovr -x cov/cov.xml
 clean:
 	rm -rf exe/*
 	rm -rf obj/*
