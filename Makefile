@@ -1,33 +1,40 @@
 SDIR = src
-EXEDIR = exe
+EDIR = exe
 ODIR = obj
 TDIR = test
 GC_files =  src/gc.c src/gc.h
 CC = gcc
 
-FLAGS = -I src -Wall -g
+FLAGS = -I src -Wall -g -fprofile-arcs -ftest-coverage
 
-_OBJS = gc.o
-OBJS = $(patsubst %, $(ODIR)/%, $(_OBJS))
+MODULES = gc
+
+OBJS = $(patsubst %,$(ODIR)/%.o,$(MODULES))
+TESTS = $(patsubst %,$(EDIR)/test_%,$(MODULES))
 
 $(ODIR)/%.o: $(SDIR)/%.c $(SDIR)/%.h
 	$(CC) $(FLAGS) $< -c -o $@ 
 
-$(EXEDIR)/gc: $(OBJS) 
+$(EDIR)/%: $(OBJS) 
 	$(CC) $(FLAGS) $^ -o $@
 
-valgrind_gc: $(EXEDIR)/gc
-	valgrind --leak-check=full --track-origins=yes $^
-
-$(EXEDIR)/test_%: $(TDIR)/test_%.c $(ODIR)/%.o
+$(EDIR)/test_%: $(TDIR)/test_%.c $(ODIR)/%.o
 	$(CC) $(FLAGS) $^ -lcunit  -o $@
 
-test_% : $(EXEDIR)/test_%
+test_%: $(EDIR)/test_%
 	valgrind --leak-check=full --track-origins=yes ./$^
 
+test_cov_%: test_%
+	gcov $(ODIR)/$(patsubst test_%,%,$^)
+	mv *.gcov cov
+
+test_all: $(TESTS)
+	$(patsubst %,make test_cov_% && ,$(MODULES)) true
 
 clean:
 	rm -rf exe/*
 	rm -rf obj/*
 
 .PHONY: clean test_%
+
+.PRECIOUS: $(ODIR)/%.o $(EDIR)/test_% $(EDIR)/%

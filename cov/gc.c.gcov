@@ -1,0 +1,34 @@
+        -:    0:Source:src/gc.c
+        -:    0:Graph:obj/gc.gcno
+        -:    0:Data:obj/gc.gcda
+        -:    0:Runs:3
+        -:    1:#include <stdlib.h>
+        -:    2:#include <stdio.h>
+        -:    3:#include <stdbool.h>
+        -:    4:#include <stdint.h>
+        -:    5:#include "gc.h"
+        -:    6:
+        -:    7:struct heap
+        -:    8:{
+        -:    9:  void **memoryBlock;
+        -:   10:  bool unsafe_stack;
+        -:   11:  float gcTrigger;
+        -:   12:};
+        -:   13:
+        3:   14:heap_t *h_init(size_t bytes, bool unsafe_stack, float gc_threshold)
+        -:   15:{
+        3:   16:  heap_t *newHeap = calloc(1,sizeof(heap_t));
+        -:   17:  
+        3:   18:  void **memBlock = calloc(bytes,1);
+        3:   19:  newHeap->memoryBlock = memBlock;
+        3:   20:  newHeap->unsafe_stack = unsafe_stack;
+        3:   21:  newHeap->gcTrigger = gc_threshold;
+        -:   22:
+        3:   23:  return newHeap;
+        -:   24:}
+        -:   25:
+        3:   26:void h_delete(heap_t *h)
+        -:   27:{
+        3:   28:  free(h->memoryBlock);
+        3:   29:  free(h);
+        3:   30:}
