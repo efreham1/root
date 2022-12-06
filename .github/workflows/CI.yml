@@ -30,6 +30,25 @@ jobs:
       run: sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev && sudo apt-get install valgrind
     - name: Coverage of all tests
       run: make test_cov_all
+    - name: Code Coverage Summary
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        # A comma separated list of code coverage files to analyse. Also supports using glob patterns to match multiple files.
+        filename: cov/gc.c.gcov
+        # Fail if overall Line Rate below lower threshold - true / false (default).
+        fail_below_min: true
+        # Output Format - markdown or text (default).
+        format: text
+        # Hide Branch Rate values in the output - true / false (default).
+        hide_branch_rate: false
+        # Hide Complexity values in the output - true / false (default).
+        hide_complexity: false
+        # Include health indicators in the output - true (default) / false.
+        indicators: true
+        # Output Type - console (default), file or both.
+        output: both
+        # Threshold percentages for badge and health indicators, lower threshold can also be used to fail the action.
+        thresholds: 75 75
     - name: clean-up
       run: make clean
     
