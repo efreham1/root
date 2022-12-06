@@ -13,6 +13,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+    - name: Get CUnit
+      run: sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev
     - name: All tests
       run: make test_all
     - name: clean-up
