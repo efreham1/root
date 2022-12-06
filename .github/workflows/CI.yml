@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Get packages
-      run: sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev && sudo apt-get install valgrind && sudo apt-get install gcovr
+      run: sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev && sudo apt-get install valgrind
     - name: All tests
       run: make test_all
     - name: clean-up
@@ -27,7 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Get packages
-      run: sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev && sudo apt-get install valgrind
+      run: sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev && sudo apt-get install valgrind && sudo apt-get install gcovr
     - name: Coverage of all tests
       run: make test_cov_all
     - name: Code Coverage Summary
