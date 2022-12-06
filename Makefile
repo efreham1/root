@@ -25,11 +25,12 @@ test_%: $(EDIR)/test_%
 	valgrind --leak-check=full --track-origins=yes ./$^
 
 test_cov_%: test_%
-	gcov -b $(ODIR)/$(patsubst test_%,%,$^)
-	mv *.gcov cov
+	gcovr -b obj
+	gcovr obj
 
 test_all: $(TESTS)
 	$(patsubst %,valgrind --leak-check=full --track-origins=yes ./% && ,$(TESTS)) true
+	gcovr -x obj/cov.xml
 
 test_cov_all: $(TESTS)
 	$(patsubst %,make test_cov_% && ,$(MODULES)) true
