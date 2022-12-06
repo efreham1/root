@@ -48,7 +48,7 @@ jobs:
         # Output Type - console (default), file or both.
         output: console
         # Threshold percentages for badge and health indicators, lower threshold can also be used to fail the action.
-        thresholds: 100
+        thresholds: 90
     - name: clean-up
       run: make clean
     
