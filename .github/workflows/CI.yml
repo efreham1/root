@@ -37,7 +37,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Coverage of all tests
-      run: make test_all
+      run: make test_cov_all
     - name: clean-up
       run: make clean
     
