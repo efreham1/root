@@ -22,14 +22,14 @@ $(EDIR)/test_%: $(TDIR)/test_%.c $(ODIR)/%.o
 	$(CC) $(FLAGS) $^ -lcunit  -o $@
 
 test_%: $(EDIR)/test_%
-	valgrind --leak-check=full --track-origins=yes ./$^
+	valgrind --error-exitcode=1 --leak-check=full --track-origins=yes ./$^
 
 test_cov_%: test_%
 	gcovr -b obj
 	gcovr obj
 
 test_all: $(TESTS)
-	$(patsubst %,valgrind --leak-check=full --track-origins=yes ./% && ,$(TESTS)) true
+	$(patsubst %,test_% && ,$(TESTS)) true
 
 test_cov_all: $(TESTS)
 	make test_all
