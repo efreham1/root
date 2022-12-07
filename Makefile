@@ -29,7 +29,7 @@ test_cov_%: test_%
 	gcovr obj
 
 test_all: $(TESTS)
-	$(patsubst %,test_% && ,$(MODULES)) true
+	$(patsubst %,make test_% && ,$(MODULES)) true
 
 test_cov_all: $(TESTS)
 	make test_all
