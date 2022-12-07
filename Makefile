@@ -2,7 +2,7 @@ SDIR = src
 EDIR = exe
 ODIR = obj
 TDIR = test
-GC_files =  src/gc.c src/gc.h
+
 CC = gcc
 
 FLAGS = -I src -Wall -g -fprofile-arcs -ftest-coverage
