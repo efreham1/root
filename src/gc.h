@@ -8,7 +8,7 @@
 #define __gc__
 
 /// The opaque data type holding all the heap data
-typedef struct heap heap_t;
+typedef struct external_heap heap_t;
 
 /// Create a new heap with bytes total size (including both spaces
 /// and metadata), meaning strictly less than bytes will be
