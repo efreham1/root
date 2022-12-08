@@ -7,7 +7,7 @@ CC = gcc
 
 FLAGS = -I src -Wall -g -fprofile-arcs -ftest-coverage
 
-MODULES = gc
+MODULES = gc page heap
 
 OBJS = $(patsubst %,$(ODIR)/%.o,$(MODULES))
 TESTS = $(patsubst %,$(EDIR)/test_%,$(MODULES))
