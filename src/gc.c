@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "gc.h"
+#include "heap.h"
 
 struct external_heap
 {
@@ -29,11 +30,10 @@ void h_delete(heap_t *h)
 
 void *h_alloc_struct(heap_t *h, char *layout)
 {
-  h_alloc_struct_interal(h->heapPtr, layout);
+  return h_alloc_struct_internal(h->heapPtr, layout);
 }
-
 
 void *h_alloc_data(heap_t *h, size_t bytes)
 {
-  h_alloc_data_interal(h->heapPtr, bytes);
+ return  h_alloc_data_internal(h->heapPtr, bytes);
 }

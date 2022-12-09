@@ -18,7 +18,7 @@ $(ODIR)/%.o: $(SDIR)/%.c $(SDIR)/%.h
 $(EDIR)/%: $(OBJS) 
 	$(CC) $(FLAGS) $^ -o $@
 
-$(EDIR)/test_%: $(TDIR)/test_%.c $(ODIR)/%.o
+$(EDIR)/test_%: $(TDIR)/test_%.c $(OBJS)
 	$(CC) $(FLAGS) $^ -lcunit  -o $@
 
 test_%: $(EDIR)/test_%
