@@ -103,13 +103,13 @@ int main()
 	// copy a line below and change the information
 
     if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..",test_h_delete_dgb) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for alloc of struct",test_alloc_struct) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for alloc of data",test_alloc_data) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..",test_h_gc) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..",test_h_gc_dbg) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..",test_h_avail) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..",test_h_used) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for ..",test_h_delete_dgb) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for alloc of struct",test_alloc_struct) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for alloc of data",test_alloc_data) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for ..",test_h_gc) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for ..",test_h_gc_dbg) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for ..",test_h_avail) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for ..",test_h_used) == NULL) ||
 
         0
     )

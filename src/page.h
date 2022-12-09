@@ -15,5 +15,8 @@ bool isActive(page_t *p);
 
 bool has_room(page_t *p, size_t bytes);
 
+void *page_alloc(page_t *page, size_t bytes);
+
+void make_active(page_t *p);
 
 #endif
