@@ -10,6 +10,7 @@ struct external_heap
   internal_heap_t *heapPtr;
   bool unsafe_stack;  
   float gcTrigger;
+  //  void **_arr (allokeringsmap?) BITVEKTOR!
 };
 
 heap_t *h_init(size_t bytes, bool unsafe_stack, float gc_threshold)

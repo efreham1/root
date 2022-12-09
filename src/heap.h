@@ -12,7 +12,7 @@ struct metadata
 
 typedef struct internal_heap internal_heap_t;
 
-internal_heap_t *h_init_internal(size_t bytes);
+internal_heap_t *h_init_internal(size_t bytes, size_t page_size);
 
 void h_delete_internal(internal_heap_t *h);
 
