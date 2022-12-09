@@ -17,6 +17,7 @@ int clean_suite(void)
 	return 0;
 }
 
+
 void test_create_destroy(void)
 {   
   heap_t *h = h_init(2,false,5.0);
@@ -26,6 +27,58 @@ void test_create_destroy(void)
   h_delete(h);
 
 }
+
+void test_h_delete_dgb(void)
+{
+	CU_ASSERT_TRUE(false);
+}
+
+void test_alloc_struct(void)
+{
+	heap_t *h = h_init(2,false, 5.0);
+
+	// h_alloc_struct(h, )
+
+
+	h_delete(h);
+}
+
+void test_alloc_data(void)
+{
+	heap_t *h = h_init(2, false, 5.0);
+
+	int *data = h_alloc_data(h, sizeof(int));
+
+	*data = 5;
+
+	CU_ASSERT_PTR_NOT_NULL(data);
+	CU_ASSERT_TRUE(*data == 5);
+
+	h_delete(h);
+}
+
+
+void test_h_gc(void)
+{
+	CU_ASSERT_TRUE(false);
+}
+
+void test_h_gc_dbg(void)
+{
+	CU_ASSERT_TRUE(false);
+}
+
+
+void test_h_avail(void)
+{
+	CU_ASSERT_TRUE(false);
+}
+
+void test_h_used(void)
+{
+	CU_ASSERT_TRUE(false);
+}
+
 
 int main()
 {
@@ -49,8 +102,18 @@ int main()
 	// the test in question. If you want to add another test, just
 	// copy a line below and change the information
 
-	if (CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL||
-	    0)
+    if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for ..",test_h_delete_dgb) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for alloc of struct",test_alloc_struct) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for alloc of data",test_alloc_data) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for ..",test_h_gc) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for ..",test_h_gc_dbg) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for ..",test_h_avail) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for ..",test_h_used) == NULL) ||
+
+        0
+    )
+
 	{
 		// If adding any of the tests fails, we tear down CUnit and exit
 		CU_cleanup_registry();

@@ -27,6 +27,18 @@ void test_create_destroy(void)
   h_delete_internal(internal_h);
 }
 
+
+void test_h_alloc_struct_internal(void)
+{
+	
+}
+
+void test_h_alloc_data_internal(void)
+{
+
+
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -49,8 +61,13 @@ int main()
 	// the test in question. If you want to add another test, just
 	// copy a line below and change the information
 
-	if (CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL||
-	    0)
+    if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for ..", test_h_alloc_struct_internal) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for ..", test_h_alloc_data_internal) == NULL) ||
+
+        0
+    )
+
 	{
 		// If adding any of the tests fails, we tear down CUnit and exit
 		CU_cleanup_registry();
