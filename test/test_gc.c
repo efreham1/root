@@ -20,7 +20,7 @@ int clean_suite(void)
 
 void test_create_destroy(void)
 {   
-  heap_t *h = h_init(2,false,5.0);
+  heap_t *h = h_init(81,false,5.0);
 
   CU_ASSERT_PTR_NOT_NULL(h);
   
@@ -35,17 +35,17 @@ void test_h_delete_dgb(void)
 
 void test_alloc_struct(void)
 {
-	heap_t *h = h_init(2,false, 5.0);
+	heap_t *h = h_init(200,false, 5.0);
 
 	// h_alloc_struct(h, )
-
+	CU_ASSERT_TRUE(false);
 
 	h_delete(h);
 }
 
 void test_alloc_data(void)
 {
-	heap_t *h = h_init(2, false, 5.0);
+	heap_t *h = h_init(100, false, 5.0);
 
 	int *data = h_alloc_data(h, sizeof(int));
 
@@ -103,10 +103,10 @@ int main()
 	// copy a line below and change the information
 
     if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
-	(CU_add_test(my_test_suite, "Test for ..",test_h_delete_dgb) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for destroy with DBG",test_h_delete_dgb) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for alloc of struct",test_alloc_struct) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for alloc of data",test_alloc_data) == NULL) ||
-	(CU_add_test(my_test_suite, "Test for ..",test_h_gc) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for ",test_h_gc) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for ..",test_h_gc_dbg) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for ..",test_h_avail) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for ..",test_h_used) == NULL) ||

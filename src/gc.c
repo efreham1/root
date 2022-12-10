@@ -15,6 +15,9 @@ struct external_heap
 
 heap_t *h_init(size_t bytes, bool unsafe_stack, float gc_threshold)
 {
+  assert(bytes > 80);
+  assert(bytes > sizeof(heap_t));
+  bytes -= sizeof(heap_t);
   heap_t *newHeap = calloc(1,sizeof(heap_t));
   newHeap->heapPtr = h_init_internal(bytes, 2048);
   newHeap->unsafe_stack = unsafe_stack;

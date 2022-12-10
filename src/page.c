@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
+#include <stdio.h>
 
 struct page
 {
@@ -14,6 +15,8 @@ struct page
 
 page_t *page_init(size_t bytes)
 {
+  assert(bytes > sizeof(page_t));
+  bytes -= sizeof(page_t);
   page_t *newpage = calloc(1,sizeof(page_t));
   newpage->isActive = false;
   newpage->size = bytes;

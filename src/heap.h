@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <assert.h>
 
 #ifndef __heap__
 #define __heap__
