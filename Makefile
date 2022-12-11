@@ -39,6 +39,7 @@ test_cov_all: $(TESTS)
 clean:
 	rm -rf exe/*
 	rm -rf obj/*
+	rm -rf cov/*
 
 .PHONY: clean test_%
 

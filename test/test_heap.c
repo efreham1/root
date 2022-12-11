@@ -1,6 +1,7 @@
 #include <CUnit/Basic.h>
 #include <stdlib.h>
 #include "heap.h"
+#include <stdbool.h>
 
 
 int init_suite(void)
@@ -20,7 +21,7 @@ int clean_suite(void)
 void test_create_destroy(void)
 {   
 
-  internal_heap_t *internal_h = h_init_internal(4);
+  internal_heap_t *internal_h = h_init_internal(4500, 2048);
 
   CU_ASSERT_PTR_NOT_NULL(internal_h);
   
@@ -30,12 +31,24 @@ void test_create_destroy(void)
 
 void test_h_alloc_struct_internal(void)
 {
-	
+	CU_ASSERT_TRUE(false); //TODO
 }
 
 void test_h_alloc_data_internal(void)
 {
+	internal_heap_t *h = h_init_internal(120, 2048);
 
+	int *data = h_alloc_data_internal(h, sizeof(int));
+	CU_ASSERT_PTR_NOT_NULL(data);
+	*data = 5;
+	CU_ASSERT_TRUE(*data == 5);
+
+	int *data2 = h_alloc_data_internal(h, sizeof(int));
+	CU_ASSERT_PTR_NOT_NULL(data2);
+	*data2 = 456789;
+	CU_ASSERT_TRUE(*data2 == 456789);
+
+	h_delete_internal(h);
 
 }
 
@@ -62,8 +75,8 @@ int main()
 	// copy a line below and change the information
 
     if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..", test_h_alloc_struct_internal) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..", test_h_alloc_data_internal) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for allocating a struct", test_h_alloc_struct_internal) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for allocating raw data", test_h_alloc_data_internal) == NULL) ||
 
         0
     )

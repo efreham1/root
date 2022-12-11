@@ -8,12 +8,12 @@
 struct page
 {
   bool isActive;
-  size_t size;
+  unsigned int size;
   unsigned int offset;
   void *memoryBlock;
 };
 
-page_t *page_init(size_t bytes)
+page_t *page_init(unsigned int bytes)
 {
   assert(bytes > sizeof(page_t));
   bytes -= sizeof(page_t);
@@ -31,20 +31,20 @@ void page_delete(page_t *p)
   free(p);
 }
 
-bool isActive(page_t *p) { return p->isActive ; }
+bool is_active(page_t *p) { return p->isActive ; }
 
 void make_active(page_t *p) { p->isActive = true ; }
 
-bool has_room(page_t *p, size_t bytes)
+bool has_room(page_t *p, unsigned int bytes)
 {
-  return(p->size - p->offset >= bytes  + sizeof(metadata_t) && isActive(p));
+  return(p->size - p->offset >= bytes  + sizeof(metadata_t) && is_active(p));
 }
 
-void *page_alloc(page_t *page, size_t bytes)
+void *page_alloc(page_t *page, unsigned int bytes)
 {
-  metadata_t *metadata = (metadata_t *) page->memoryBlock + page->offset;
+  metadata_t *metadata = (metadata_t *) (page->memoryBlock + page->offset);
   page->offset += sizeof(metadata_t);
-  *metadata = set_data_size(bytes);
+  *metadata = set_data_size((unsigned int) bytes);
 
   void *pointer = page->memoryBlock + page->offset;
   page->offset += bytes;

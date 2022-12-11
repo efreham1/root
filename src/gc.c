@@ -13,7 +13,7 @@ struct external_heap
   //  void **_arr (allokeringsmap?) BITVEKTOR!
 };
 
-heap_t *h_init(size_t bytes, bool unsafe_stack, float gc_threshold)
+heap_t *h_init(unsigned int bytes, bool unsafe_stack, float gc_threshold)
 {
   assert(bytes > 80);
   assert(bytes > sizeof(heap_t));
@@ -37,7 +37,7 @@ void *h_alloc_struct(heap_t *h, char *layout)
   return h_alloc_struct_internal(h->heapPtr, layout);
 }
 
-void *h_alloc_data(heap_t *h, size_t bytes)
+void *h_alloc_data(heap_t *h, unsigned int bytes)
 {
  return  h_alloc_data_internal(h->heapPtr, bytes);
 }

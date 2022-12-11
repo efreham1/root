@@ -15,9 +15,7 @@ void get_data_id(metadata_t mdata, bool *id)
     assert(is_little_end());
     char *b = (char *)&mdata;
     id[0] = (*b & 1) == 1 ? true : false;
-    printf("id1 = %d\n", id[0]);
     id[1] = (*b >> 1 & 1) == 1 ? true : false;
-    printf("id2 = %d\n", id[1]);
 }
 
 bool is_format_vector(metadata_t mdata)
@@ -43,25 +41,40 @@ bool is_forward_address(metadata_t mdata)
 
 metadata_t set_forward_address(void *ptr)
 {
-    return (metadata_t)ptr;
+    return (metadata_t) ptr;
 }
 
-size_t get_data_size(metadata_t mdata)
+void *get_forward_address(metadata_t mdata)
+{
+    return (void *) mdata;
+}
+
+unsigned int get_data_size(metadata_t mdata)
 {
     assert(is_data_size(mdata));
-    char *b = (char *)&mdata;
-    size_t size = b[1];
+    unsigned int size;
+    char *mb = (char *)&mdata;
+    char *sb = (char *)&size;
+    for (unsigned int i = 0; i < sizeof(unsigned int); i++)
+    {
+        sb[i] = mb[i+1];
+    }
+    
     return size;
 }
 
-metadata_t set_data_size(size_t size)
+metadata_t set_data_size(unsigned int size)
 {
     assert(is_little_end());
     metadata_t mdata = 0;
-    char *b = (char *)&mdata;
-    b[1] = size;
-    b[0] = *b & ~(1 << 1);
-    b[0] = *b | 1;
+    char *mb = (char *)&mdata;
+    char *sb = (char *)&size;
+    for (unsigned int i = 0; i < sizeof(unsigned int); i++)
+    {
+        mb[i+1] = sb[i];
+    }
+    mb[0] = mb[0] & ~(1 << 1);
+    mb[0] = mb[0] | 1;
     return mdata;
 }
 
@@ -91,15 +104,15 @@ bool *get_format_vector(metadata_t mdata, int *len)
     }
     bool *format_vector = calloc(idx, sizeof(bool));
     *len = idx;
-    for (size_t i = 0; i < idx; i++)
+    for (unsigned int i = 0; i < idx; i++)
     {
         format_vector[i] = buf[i];
     }
-    
+
     return format_vector;
 }
 
-metadata_t set_format_vector(bool *format_vector, size_t len)
+metadata_t set_format_vector(bool *format_vector, unsigned int len)
 {
     assert(is_little_end());
     metadata_t mdata = 0;
@@ -112,17 +125,17 @@ metadata_t set_format_vector(bool *format_vector, size_t len)
             {
                 if (format_vector[len - 1])
                 {
-                    b[i] = b[i] | 1<<j;
+                    b[i] = b[i] | 1 << j;
                 }
                 else
                 {
-                    b[i] = b[i] & ~1<<j;
+                    b[i] = b[i] & ~1 << j;
                 }
                 len--;
             }
             else
             {
-                b[i] = b[i] | 1<<j;
+                b[i] = b[i] | 1 << j;
                 b[0] = b[0] | 1;
                 b[0] = b[0] | 1 << 1;
                 return mdata;

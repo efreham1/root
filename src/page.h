@@ -8,15 +8,15 @@
 
 typedef struct page page_t;
 
-page_t *page_init(size_t bytes);
+page_t *page_init(unsigned int bytes);
 
 void page_delete(page_t *p);
 
-bool isActive(page_t *p);
+bool is_active(page_t *p);
 
-bool has_room(page_t *p, size_t bytes);
+bool has_room(page_t *p, unsigned int bytes);
 
-void *page_alloc(page_t *page, size_t bytes);
+void *page_alloc(page_t *page, unsigned int bytes);
 
 void make_active(page_t *p);
 

@@ -1,5 +1,6 @@
 #include <CUnit/Basic.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "metadata.h"
 
 
@@ -15,6 +16,60 @@ int clean_suite(void)
 	// Change this function if you want to do something *after* you
 	// run a test suite
 	return 0;
+}
+
+void test_is_format_vector()
+{
+	metadata_t md = (void *) 3;
+	CU_ASSERT_TRUE(is_format_vector(md));
+	CU_ASSERT_FALSE(is_data_size(md) && is_forward_address(md));
+}
+
+void test_is_data_size()
+{
+	metadata_t md = (void *) 1;
+	CU_ASSERT_TRUE(is_data_size(md));
+	CU_ASSERT_FALSE(is_format_vector(md) && is_forward_address(md));
+}
+
+void test_is_forward_address()
+{
+	metadata_t md = malloc(1);
+	CU_ASSERT_TRUE(is_forward_address(md));
+	CU_ASSERT_FALSE(is_data_size(md) && is_format_vector(md));
+	free(md);
+}
+
+void test_set_get_forward_address()
+{
+	int *i = malloc(sizeof(int));
+	*i = 42;
+	metadata_t md = set_forward_address(i);
+	int *j = (int *) get_forward_address(md);
+	CU_ASSERT_PTR_EQUAL(j, i);
+	CU_ASSERT_EQUAL(*i, *j);
+	free(i);
+}
+
+void test_set_get_data_size()
+{
+	unsigned int size = 8765432;
+	metadata_t md = set_data_size(size);
+	unsigned int gotten_size = get_data_size(md);
+	CU_ASSERT_EQUAL(gotten_size, size);
+}
+
+void test_set_get_format_vector()
+{
+	bool format_vector[13] = {0,1,0,0,0,1,1,0,1,0,0,1,1};
+	metadata_t md = set_format_vector(format_vector, 13);
+	int len = 0;
+	bool *gotten_format_vector = get_format_vector(md, &len);
+	for (unsigned int i = 0; i < 13; i++)
+	{
+		CU_ASSERT_EQUAL(format_vector[i], gotten_format_vector[i]);
+	}
+	free(gotten_format_vector);
 }
 
 int main()
@@ -39,9 +94,12 @@ int main()
 	// the test in question. If you want to add another test, just
 	// copy a line below and change the information
 
-    if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..", test_h_alloc_struct_internal) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for ..", test_h_alloc_data_internal) == NULL) ||
+    if ((CU_add_test(my_test_suite, "Test for is_format_vector", test_is_format_vector) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for is_data_size",  test_is_data_size) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for is_forward_address",  test_is_forward_address) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for set and get forward_address",  test_set_get_forward_address) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for set and get data_size",  test_set_get_data_size) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for set and get format_vector",  test_set_get_format_vector) == NULL) ||
 
         0
     )

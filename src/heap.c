@@ -5,12 +5,12 @@
 struct internal_heap
 {
   page_t **page_arr;
-  size_t num_pages;
-  size_t page_size;
-  size_t last_page_size;
+  unsigned int num_pages;
+  unsigned int page_size;
+  unsigned int last_page_size;
 };
 
-internal_heap_t *h_init_internal(size_t bytes, size_t page_size)
+internal_heap_t *h_init_internal(unsigned int bytes, unsigned int page_size)
 {
   assert(bytes > sizeof(internal_heap_t));
   bytes -= sizeof(internal_heap_t);
@@ -48,7 +48,7 @@ void *h_alloc_struct_internal(internal_heap_t *h, char *layout)
   return NULL;
 }
 
-void *h_alloc_data_internal(internal_heap_t *h, size_t bytes)
+void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
 {
   for (int i = 0; i < h->num_pages; i++)
   {
@@ -60,7 +60,7 @@ void *h_alloc_data_internal(internal_heap_t *h, size_t bytes)
 
   for (int i = 0; i < h->num_pages; i++)
   {
-    if (!isActive(h->page_arr[i]))
+    if (!is_active(h->page_arr[i]))
     {
       make_active(h->page_arr[i]);
 
