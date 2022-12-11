@@ -4,13 +4,6 @@
 #ifndef __heap__
 #define __heap__
 
-typedef struct metadata metadata_t;
-struct metadata
-{
-  const char *formatString;
-  void *forwardingAdress; // If NULL => has not been copied!  
-};
-
 typedef struct internal_heap internal_heap_t;
 
 internal_heap_t *h_init_internal(size_t bytes, size_t page_size);

@@ -1,5 +1,5 @@
 #include "page.h"
-#include "heap.h"
+#include "metadata.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
@@ -44,8 +44,7 @@ void *page_alloc(page_t *page, size_t bytes)
 {
   metadata_t *metadata = (metadata_t *) page->memoryBlock + page->offset;
   page->offset += sizeof(metadata_t);
-  metadata->formatString = strdup("");
-  metadata->forwardingAdress = NULL;
+  *metadata = set_data_size(bytes);
 
   void *pointer = page->memoryBlock + page->offset;
   page->offset += bytes;
