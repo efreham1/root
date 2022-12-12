@@ -7,7 +7,7 @@
 
 struct page
 {
-  bool isActive;
+  bool is_active;
   unsigned int size;
   unsigned int offset;
   void *memoryBlock;
@@ -31,9 +31,9 @@ void page_delete(page_t *p)
   free(p);
 }
 
-bool is_active(page_t *p) { return p->isActive ; }
+bool is_active(page_t *p) { return p->is_active ; }
 
-void make_active(page_t *p) { p->isActive = true ; }
+void make_active(page_t *p) { p->is_active = true ; }
 
 bool has_room(page_t *p, unsigned int bytes)
 {
