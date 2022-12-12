@@ -20,7 +20,7 @@ int clean_suite(void)
 
 void test_create_destroy(void)
 {   
-  heap_t *h = h_init(81,false,5.0);
+  heap_t *h = h_init(2,false,5.0);
 
   CU_ASSERT_PTR_NOT_NULL(h);
   
@@ -35,7 +35,7 @@ void test_h_delete_dgb(void)
 
 void test_alloc_struct(void)
 {
-	heap_t *h = h_init(200,false, 5.0);
+	heap_t *h = h_init(2, false, 5.0);
 
 	// h_alloc_struct(h, )
 	CU_ASSERT_TRUE(false);
@@ -45,7 +45,7 @@ void test_alloc_struct(void)
 
 void test_alloc_data(void)
 {
-	heap_t *h = h_init(100, false, 5.0);
+	heap_t *h = h_init(2, false, 5.0);
 
 	int *data = h_alloc_data(h, sizeof(int));
 

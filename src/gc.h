@@ -10,15 +10,13 @@
 /// The opaque data type holding all the heap data
 typedef struct external_heap heap_t;
 
-/// Create a new heap with bytes total size (including both spaces
-/// and metadata), meaning strictly less than bytes will be
-/// available for allocation.
+/// Create a new heap
 ///
-/// \param bytes the total size of the heap in bytes, must be larger than 80
+/// \param No_pages the total number of pages, has to be larger than 2
 /// \param unsafe_stack true if pointers on the stack are to be considered unsafe pointers
 /// \param gc_threshold the memory pressure at which gc should be triggered (1.0 = full memory)
 /// \return the new heap
-heap_t *h_init(unsigned int bytes, bool unsafe_stack, float gc_threshold);
+heap_t *h_init(unsigned int No_pages, bool unsafe_stack, float gc_threshold);
 
 /// Delete a heap.
 ///

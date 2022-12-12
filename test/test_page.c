@@ -41,37 +41,37 @@ void test_is_make_active()
 
 void test_has_room()
 {
-	page_t *p = page_init(37);
+	page_t *p = page_init(64);
 
 	make_active(p);
-
-	CU_ASSERT_TRUE(has_room(p, 5));
-	CU_ASSERT_FALSE(has_room(p, 6));
-
-	page_delete(p);
-}
-
-void test_page_alloc()
-{
-	page_t *p = page_init(100);
-	make_active(p);
-	CU_ASSERT_TRUE(has_room(p, 68));
-	CU_ASSERT_FALSE(has_room(p, 69));
-	int *i = (int *) page_alloc(p, sizeof(int));
-	CU_ASSERT_PTR_NOT_NULL(i);
-	*i = 76543;
-	CU_ASSERT_EQUAL(*i, 76543);
 
 	CU_ASSERT_TRUE(has_room(p, 56));
 	CU_ASSERT_FALSE(has_room(p, 57));
 
-	int *j = (int *) page_alloc(p, sizeof(int));
+	page_delete(p);
+}
+
+void test_page_alloc_data()
+{
+	page_t *p = page_init(128);
+	make_active(p);
+	CU_ASSERT_TRUE(has_room(p, 120));
+	CU_ASSERT_FALSE(has_room(p, 121));
+	int *i = (int *) page_alloc_data(p, sizeof(int));
+	CU_ASSERT_PTR_NOT_NULL(i);
+	*i = 76543;
+	CU_ASSERT_EQUAL(*i, 76543);
+
+	CU_ASSERT_TRUE(has_room(p, 104));
+	CU_ASSERT_FALSE(has_room(p, 105));
+
+	int *j = (int *) page_alloc_data(p, sizeof(int));
 	CU_ASSERT_PTR_NOT_NULL(i);
 	*j = 456789;
 	CU_ASSERT_EQUAL(*j, 456789);
 
-	CU_ASSERT_TRUE(has_room(p, 44));
-	CU_ASSERT_FALSE(has_room(p, 45));
+	CU_ASSERT_TRUE(has_room(p, 88));
+	CU_ASSERT_FALSE(has_room(p, 89));
 
 	page_delete(p);
 }
@@ -85,7 +85,7 @@ int main()
 
 	// We then create an empty test suite and specify the name and
 	// the init and cleanup functions
-	CU_pSuite my_test_suite = CU_add_suite("Tests for gc functions", init_suite, clean_suite);
+	CU_pSuite my_test_suite = CU_add_suite("Tests for page functions", init_suite, clean_suite);
 	if (my_test_suite == NULL)
 	{
 		// If the test suite could not be added, tear down CUnit and exit
@@ -102,7 +102,7 @@ int main()
     if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for make and is active", test_is_make_active) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for has_room", test_has_room) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for page_alloc", test_page_alloc) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for page_alloc_data", test_page_alloc_data) == NULL) ||
 
         0
     )

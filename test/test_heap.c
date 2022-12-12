@@ -21,7 +21,7 @@ int clean_suite(void)
 void test_create_destroy(void)
 {   
 
-  internal_heap_t *internal_h = h_init_internal(4500, 2048);
+  internal_heap_t *internal_h = h_init_internal(2, 2048);
 
   CU_ASSERT_PTR_NOT_NULL(internal_h);
   
@@ -36,7 +36,7 @@ void test_h_alloc_struct_internal(void)
 
 void test_h_alloc_data_internal(void)
 {
-	internal_heap_t *h = h_init_internal(120, 2048);
+	internal_heap_t *h = h_init_internal(2, 2048);
 
 	int *data = h_alloc_data_internal(h, sizeof(int));
 	CU_ASSERT_PTR_NOT_NULL(data);
@@ -60,7 +60,7 @@ int main()
 
 	// We then create an empty test suite and specify the name and
 	// the init and cleanup functions
-	CU_pSuite my_test_suite = CU_add_suite("Tests for gc functions", init_suite, clean_suite);
+	CU_pSuite my_test_suite = CU_add_suite("Tests for heap functions", init_suite, clean_suite);
 	if (my_test_suite == NULL)
 	{
 		// If the test suite could not be added, tear down CUnit and exit

@@ -6,7 +6,7 @@
 
 typedef struct internal_heap internal_heap_t;
 
-internal_heap_t *h_init_internal(unsigned int bytes, unsigned int page_size);
+internal_heap_t *h_init_internal(unsigned int No_pages, unsigned int page_size);
 
 void h_delete_internal(internal_heap_t *h);
 

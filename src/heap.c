@@ -7,28 +7,21 @@ struct internal_heap
   page_t **page_arr;
   unsigned int num_pages;
   unsigned int page_size;
-  unsigned int last_page_size;
 };
 
-internal_heap_t *h_init_internal(unsigned int bytes, unsigned int page_size)
+internal_heap_t *h_init_internal(unsigned int No_pages, unsigned int page_size)
 {
-  assert(bytes > sizeof(internal_heap_t));
-  bytes -= sizeof(internal_heap_t);
+  assert(No_pages >= 2);
   internal_heap_t *new_iheap = calloc(1, sizeof(internal_heap_t));
-
-  new_iheap->num_pages = (bytes / page_size) + 1;
-
+  
+  new_iheap->num_pages = No_pages;
   new_iheap->page_size = page_size;
-  new_iheap->last_page_size = bytes % page_size;
-
-  assert(bytes > new_iheap->num_pages * sizeof(page_t *));
-  bytes -= new_iheap->num_pages * sizeof(page_t *);
-  new_iheap->page_arr = calloc(new_iheap->num_pages, sizeof(page_t *));
-  for (int i = 0; i < new_iheap->num_pages - 1; i++)
+  new_iheap->page_arr = calloc(No_pages, sizeof(page_t *));
+  
+  for (int i = 0; i < new_iheap->num_pages; i++)
   {
     new_iheap->page_arr[i] = page_init(page_size);
   }
-  new_iheap->page_arr[new_iheap->num_pages - 1] = page_init(new_iheap->last_page_size);
   return new_iheap;
 }
 
@@ -54,7 +47,7 @@ void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
   {
     if (has_room(h->page_arr[i], bytes))
     {
-      return page_alloc(h->page_arr[i], bytes);
+      return page_alloc_data(h->page_arr[i], bytes);
     }
   }
 
@@ -64,7 +57,7 @@ void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
     {
       make_active(h->page_arr[i]);
 
-      return page_alloc(h->page_arr[i], bytes);
+      return page_alloc_data(h->page_arr[i], bytes);
     }
   }
 

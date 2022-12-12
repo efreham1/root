@@ -13,13 +13,11 @@ struct external_heap
   //  void **_arr (allokeringsmap?) BITVEKTOR!
 };
 
-heap_t *h_init(unsigned int bytes, bool unsafe_stack, float gc_threshold)
+heap_t *h_init(unsigned int No_pages, bool unsafe_stack, float gc_threshold)
 {
-  assert(bytes > 80);
-  assert(bytes > sizeof(heap_t));
-  bytes -= sizeof(heap_t);
+  assert(No_pages >= 2);
   heap_t *newHeap = calloc(1,sizeof(heap_t));
-  newHeap->heapPtr = h_init_internal(bytes, 2048);
+  newHeap->heapPtr = h_init_internal(No_pages, 2048);
   newHeap->unsafe_stack = unsafe_stack;
   newHeap->gcTrigger = gc_threshold;
 
