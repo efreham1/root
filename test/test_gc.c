@@ -29,9 +29,22 @@ void test_create_destroy(void)
 
 }
 
-void test_h_delete_dgb(void)
+void test_h_delete_dbg(void)
 {
-	CU_ASSERT_TRUE(false);
+  heap_t *h = h_init(2,false,5.0);
+
+  CU_ASSERT_PTR_NOT_NULL_FATAL(h);
+
+  void *ptr_data = h_alloc_data(h,8);
+  void *ptr_struct = h_alloc_struct(h,"i2*f3c");
+
+  CU_ASSERT_PTR_NOT_NULL(ptr_data);
+  CU_ASSERT_PTR_NOT_NULL(ptr_struct);
+
+  h_delete_dbg(h,NULL);
+
+  CU_ASSERT_PTR_NULL(ptr_data);
+  CU_ASSERT_PTR_NULL(ptr_struct);
 }
 
 void test_alloc_struct(void)
@@ -59,23 +72,22 @@ void test_alloc_data(void)
 }
 
 
-void test_h_gc(void)
+void test_h_gc(void) //run a gc
+{
+  CU_ASSERT_TRUE(false);
+}
+
+void test_h_gc_dbg(void) // run a gc in which stack pointers are safe (?)
+{
+  CU_ASSERT_TRUE(false);
+}
+
+void test_h_avail(void) // return availible free memory (as an unsigned int)
 {
 	CU_ASSERT_TRUE(false);
 }
 
-void test_h_gc_dbg(void)
-{
-	CU_ASSERT_TRUE(false);
-}
-
-
-void test_h_avail(void)
-{
-	CU_ASSERT_TRUE(false);
-}
-
-void test_h_used(void)
+void test_h_used(void) //return used data (as an unsigned int)
 {
 	CU_ASSERT_TRUE(false);
 }
@@ -128,7 +140,7 @@ int main()
 	// copy a line below and change the information
 
     if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
-	(CU_add_test(my_test_suite, "Test for destroy with DBG",test_h_delete_dgb) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for destroy with DBG",test_h_delete_dbg) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for alloc of struct",test_alloc_struct) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for alloc of data",test_alloc_data) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for ",test_h_gc) == NULL) ||

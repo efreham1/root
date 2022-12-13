@@ -34,7 +34,7 @@ void h_delete(heap_t *h)
 
 void h_delete_dbg(heap_t *h, void *dbg_value)
 {
-  h_delete;
+  h_delete(h);
 }
 
 int calc_buf_length(char *str)

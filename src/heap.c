@@ -1,6 +1,7 @@
 #include "heap.h"
 #include "page.h"
 #include <stdio.h>
+#include <string.h>
 
 struct internal_heap
 {
