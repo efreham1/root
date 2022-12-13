@@ -1,7 +1,7 @@
 #include <CUnit/Basic.h>
 #include <stdlib.h>
 #include "page.h"
-
+#include "metadata.h"
 
 int init_suite(void)
 {
@@ -57,7 +57,7 @@ void test_page_alloc_data()
 	make_active(p);
 	CU_ASSERT_TRUE(has_room(p, 120));
 	CU_ASSERT_FALSE(has_room(p, 121));
-	int *i = (int *) page_alloc_data(p, sizeof(int));
+	int *i = (int *)page_alloc_data(p, sizeof(int));
 	CU_ASSERT_PTR_NOT_NULL(i);
 	*i = 76543;
 	CU_ASSERT_EQUAL(*i, 76543);
@@ -65,7 +65,7 @@ void test_page_alloc_data()
 	CU_ASSERT_TRUE(has_room(p, 104));
 	CU_ASSERT_FALSE(has_room(p, 105));
 
-	int *j = (int *) page_alloc_data(p, sizeof(int));
+	int *j = (int *)page_alloc_data(p, sizeof(int));
 	CU_ASSERT_PTR_NOT_NULL(i);
 	*j = 456789;
 	CU_ASSERT_EQUAL(*j, 456789);
@@ -76,6 +76,100 @@ void test_page_alloc_data()
 	page_delete(p);
 }
 
+void test_page_alloc_struct()
+{
+	page_t *p = page_init(128);
+	make_active(p);
+
+	struct s1
+	{
+		int i;
+		int j;
+		char c;
+		int *ptr;
+	};
+
+	struct s2
+	{
+		char c;
+		int i;
+		int *ptr;
+		float f;
+	};
+
+	struct s1 *ss1 = page_alloc_struct(p, "iic*");
+	CU_ASSERT_TRUE(has_room(p, 88));
+	CU_ASSERT_FALSE(has_room(p, 89));
+
+	ss1->i = 5;
+	ss1->j = 987654;
+	ss1->c = 'h';
+	ss1->ptr = calloc(1, sizeof(int));
+
+	*ss1->ptr = 45678;
+
+	CU_ASSERT_EQUAL(ss1->i, 5);
+	CU_ASSERT_EQUAL(ss1->j, 987654);
+	CU_ASSERT_EQUAL(ss1->c, 'h');
+	CU_ASSERT_EQUAL(*ss1->ptr, 45678);
+	free(ss1->ptr);
+
+	metadata_t *md1 = (metadata_t *) ss1 - 1;
+
+	int len1 = 0;
+
+	CU_ASSERT_TRUE_FATAL(is_format_vector(*md1));
+
+	bool *format_vector1 = get_format_vector(*md1, &len1);
+
+	bool actual_format_vector1[] = {0, 0, 1};
+
+	CU_ASSERT_EQUAL_FATAL(len1, 3);
+
+	for (size_t i = 0; i < 3; i++)
+	{
+		CU_ASSERT_EQUAL(format_vector1[i], actual_format_vector1[i]);
+	}
+	
+	free(format_vector1);
+
+	struct s2 *ss2 = page_alloc_struct(p, "ci*f");
+	CU_ASSERT_TRUE(has_room(p, 56));
+	CU_ASSERT_FALSE(has_room(p, 57));
+
+	ss2->c = 'y';
+	ss2->i = 987654;
+	ss2->ptr = calloc(1, sizeof(int));;
+	ss2->f = 5.765000;
+
+	*ss2->ptr = 45678;
+
+	CU_ASSERT_EQUAL(ss2->i, 987654);
+	CU_ASSERT_EQUAL(ss2->c, 'y');
+	CU_ASSERT_EQUAL(*ss2->ptr, 45678);
+	free(ss2->ptr);
+
+	metadata_t *md2 = (metadata_t *) ss2 - 1;
+
+	int len2 = 0;
+
+	CU_ASSERT_TRUE_FATAL(is_format_vector(*md2));
+
+	bool *format_vector2 = get_format_vector(*md2, &len2);
+
+	bool actual_format_vector2[] = {0, 1, 0};
+
+	CU_ASSERT_EQUAL_FATAL(len2, 3);
+
+	for (size_t i = 0; i < 3; i++)
+	{
+		CU_ASSERT_EQUAL(format_vector2[i], actual_format_vector2[i]);
+	}
+
+	free(format_vector2);
+
+	page_delete(p);
+}
 
 int main()
 {
@@ -99,13 +193,13 @@ int main()
 	// the test in question. If you want to add another test, just
 	// copy a line below and change the information
 
-    if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
+	if ((CU_add_test(my_test_suite, "Test for create and destroy", test_create_destroy) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for make and is active", test_is_make_active) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for has_room", test_has_room) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for page_alloc_data", test_page_alloc_data) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for page_alloc_struct", test_page_alloc_struct) == NULL) ||
 
-        0
-    )
+		0)
 
 	{
 		// If adding any of the tests fails, we tear down CUnit and exit

@@ -133,7 +133,7 @@ void *page_alloc_struct(page_t *page, char *format_string)
 
   int padding = bytes%largest==0? 0: largest - bytes%largest;
   bytes += padding;
-  printf("Total size: %d\nFormat string: %s\nFormat vector\n", bytes, format_string);
+  printf("\nTotal size: %d\nFormat string: %s\nFormat vector\n", bytes, format_string);
   
   for (size_t i = 0; i < idx; i++)
   {
