@@ -32,6 +32,11 @@ void h_delete(heap_t *h)
   free(h);
 }
 
+void h_delete_dbg(heap_t *h, void *dbg_value)
+{
+  h_delete;
+}
+
 int calc_buf_length(char *str)
 {
   char *c = str;
