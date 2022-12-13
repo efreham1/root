@@ -1,6 +1,7 @@
 #include <CUnit/Basic.h>
 #include <stdlib.h>
 #include "gc.h"
+#include "input_handler.h"
 
 
 int init_suite(void)
@@ -79,6 +80,30 @@ void test_h_used(void)
 	CU_ASSERT_TRUE(false);
 }
 
+void test_input_handler(void)
+{
+	char *s1 = handle_input("10i2l**4*1c");
+	char *s2 = handle_input("gul lök");
+	char *s3 = handle_input("2*0L");
+	char *s4 =  handle_input("**ll2ld3d4d");
+	char *s5 = handle_input("");
+
+	CU_ASSERT_STRING_EQUAL("iiiiiiiiiill******c", s1);
+
+	CU_ASSERT_PTR_EQUAL((char *) 0xDEADCAFEBABEBEEF , s2);
+	
+	CU_ASSERT_PTR_EQUAL((char *) 0xDEADCAFEBABEBEEF , s3);
+
+	CU_ASSERT_STRING_EQUAL("**lllldddddddd", s4);
+
+	CU_ASSERT_PTR_EQUAL((char *) 0xDEADCAFEBABEBEEF , s5);
+
+	free(s1);
+	free(s4);
+
+}
+
+
 
 int main()
 {
@@ -110,6 +135,7 @@ int main()
 	(CU_add_test(my_test_suite, "Test for ..",test_h_gc_dbg) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for ..",test_h_avail) == NULL) ||
 	(CU_add_test(my_test_suite, "Test for ..",test_h_used) == NULL) ||
+	(CU_add_test(my_test_suite, "Test for the input handler",test_input_handler) == NULL) ||
 
         0
     )

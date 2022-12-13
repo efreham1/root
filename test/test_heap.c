@@ -31,7 +31,51 @@ void test_create_destroy(void)
 
 void test_h_alloc_struct_internal(void)
 {
-	CU_ASSERT_TRUE(false); //TODO
+	struct person
+	{
+		char *first_name;
+		char *last_name;
+		int age;
+		long prs_num;
+	};
+
+	struct house
+	{
+		int num_windows;
+		char *city;
+		char *wall_colour;
+		int postcode;
+		long price_in_ore;
+	};
+	
+
+	internal_heap_t *h = h_init_internal(2, 2048);
+
+	struct person *pers = h_alloc_struct_internal(h, "**il");
+	CU_ASSERT_PTR_NOT_NULL(pers);
+	pers->age = 69;
+	pers->first_name = "Lennart";
+	pers->last_name = "Åkesson";
+	pers->prs_num = 5308091327;
+	CU_ASSERT_EQUAL(pers->age, 69);
+	CU_ASSERT_STRING_EQUAL(pers->first_name, "Lennart");
+	CU_ASSERT_STRING_EQUAL(pers->last_name, "Åkesson");
+	CU_ASSERT_EQUAL(pers->prs_num, 5308091327);
+
+	struct house *hus = h_alloc_struct_internal(h, "i**il");
+	CU_ASSERT_PTR_NOT_NULL(hus);
+	hus->city = "Åtvidaberg";
+	hus->num_windows = 1;
+	hus->postcode = 20000;
+	hus->price_in_ore = 7000000000;
+	hus->wall_colour = "Orange";
+	CU_ASSERT_EQUAL(hus->num_windows, 1);
+	CU_ASSERT_EQUAL(hus->postcode, 20000);
+	CU_ASSERT_EQUAL(hus->price_in_ore, 7000000000);
+	CU_ASSERT_STRING_EQUAL(hus->city, "Åtvidaberg");
+	CU_ASSERT_STRING_EQUAL(hus->wall_colour, "Orange");
+
+	h_delete_internal(h);
 }
 
 void test_h_alloc_data_internal(void)

@@ -15,7 +15,7 @@ TESTS = $(patsubst %,$(EDIR)/test_%,$(MODULES))
 $(ODIR)/%.o: $(SDIR)/%.c $(SDIR)/%.h
 	$(CC) $(FLAGS) $< -c -o $@ 
 
-$(EDIR)/%: $(OBJS) 
+$(EDIR)/%: $(SDIR)/%.c $(OBJS) 
 	$(CC) $(FLAGS) $^ -o $@
 
 $(EDIR)/test_%: $(TDIR)/test_%.c $(OBJS)
