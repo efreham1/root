@@ -130,3 +130,12 @@ void *h_alloc_data(heap_t *h, unsigned int bytes)
 {
  return  h_alloc_data_internal(h->heapPtr, bytes);
 }
+
+
+unsigned int h_gc(heap_t *h)
+{
+  //TODO: STUB
+  if(h){ puts("Not Null") ; } else { puts("NULL") ; }
+  
+  return 0;
+}

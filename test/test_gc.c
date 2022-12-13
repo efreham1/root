@@ -74,7 +74,19 @@ void test_alloc_data(void)
 
 void test_h_gc(void) //run a gc
 {
-  CU_ASSERT_TRUE(false);
+  heap_t *h = h_init(2, false, 50.0);
+  
+  int *data_1 = h_alloc_data(h, sizeof(int));
+    
+  CU_ASSERT_PTR_NOT_NULL(data_1);
+
+  data_1 = NULL;
+  
+  unsigned int bytes_collected = h_gc(h);
+
+  CU_ASSERT_FALSE(0 == bytes_collected);  
+  
+  h_delete(h);
 }
 
 void test_h_gc_dbg(void) // run a gc in which stack pointers are safe (?)
