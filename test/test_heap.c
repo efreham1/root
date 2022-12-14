@@ -96,6 +96,47 @@ void test_h_alloc_data_internal(void)
 
 }
 
+void test_is_valid_ptr()
+{
+	struct person
+	{
+		char *first_name;
+		char *last_name;
+		int age;
+		long prs_num;
+	};
+
+	struct house
+	{
+		int num_windows;
+		char *city;
+		char *wall_colour;
+		int postcode;
+		long price_in_ore;
+	};
+
+	internal_heap_t *h = h_init_internal(2, 2048);
+
+	int *data = h_alloc_data_internal(h, sizeof(int));
+	int *data2 = h_alloc_data_internal(h, sizeof(int));
+	struct house *hus = h_alloc_struct_internal(h, "i**il");
+	struct person *pers = h_alloc_struct_internal(h, "**il");
+
+	int i = 5;
+	char *str = "nujhn345uyiwghs";
+
+	CU_ASSERT_TRUE(is_valid_ptr(h, data));
+	CU_ASSERT_TRUE(is_valid_ptr(h, data2));
+	CU_ASSERT_TRUE(is_valid_ptr(h, hus));
+	CU_ASSERT_TRUE(is_valid_ptr(h, pers));
+
+	CU_ASSERT_FALSE(is_valid_ptr(h, &i));
+	CU_ASSERT_FALSE(is_valid_ptr(h, str));
+	CU_ASSERT_FALSE(is_valid_ptr(h, NULL));
+
+	h_delete_internal(h);
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -121,6 +162,7 @@ int main()
     if ((CU_add_test(my_test_suite, "Test for create and destroy",test_create_destroy) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for allocating a struct", test_h_alloc_struct_internal) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for allocating raw data", test_h_alloc_data_internal) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for validating pointer", test_is_valid_ptr) == NULL) ||
 
         0
     )

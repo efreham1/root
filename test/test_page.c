@@ -19,7 +19,7 @@ int clean_suite(void)
 
 void test_create_destroy()
 {
-	page_t *p = page_init(345);
+	page_t *p = page_init(256);
 
 	CU_ASSERT_PTR_NOT_NULL(p);
 
@@ -28,7 +28,7 @@ void test_create_destroy()
 
 void test_is_make_active()
 {
-	page_t *p = page_init(345);
+	page_t *p = page_init(128);
 
 	CU_ASSERT_FALSE(is_active(p));
 
@@ -171,6 +171,46 @@ void test_page_alloc_struct()
 	page_delete(p);
 }
 
+void test_is_ptr_to_page()
+{
+	page_t *p = page_init(128);
+	make_active(p);
+	int *i = (int *)page_alloc_data(p, 8);
+	int *j = (int *)page_alloc_data(p, 8);
+	struct s1
+	{
+		int i;
+		int j;
+		char c;
+		int *ptr;
+	};
+	struct s2
+	{
+		char c;
+		int i;
+		int *ptr;
+		float f;
+	};
+	bool actual_format_vector1[] = {0, 0, 1};
+	bool actual_format_vector2[] = {0, 1, 0};
+	struct s1 *ss1 = page_alloc_struct(p, actual_format_vector1, 3, 24);
+	struct s2 *ss2 = page_alloc_struct(p, actual_format_vector2, 3, 24);
+
+	int m = 5;
+	int n = 7;
+
+	CU_ASSERT_TRUE(is_ptr_to_page(p, i));
+	CU_ASSERT_TRUE(is_ptr_to_page(p, j));
+	CU_ASSERT_TRUE(is_ptr_to_page(p, ss1));
+	CU_ASSERT_TRUE(is_ptr_to_page(p, ss2));
+
+	CU_ASSERT_FALSE(is_ptr_to_page(p, &m));
+	CU_ASSERT_FALSE(is_ptr_to_page(p, &n));
+	CU_ASSERT_FALSE(is_ptr_to_page(p, NULL));
+
+	page_delete(p);
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -198,6 +238,7 @@ int main()
 		(CU_add_test(my_test_suite, "Test for has_room", test_has_room) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for page_alloc_data", test_page_alloc_data) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for page_alloc_struct", test_page_alloc_struct) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for is_ptr_to_page", test_is_ptr_to_page) == NULL) ||
 
 		0)
 

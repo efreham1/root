@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
 #include <ctype.h>
@@ -12,7 +11,6 @@ struct external_heap
   internal_heap_t *heapPtr;
   bool unsafe_stack;  
   float gcTrigger;
-  //  void **_arr (allokeringsmap?) BITVEKTOR!
 };
 
 heap_t *h_init(unsigned int No_pages, bool unsafe_stack, float gc_threshold)
@@ -35,6 +33,33 @@ void h_delete(heap_t *h)
 void h_delete_dbg(heap_t *h, void *dbg_value)
 {
   h_delete(h);
+}
+
+void **get_valid_ptrs(internal_heap_t *i_heap, int *len)
+{
+  int stack_ptrs_len = 0;
+
+  void **stack_ptrs = NULL; //TODO insert stack function thing.
+
+  void *buf[stack_ptrs_len];
+
+  int idx = 0;
+  for (size_t i = 0; i < stack_ptrs_len; i++)
+  {
+    if (is_valid_ptr(i_heap, stack_ptrs[i]))
+    {
+      buf[idx++] = stack_ptrs[i];
+    }
+  }
+  *len = idx;
+
+  void **valid_ptrs = calloc(idx, sizeof(void *));
+
+  for (size_t i = 0; i < idx; i++)
+  {
+    valid_ptrs[i] = buf[i];
+  }
+  return valid_ptrs;
 }
 
 int calc_buf_length(char *str)

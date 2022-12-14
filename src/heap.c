@@ -134,3 +134,15 @@ void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
 
   return NULL;
 }
+
+bool is_valid_ptr(internal_heap_t *h, void *ptr)
+{
+  for (int i = 0; i < h->num_pages; i++)
+  {
+    if (is_ptr_to_page(h->page_arr[i], ptr))
+    {
+      return true;
+    }
+  }
+  return false;
+}

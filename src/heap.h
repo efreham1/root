@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #ifndef __heap__
 #define __heap__
@@ -13,5 +14,7 @@ void h_delete_internal(internal_heap_t *h);
 void *h_alloc_struct_internal(internal_heap_t *h, char *layout);
 
 void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes);
+
+bool is_valid_ptr(internal_heap_t *h, void *ptr);
 
 #endif
