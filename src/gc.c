@@ -8,7 +8,7 @@
 
 struct external_heap
 {
-  internal_heap_t *heapPtr;
+  internal_heap_t *internal_heap;
   bool unsafe_stack;  
   float gcTrigger;
 };
@@ -17,7 +17,7 @@ heap_t *h_init(unsigned int No_pages, bool unsafe_stack, float gc_threshold)
 {
   assert(No_pages >= 2);
   heap_t *newHeap = calloc(1,sizeof(heap_t));
-  newHeap->heapPtr = h_init_internal(No_pages, 2048);
+  newHeap->internal_heap = h_init_internal(No_pages, 2048);
   newHeap->unsafe_stack = unsafe_stack;
   newHeap->gcTrigger = gc_threshold;
 
@@ -26,7 +26,7 @@ heap_t *h_init(unsigned int No_pages, bool unsafe_stack, float gc_threshold)
 
 void h_delete(heap_t *h)
 {
-  h_delete_internal(h->heapPtr);
+  h_delete_internal(h->internal_heap);
   free(h);
 }
 
@@ -146,14 +146,14 @@ char *handle_input(char *str)
 void *h_alloc_struct(heap_t *h, char *layout)
 {
   char *format_string = handle_input(layout);
-  void *ptr = h_alloc_struct_internal(h->heapPtr, format_string);
+  void *ptr = h_alloc_struct_internal(h->internal_heap, format_string);
   free(format_string);
   return ptr;
 }
 
 void *h_alloc_data(heap_t *h, unsigned int bytes)
 {
- return  h_alloc_data_internal(h->heapPtr, bytes);
+ return  h_alloc_data_internal(h->internal_heap, bytes);
 }
 
 
@@ -163,4 +163,9 @@ unsigned int h_gc(heap_t *h)
   if(h){ puts("Not Null") ; } else { puts("NULL") ; }
   
   return 0;
+}
+
+size_t get_heap_actual_size(heap_t *h)
+{
+  return sizeof(heap_t) + get_internal_heap_actual_size(h->internal_heap);
 }

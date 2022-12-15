@@ -14,9 +14,9 @@ struct page
   void *alloc_map;
 };
 
-size_t get_page_struct_size()
+size_t get_page_actual_size(page_t *p)
 {
-  return sizeof(page_t);
+  return sizeof(page_t) + (p->size/8-1)/8 + 1 + p->size;
 }
 
 page_t *page_init(unsigned int bytes)
@@ -84,6 +84,8 @@ bool is_ptr_to_page(page_t *p, void *ptr)
 
 void *page_alloc_data(page_t *page, unsigned int bytes)
 {  
+  assert(bytes%8==0);
+
   metadata_t *metadata = (metadata_t *) (page->memory_block + page->offset);
   page->offset += sizeof(metadata_t);
 
@@ -99,6 +101,8 @@ void *page_alloc_data(page_t *page, unsigned int bytes)
 
 void *page_alloc_struct(page_t *page, bool *format_vector, int len, unsigned int bytes)
 {
+  assert(bytes%8==0);
+
   metadata_t *metadata = (metadata_t *) (page->memory_block + page->offset);
   page->offset += sizeof(metadata_t);
 
@@ -110,4 +114,14 @@ void *page_alloc_struct(page_t *page, bool *format_vector, int len, unsigned int
   void *pointer = page->memory_block + page->offset;
   page->offset += bytes;
   return pointer;
+}
+
+unsigned int avail_space_page(page_t *p)
+{
+  return p->size - p->offset;
+}
+
+unsigned int used_space_page(page_t *p)
+{
+  return p->offset;
 }

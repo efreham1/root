@@ -211,6 +211,33 @@ void test_is_ptr_to_page()
 	page_delete(p);
 }
 
+void test_avail_used_space()
+{
+	page_t *p = page_init(256);
+
+	CU_ASSERT_EQUAL(avail_space_page(p), 256);
+	CU_ASSERT_EQUAL(used_space_page(p), 0);
+
+	page_alloc_data(p, 64);
+
+	CU_ASSERT_EQUAL(avail_space_page(p), 184);
+	CU_ASSERT_EQUAL(used_space_page(p), 72);
+
+	bool fv[3] = {0,0,0};
+
+	page_alloc_struct(p, fv, 3, 32);
+
+	CU_ASSERT_EQUAL(avail_space_page(p), 144);
+	CU_ASSERT_EQUAL(used_space_page(p), 112);
+
+	page_alloc_data(p, 136);
+
+	CU_ASSERT_EQUAL(avail_space_page(p), 0);
+	CU_ASSERT_EQUAL(used_space_page(p), 256);
+
+	page_delete(p);
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -239,6 +266,7 @@ int main()
 		(CU_add_test(my_test_suite, "Test for page_alloc_data", test_page_alloc_data) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for page_alloc_struct", test_page_alloc_struct) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for is_ptr_to_page", test_is_ptr_to_page) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for avail_space and used_space", test_avail_used_space) == NULL) ||
 
 		0)
 

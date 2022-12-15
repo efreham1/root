@@ -146,3 +146,15 @@ bool is_valid_ptr(internal_heap_t *h, void *ptr)
   }
   return false;
 }
+
+size_t get_internal_heap_actual_size(internal_heap_t *h)
+{
+  size_t sum = 0;
+
+  for (size_t i = 0; i < h->num_pages; i++)
+  {
+    sum += get_page_actual_size(h->page_arr[i]);
+  }
+  
+  return sizeof(internal_heap_t) + h->num_pages*sizeof(page_t *) + sum;
+}

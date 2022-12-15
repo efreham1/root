@@ -8,7 +8,7 @@
 
 typedef struct page page_t;
 
-size_t get_page_struct_size();
+size_t get_page_actual_size(page_t *p);
 
 page_t *page_init(unsigned int bytes);
 
@@ -25,5 +25,9 @@ void *page_alloc_struct(page_t *page, bool *format_vector, int len, unsigned int
 void make_active(page_t *p);
 
 bool is_ptr_to_page(page_t *p, void *ptr);
+
+unsigned int avail_space_page(page_t *p);
+
+unsigned int used_space_page(page_t *p);
 
 #endif

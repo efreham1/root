@@ -92,4 +92,6 @@ unsigned int h_avail(heap_t *h);
 /// \return the bytes currently in use by user structures. 
 unsigned int h_used(heap_t *h);
 
+size_t get_heap_actual_size(heap_t *h);
+
 #endif

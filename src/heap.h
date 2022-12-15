@@ -17,4 +17,6 @@ void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes);
 
 bool is_valid_ptr(internal_heap_t *h, void *ptr);
 
+size_t get_internal_heap_actual_size(internal_heap_t *h);
+
 #endif
