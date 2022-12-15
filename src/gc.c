@@ -13,11 +13,15 @@ struct external_heap
   float gcTrigger;
 };
 
-heap_t *h_init(unsigned int No_pages, bool unsafe_stack, float gc_threshold)
+heap_t *h_init(unsigned long bytes, bool unsafe_stack, float gc_threshold)
 {
-  assert(No_pages >= 2);
   heap_t *newHeap = calloc(1,sizeof(heap_t));
-  newHeap->internal_heap = h_init_internal(No_pages, 2048);
+
+  unsigned int page_size = 2048;
+
+  unsigned int No_pages = (bytes/(page_size))*2 + 2;
+
+  newHeap->internal_heap = h_init_internal(No_pages, page_size);
   newHeap->unsafe_stack = unsafe_stack;
   newHeap->gcTrigger = gc_threshold;
 
