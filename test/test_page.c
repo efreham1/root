@@ -19,16 +19,20 @@ int clean_suite(void)
 
 void test_create_destroy()
 {
-	page_t *p = page_init(256);
+
+	void *memory_block = calloc(256, 1);
+	page_t *p = page_init(256, memory_block);
 
 	CU_ASSERT_PTR_NOT_NULL(p);
 
 	page_delete(p);
+	free(memory_block);
 }
 
 void test_is_make_active()
 {
-	page_t *p = page_init(128);
+	void *memory_block = calloc(128, 1);
+	page_t *p = page_init(128, memory_block);
 
 	CU_ASSERT_FALSE(is_active(p));
 
@@ -37,11 +41,13 @@ void test_is_make_active()
 	CU_ASSERT_TRUE(is_active(p));
 
 	page_delete(p);
+	free(memory_block);
 }
 
 void test_has_room()
 {
-	page_t *p = page_init(64);
+	void *memory_block = calloc(64, 1);
+	page_t *p = page_init(64, memory_block);
 
 	make_active(p);
 
@@ -49,36 +55,55 @@ void test_has_room()
 	CU_ASSERT_FALSE(has_room(p, 57));
 
 	page_delete(p);
+	free(memory_block);
 }
 
 void test_page_alloc_data()
 {
-	page_t *p = page_init(128);
+	void *memory_block = calloc(128, 1);
+	page_t *p = page_init(128, memory_block);
 	make_active(p);
+
 	CU_ASSERT_TRUE(has_room(p, 120));
 	CU_ASSERT_FALSE(has_room(p, 121));
-	int *i = (int *)page_alloc_data(p, 8);
-	CU_ASSERT_PTR_NOT_NULL(i);
-	*i = 76543;
-	CU_ASSERT_EQUAL(*i, 76543);
 
+	int *i = (int *)page_alloc_data(p, 8);
+
+	CU_ASSERT_PTR_NOT_NULL(i);
+
+	*i = 76543;
+	metadata_t *md = (metadata_t *) i - 1;
+
+	CU_ASSERT_TRUE_FATAL(is_data_size(*md));
+
+	CU_ASSERT_EQUAL(get_data_size(*md), 8);
+	CU_ASSERT_EQUAL(*i, 76543);
 	CU_ASSERT_TRUE(has_room(p, 104));
 	CU_ASSERT_FALSE(has_room(p, 105));
 
 	int *j = (int *)page_alloc_data(p, 8);
-	CU_ASSERT_PTR_NOT_NULL(i);
-	*j = 456789;
-	CU_ASSERT_EQUAL(*j, 456789);
 
+	CU_ASSERT_PTR_NOT_NULL(i);
+
+	*j = 456789;
+	md = (metadata_t *) i - 1;
+
+	CU_ASSERT_TRUE_FATAL(is_data_size(*md));
+
+	CU_ASSERT_EQUAL(get_data_size(*md), 8);
+
+	CU_ASSERT_EQUAL(*j, 456789);
 	CU_ASSERT_TRUE(has_room(p, 88));
 	CU_ASSERT_FALSE(has_room(p, 89));
 
 	page_delete(p);
+	free(memory_block);
 }
 
 void test_page_alloc_struct()
 {
-	page_t *p = page_init(128);
+	void *memory_block = calloc(128, 1);
+	page_t *p = page_init(128, memory_block);
 	make_active(p);
 
 	struct s1
@@ -116,7 +141,7 @@ void test_page_alloc_struct()
 	CU_ASSERT_EQUAL(*ss1->ptr, 45678);
 	free(ss1->ptr);
 
-	metadata_t *md1 = (metadata_t *) ss1 - 1;
+	metadata_t *md1 = (metadata_t *)ss1 - 1;
 
 	int len1 = 0;
 
@@ -130,7 +155,7 @@ void test_page_alloc_struct()
 	{
 		CU_ASSERT_EQUAL(format_vector1[i], actual_format_vector1[i]);
 	}
-	
+
 	free(format_vector1);
 
 	bool actual_format_vector2[] = {0, 1, 0};
@@ -141,17 +166,19 @@ void test_page_alloc_struct()
 
 	ss2->c = 'y';
 	ss2->i = 987654;
-	ss2->ptr = calloc(1, sizeof(int));;
-	ss2->f = 5.765000;
+	ss2->ptr = calloc(1, sizeof(int));
+	;
+	ss2->f = 5.765;
 
 	*ss2->ptr = 45678;
 
 	CU_ASSERT_EQUAL(ss2->i, 987654);
 	CU_ASSERT_EQUAL(ss2->c, 'y');
 	CU_ASSERT_EQUAL(*ss2->ptr, 45678);
+	CU_ASSERT_DOUBLE_EQUAL(ss2->f, 5.765, 0.0001);
 	free(ss2->ptr);
 
-	metadata_t *md2 = (metadata_t *) ss2 - 1;
+	metadata_t *md2 = (metadata_t *)ss2 - 1;
 
 	int len2 = 0;
 
@@ -169,11 +196,13 @@ void test_page_alloc_struct()
 	free(format_vector2);
 
 	page_delete(p);
+	free(memory_block);
 }
 
 void test_is_ptr_to_page()
 {
-	page_t *p = page_init(128);
+	void *memory_block = calloc(128, 1);
+	page_t *p = page_init(128, memory_block);
 	make_active(p);
 	int *i = (int *)page_alloc_data(p, 8);
 	int *j = (int *)page_alloc_data(p, 8);
@@ -209,11 +238,13 @@ void test_is_ptr_to_page()
 	CU_ASSERT_FALSE(is_ptr_to_page(p, NULL));
 
 	page_delete(p);
+	free(memory_block);
 }
 
 void test_avail_used_space()
 {
-	page_t *p = page_init(256);
+	void *memory_block = calloc(256, 1);
+	page_t *p = page_init(256, memory_block);
 
 	CU_ASSERT_EQUAL(avail_space_page(p), 256);
 	CU_ASSERT_EQUAL(used_space_page(p), 0);
@@ -223,7 +254,7 @@ void test_avail_used_space()
 	CU_ASSERT_EQUAL(avail_space_page(p), 184);
 	CU_ASSERT_EQUAL(used_space_page(p), 72);
 
-	bool fv[3] = {0,0,0};
+	bool fv[3] = {0, 0, 0};
 
 	page_alloc_struct(p, fv, 3, 32);
 
@@ -236,6 +267,7 @@ void test_avail_used_space()
 	CU_ASSERT_EQUAL(used_space_page(p), 256);
 
 	page_delete(p);
+	free(memory_block);
 }
 
 int main()

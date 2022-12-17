@@ -5,13 +5,7 @@
 #include <ctype.h>
 #include "gc.h"
 #include "heap.h"
-
-struct external_heap
-{
-  internal_heap_t *internal_heap;
-  bool unsafe_stack;  
-  float gcTrigger;
-};
+#include "structs.h"
 
 heap_t *h_init(unsigned long bytes, bool unsafe_stack, float gc_threshold)
 {
@@ -34,16 +28,11 @@ void h_delete(heap_t *h)
   free(h);
 }
 
-void h_delete_dbg(heap_t *h, void *dbg_value)
-{
-  h_delete(h);
-}
-
-void **get_valid_ptrs(internal_heap_t *i_heap, int *len)
+void ***get_valid_ptrs(internal_heap_t *i_heap, int *len)
 {
   int stack_ptrs_len = 0;
 
-  void **stack_ptrs = NULL; //TODO insert stack function thing.
+  void ***stack_ptrs = NULL; //TODO insert stack function thing.
 
   void *buf[stack_ptrs_len];
 
@@ -57,13 +46,26 @@ void **get_valid_ptrs(internal_heap_t *i_heap, int *len)
   }
   *len = idx;
 
-  void **valid_ptrs = calloc(idx, sizeof(void *));
+  void ***valid_ptrs = calloc(idx, sizeof(void **));
 
   for (size_t i = 0; i < idx; i++)
   {
-    valid_ptrs[i] = buf[i];
+    valid_ptrs[i] = buf[i]; 
   }
+  //free(stack_ptrs);
   return valid_ptrs;
+}
+
+void h_delete_dbg(heap_t *h, void *dbg_value)
+{
+  int len = 0;
+  void ***ptrs = get_valid_ptrs(h->internal_heap, &len);
+  for (size_t i = 0; i < len; i++)
+  {
+    *ptrs[i] = NULL;
+  }
+  free(ptrs);
+  h_delete(h);
 }
 
 int calc_buf_length(char *str)

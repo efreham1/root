@@ -1,14 +1,7 @@
 #include "heap.h"
-#include "page.h"
 #include <stdio.h>
 #include <string.h>
-
-struct internal_heap
-{
-  page_t **page_arr;
-  unsigned int num_pages;
-  unsigned int page_size;
-};
+#include "structs.h"
 
 internal_heap_t *h_init_internal(unsigned int No_pages, unsigned int page_size)
 {
@@ -18,10 +11,13 @@ internal_heap_t *h_init_internal(unsigned int No_pages, unsigned int page_size)
   new_iheap->num_pages = No_pages;
   new_iheap->page_size = page_size;
   new_iheap->page_arr = calloc(No_pages, sizeof(page_t *));
+  new_iheap->memory_block = calloc(No_pages, page_size);
+  new_iheap->end_of_memory_block = new_iheap->memory_block + No_pages * page_size;
   
   for (int i = 0; i < new_iheap->num_pages; i++)
   {
-    new_iheap->page_arr[i] = page_init(page_size);
+    void *start_of_page = new_iheap->memory_block + No_pages * page_size*(i)/new_iheap->num_pages;
+    new_iheap->page_arr[i] = page_init(page_size, start_of_page);
   }
   return new_iheap;
 }
@@ -33,13 +29,13 @@ void h_delete_internal(internal_heap_t *h)
     page_delete(h->page_arr[i]);
   }
   free(h->page_arr);
+  free(h->memory_block);
   free(h);
 }
 
-void *h_alloc_struct_internal(internal_heap_t *h, char *format_string)
+unsigned int get_size_and_format_vector(bool *format_vector,char *format_string, int *len)
 {
   unsigned int bytes = 0;
-  bool format_vector[strlen(format_string)];
   size_t size = 0;
   int idx = 0;
   for (char *c = format_string; *c != '\0'; c++)
@@ -81,18 +77,23 @@ void *h_alloc_struct_internal(internal_heap_t *h, char *format_string)
     {
       format_vector[idx++] = *c == '*';
     }
-
     bytes += padding + size;
   }
 
   int padding = bytes%8==0? 0: 8 - bytes%8;
   bytes += padding;
 
+  *len = idx;
+  return bytes;
+}
+
+page_t *get_alloc_page(internal_heap_t *h, unsigned int bytes)
+{
   for (int i = 0; i < h->num_pages; i++)
   {
     if (has_room(h->page_arr[i], bytes))
     {
-      return page_alloc_struct(h->page_arr[i], format_vector, idx, bytes);
+      return h->page_arr[i];
     }
   }
 
@@ -102,11 +103,21 @@ void *h_alloc_struct_internal(internal_heap_t *h, char *format_string)
     {
       make_active(h->page_arr[i]);
 
-      return page_alloc_struct(h->page_arr[i], format_vector, idx, bytes);
+      return h->page_arr[i];
     }
   }
 
   return NULL;
+}
+
+void *h_alloc_struct_internal(internal_heap_t *h, char *format_string)
+{
+  bool format_vector[strlen(format_string)];
+  int len = 0;
+
+  unsigned int bytes = get_size_and_format_vector(format_vector, format_string, &len);
+
+  return page_alloc_struct(get_alloc_page(h, bytes), format_vector, len, bytes);
 }
 
 void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
@@ -114,29 +125,16 @@ void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
   int padding = bytes%8 == 0? 0: 8 - bytes%8;
   bytes = bytes >= 8? bytes + padding: 8;
   
-  for (int i = 0; i < h->num_pages; i++)
-  {
-    if (has_room(h->page_arr[i], bytes))
-    {
-      return page_alloc_data(h->page_arr[i], bytes);
-    }
-  }
-
-  for (int i = 0; i < h->num_pages; i++)
-  {
-    if (!is_active(h->page_arr[i]))
-    {
-      make_active(h->page_arr[i]);
-
-      return page_alloc_data(h->page_arr[i], bytes);
-    }
-  }
-
-  return NULL;
+  return page_alloc_data(get_alloc_page(h, bytes), bytes);
 }
 
 bool is_valid_ptr(internal_heap_t *h, void *ptr)
 {
+  if (ptr<h->memory_block || ptr>h->end_of_memory_block)
+  {
+    return false;
+  }
+  
   for (int i = 0; i < h->num_pages; i++)
   {
     if (is_ptr_to_page(h->page_arr[i], ptr))
@@ -157,4 +155,55 @@ size_t get_internal_heap_actual_size(internal_heap_t *h)
   }
   
   return sizeof(internal_heap_t) + h->num_pages*sizeof(page_t *) + sum;
+}
+
+
+page_t ** get_active_pages(internal_heap_t *h)
+{
+  page_t *buf[h->num_pages];
+
+  int ind = 0;
+  for(int i=0; i < h->num_pages; i++)
+  {
+    page_t *curr_page = h->page_arr[i];
+    if(is_active(curr_page))
+    {
+      buf[ind++] = curr_page;
+    }
+
+  }
+  
+  page_t **active_pages = calloc(ind, sizeof(page_t *));
+
+  for(int j=0; j < ind; j++)
+  {
+    active_pages[j] = buf[j];
+  }
+
+  return active_pages;
+}
+
+page_t **get_passive_pages(internal_heap_t *h)
+{
+  page_t *buf[h->num_pages];
+
+  int ind = 0;
+  for(int i=0; i < h->num_pages; i++)
+  {
+    page_t *curr_page = h->page_arr[i];
+    if(! is_active(curr_page))
+    {
+      buf[ind++] = curr_page;
+    }
+
+  }
+  
+  page_t **passive_pages = calloc(ind, sizeof(page_t *));
+
+  for(int j=0; j < ind; j++)
+  {
+    passive_pages[j] = buf[j];
+  }
+
+  return passive_pages;
 }

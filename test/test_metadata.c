@@ -72,6 +72,22 @@ void test_set_get_format_vector()
 	free(gotten_format_vector);
 }
 
+void test_get_size_struct()
+{
+	bool format_vector[13] = {0,1,0,0,0,1,1,0,1,0,0,1,1};
+	metadata_t md = set_format_vector(format_vector, 13);
+	CU_ASSERT_TRUE(get_size_struct(md) == 13*8);
+
+	bool format_vector2[0] = {};
+	metadata_t md2 = set_format_vector(format_vector2, 0);
+	CU_ASSERT_TRUE(get_size_struct(md2) == 0);
+	
+	bool format_vector3[1] = {0};
+	metadata_t md3 = set_format_vector(format_vector3, 1);
+	CU_ASSERT_TRUE(get_size_struct(md3) == 1*8);
+	
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -100,6 +116,7 @@ int main()
 		(CU_add_test(my_test_suite, "Test for set and get forward_address",  test_set_get_forward_address) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for set and get data_size",  test_set_get_data_size) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for set and get format_vector",  test_set_get_format_vector) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for metadata size",  test_get_size_struct) == NULL) ||
 
         0
     )

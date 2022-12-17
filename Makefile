@@ -7,12 +7,12 @@ CC = gcc
 
 FLAGS = -I src -Wall -g -fprofile-arcs -ftest-coverage
 
-MODULES = gc page heap metadata
+MODULES = gc page heap metadata mover
 
 OBJS = $(patsubst %,$(ODIR)/%.o,$(MODULES))
 TESTS = $(patsubst %,$(EDIR)/test_%,$(MODULES))
 
-$(ODIR)/%.o: $(SDIR)/%.c $(SDIR)/%.h
+$(ODIR)/%.o: $(SDIR)/%.c $(SDIR)/%.h $(SDIR)/structs.h
 	$(CC) $(FLAGS) $< -c -o $@ 
 
 $(EDIR)/%: $(SDIR)/%.c $(OBJS) 

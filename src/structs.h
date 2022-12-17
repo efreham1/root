@@ -1,0 +1,27 @@
+#include "heap.h"
+#include "page.h"
+
+struct external_heap
+{
+  internal_heap_t *internal_heap;
+  bool unsafe_stack;  
+  float gcTrigger;
+};
+
+struct internal_heap
+{
+  page_t **page_arr;
+  unsigned int num_pages;
+  unsigned int page_size;
+  void *memory_block;
+  void *end_of_memory_block;
+};
+
+struct page
+{
+  bool is_active;
+  unsigned int size;
+  unsigned int offset;
+  void *memory_block;
+  void *alloc_map;
+};

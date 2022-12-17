@@ -144,3 +144,29 @@ metadata_t set_format_vector(bool *format_vector, unsigned int len)
     }
     return mdata;
 }
+
+size_t get_size_struct(metadata_t md)
+{
+    assert(is_format_vector(md));
+    char *b = (char *)&md;
+    bool flag = false;
+    int idx = 0;
+    for (int i = 0; i < sizeof(metadata_t); i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (i != 0 || j > 1)
+            {
+                if (flag)
+                {
+                    idx++;
+                }
+                else
+                {
+                    flag = (b[i] >> j) & 1;
+                }
+            }
+        }
+    }
+    return idx*8;
+}

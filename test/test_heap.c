@@ -37,6 +37,7 @@ void test_h_alloc_struct_internal(void)
 		char *last_name;
 		int age;
 		long prs_num;
+		double d;
 	};
 
 	struct house
@@ -51,16 +52,18 @@ void test_h_alloc_struct_internal(void)
 
 	internal_heap_t *h = h_init_internal(2, 2048);
 
-	struct person *pers = h_alloc_struct_internal(h, "**il");
+	struct person *pers = h_alloc_struct_internal(h, "**ild");
 	CU_ASSERT_PTR_NOT_NULL(pers);
 	pers->age = 69;
 	pers->first_name = "Lennart";
 	pers->last_name = "Åkesson";
 	pers->prs_num = 5308091327;
+	pers->d = 556.234567;
 	CU_ASSERT_EQUAL(pers->age, 69);
 	CU_ASSERT_STRING_EQUAL(pers->first_name, "Lennart");
 	CU_ASSERT_STRING_EQUAL(pers->last_name, "Åkesson");
 	CU_ASSERT_EQUAL(pers->prs_num, 5308091327);
+	CU_ASSERT_DOUBLE_EQUAL(pers->d, 556.234567, 0.0001);
 
 	struct house *hus = h_alloc_struct_internal(h, "i**il");
 	CU_ASSERT_PTR_NOT_NULL(hus);

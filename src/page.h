@@ -10,7 +10,7 @@ typedef struct page page_t;
 
 size_t get_page_actual_size(page_t *p);
 
-page_t *page_init(unsigned int bytes);
+page_t *page_init(unsigned int bytes, void *page_start);
 
 void page_delete(page_t *p);
 
