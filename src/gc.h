@@ -59,8 +59,8 @@ void *h_alloc_data(heap_t *h, unsigned int bytes);
 
 /// Manually trigger garbage collection.
 ///
-/// Garbage collection is otherwise run when an allocation is
-/// impossible in the available consecutive free memory.
+/// Garbage collection is otherwise run when an allocation pushes
+/// the available memory over the threshold.
 ///
 /// \param h the heap
 /// \return the number of bytes collected
@@ -69,8 +69,8 @@ unsigned int h_gc(heap_t *h);
 /// Manually trigger garbage collection with the ability to 
 /// override the setting for how stack pointers are treated. 
 /// 
-/// Garbage collection is otherwise run when an allocation is
-/// impossible in the available consecutive free memory.
+/// Garbage collection is otherwise run when an allocation pushes
+/// the available memory over the threshold.
 ///
 /// \param h the heap
 /// \param unsafe_stack true if pointers on the stack are to be considered unsafe pointers

@@ -88,7 +88,7 @@ void test_do_move()
 	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss2->linked_struct->ptr));
 	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss2->linked_struct->ptr));
 
-	do_move((void **)&ss2, &passive_page, 1);
+	do_move((void **)&ss2, &passive_page, 1, NULL, 0);
 
 	CU_ASSERT_TRUE(is_active(passive_page));
 
@@ -174,7 +174,7 @@ void test_do_move_ref_loop()
 
 	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
 
-	do_move(&ss1, &passive_page, 1);
+	do_move((void **) &ss1, &passive_page, 1, NULL, 0);
 
 	CU_ASSERT_TRUE(is_active(passive_page));
 
@@ -195,6 +195,51 @@ void test_do_move_ref_loop()
 	page_delete(active_page);
 	page_delete(passive_page);
 	free(memory_block);
+}
+
+void test_do_move_static_pages()
+{
+	struct s1;
+	struct s2;
+	struct s3;
+
+	struct s1
+	{
+		struct s2 *s_ptr;
+		int i;
+		char *ptr;
+	};
+
+	struct s2
+	{
+		struct s3 *s_ptr;
+		int i;
+		char *ptr;
+	};
+
+	struct s3
+	{
+		struct s1 *s_ptr;
+		int i;
+		char *ptr;
+	};
+
+	void *memory_block = calloc(512, 1);
+	page_t *active_page1 = page_init(128, memory_block);
+	page_t *active_page2 = page_init(128, memory_block + 128);
+	page_t *passive_page1 = page_init(128, memory_block + 256);
+	page_t *passive_page2 = page_init(128, memory_block + 384);
+
+	page_t *passive_pages[] = {passive_page1, passive_page2};
+
+	make_active(active_page1);
+	make_active(active_page2);
+
+	bool format_vector[] = {1, 0, 1};
+
+	struct s1 *ss1 = page_alloc_struct(active_page1, format_vector, 3, 24);
+	ss1->i = 76;
+	ss1->ptr = page_alloc_data(passive_page1, 8);
 }
 
 int main()
