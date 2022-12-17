@@ -6,7 +6,8 @@
 
 void move(heap_t *ext_heap)
 {
-    page_t **passive_pages = get_passive_pages(ext_heap->internal_heap);
+    int len = 0;
+    page_t **passive_pages = get_passive_pages(ext_heap->internal_heap, &len);
 }
 
 page_t *get_moveto_page(unsigned int bytes, page_t **new_pages, int len)

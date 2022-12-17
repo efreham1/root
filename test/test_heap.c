@@ -1,6 +1,8 @@
 #include <CUnit/Basic.h>
 #include <stdlib.h>
 #include "heap.h"
+#include "structs.h"
+#include "page.h"
 #include <stdbool.h>
 
 
@@ -134,9 +136,36 @@ void test_is_valid_ptr()
 	CU_ASSERT_TRUE(is_valid_ptr(h, pers));
 
 	CU_ASSERT_FALSE(is_valid_ptr(h, &i));
+	CU_ASSERT_FALSE(is_valid_ptr(h, pers+1));
 	CU_ASSERT_FALSE(is_valid_ptr(h, str));
 	CU_ASSERT_FALSE(is_valid_ptr(h, NULL));
 
+	h_delete_internal(h);
+}
+
+void test_passive_active_pages()
+{
+	internal_heap_t *h = h_init_internal(5, 2048);
+	
+	make_active(h->page_arr[0]);
+	make_active(h->page_arr[1]);
+	make_active(h->page_arr[4]);
+
+	int lenp = 0;
+	int lena = 0;
+
+	page_t **pass_pages = get_passive_pages(h, &lenp);
+	page_t **act_pages = get_active_pages(h, &lena);
+
+	CU_ASSERT_PTR_EQUAL(act_pages[0], h->page_arr[0]);
+	CU_ASSERT_PTR_EQUAL(act_pages[1], h->page_arr[1]);
+	CU_ASSERT_PTR_EQUAL(act_pages[2], h->page_arr[4]);
+
+	CU_ASSERT_PTR_EQUAL(pass_pages[0], h->page_arr[2]);
+	CU_ASSERT_PTR_EQUAL(pass_pages[1], h->page_arr[3]);
+
+	free(pass_pages);
+	free(act_pages);
 	h_delete_internal(h);
 }
 
@@ -166,6 +195,7 @@ int main()
 		(CU_add_test(my_test_suite, "Test for allocating a struct", test_h_alloc_struct_internal) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for allocating raw data", test_h_alloc_data_internal) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for validating pointer", test_is_valid_ptr) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for getters of passive and active pages", test_passive_active_pages) == NULL) ||
 
         0
     )

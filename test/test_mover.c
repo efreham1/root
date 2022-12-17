@@ -118,6 +118,85 @@ void test_do_move()
 	free(memory_block);
 }
 
+void test_do_move_ref_loop()
+{
+	struct s1;
+	struct s2;
+	struct s3;
+
+	struct s1
+	{
+		struct s2 *s_ptr;
+		int i;
+	};
+
+	struct s2
+	{
+		struct s3 *s_ptr;
+		int i;
+	};
+
+	struct s3
+	{
+		struct s1 *s_ptr;
+		int i;
+	};
+
+	void *memory_block = calloc(256, 1);
+	page_t *active_page = page_init(128, memory_block);
+	page_t *passive_page = page_init(128, memory_block + 128);
+
+	make_active(active_page);
+	
+	bool format_vector[] = {1, 0};
+
+	struct s1 *ss1 = page_alloc_struct(active_page, format_vector, 2, 16);
+
+	ss1->i = 567;
+	ss1->s_ptr = page_alloc_struct(active_page, format_vector, 2, 16);
+
+	ss1->s_ptr->i = 987;
+	ss1->s_ptr->s_ptr = page_alloc_struct(active_page, format_vector, 2, 16);
+
+	ss1->s_ptr->s_ptr->i = 2345;
+	ss1->s_ptr->s_ptr->s_ptr = ss1;
+
+	CU_ASSERT_FALSE(is_active(passive_page));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss1));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss1->s_ptr));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss1->s_ptr->s_ptr));
+
+	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
+
+	do_move(&ss1, &passive_page, 1);
+
+	CU_ASSERT_TRUE(is_active(passive_page));
+
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss1));
+	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss1));
+	CU_ASSERT_EQUAL(ss1->i, 567);
+
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss1->s_ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss1->s_ptr));
+	CU_ASSERT_EQUAL(ss1->s_ptr->i, 987);
+
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss1->s_ptr->s_ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss1->s_ptr->s_ptr));
+	CU_ASSERT_EQUAL(ss1->s_ptr->s_ptr->i, 2345);
+
+	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
+
+	page_delete(active_page);
+	page_delete(passive_page);
+	free(memory_block);
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -140,7 +219,8 @@ int main()
 	// the test in question. If you want to add another test, just
 	// copy a line below and change the information
 
-	if ((CU_add_test(my_test_suite, "Test for do_move", test_do_move) == NULL) ||
+	if ((CU_add_test(my_test_suite, "Test for do_move with 2 structs", test_do_move) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for do_move with 3 structs in loop", test_do_move_ref_loop) == NULL) ||
 
 		0)
 

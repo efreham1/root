@@ -20,8 +20,8 @@ bool is_valid_ptr(internal_heap_t *h, void *ptr);
 
 size_t get_internal_heap_actual_size(internal_heap_t *h);
 
-page_t **get_passive_pages(internal_heap_t *h);
+page_t **get_passive_pages(internal_heap_t *h, int *len);
 
-page_t **get_active_pages(internal_heap_t *h);
+page_t **get_active_pages(internal_heap_t *h, int *len);
 
 #endif

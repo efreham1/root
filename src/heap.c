@@ -158,7 +158,7 @@ size_t get_internal_heap_actual_size(internal_heap_t *h)
 }
 
 
-page_t ** get_active_pages(internal_heap_t *h)
+page_t **get_active_pages(internal_heap_t *h, int *len)
 {
   page_t *buf[h->num_pages];
 
@@ -180,10 +180,11 @@ page_t ** get_active_pages(internal_heap_t *h)
     active_pages[j] = buf[j];
   }
 
+  *len = ind;
   return active_pages;
 }
 
-page_t **get_passive_pages(internal_heap_t *h)
+page_t **get_passive_pages(internal_heap_t *h, int *len)
 {
   page_t *buf[h->num_pages];
 
@@ -205,5 +206,6 @@ page_t **get_passive_pages(internal_heap_t *h)
     passive_pages[j] = buf[j];
   }
 
+  *len = ind;
   return passive_pages;
 }

@@ -24,6 +24,8 @@ void *page_alloc_struct(page_t *page, bool *format_vector, int len, unsigned int
 
 void make_active(page_t *p);
 
+void make_passive(page_t *p);
+
 bool is_ptr_to_page(page_t *p, void *ptr);
 
 unsigned int avail_space_page(page_t *p);

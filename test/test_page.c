@@ -29,10 +29,18 @@ void test_create_destroy()
 	free(memory_block);
 }
 
-void test_is_make_active()
+void test_is_make_active_passive()
 {
 	void *memory_block = calloc(128, 1);
 	page_t *p = page_init(128, memory_block);
+
+	CU_ASSERT_FALSE(is_active(p));
+
+	make_active(p);
+
+	CU_ASSERT_TRUE(is_active(p));
+
+	make_passive(p);
 
 	CU_ASSERT_FALSE(is_active(p));
 
@@ -293,7 +301,7 @@ int main()
 	// copy a line below and change the information
 
 	if ((CU_add_test(my_test_suite, "Test for create and destroy", test_create_destroy) == NULL) ||
-		(CU_add_test(my_test_suite, "Test for make and is active", test_is_make_active) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for make active and passive and is active", test_is_make_active_passive) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for has_room", test_has_room) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for page_alloc_data", test_page_alloc_data) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for page_alloc_struct", test_page_alloc_struct) == NULL) ||
