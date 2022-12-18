@@ -1,10 +1,12 @@
-#ifndef __page__
-#define __page__
+/// \file
 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <assert.h>
+
+#ifndef __page__
+#define __page__
 
 typedef struct page page_t;
 

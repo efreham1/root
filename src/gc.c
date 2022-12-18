@@ -9,11 +9,11 @@
 
 heap_t *h_init(unsigned long bytes, bool unsafe_stack, float gc_threshold)
 {
-  heap_t *newHeap = calloc(1,sizeof(heap_t));
+  heap_t *newHeap = calloc(1, sizeof(heap_t));
 
   unsigned int page_size = 2048;
 
-  unsigned int No_pages = (bytes/(page_size))*2 + 2;
+  unsigned int No_pages = (bytes / page_size) * 2 + 2;
 
   newHeap->internal_heap = h_init_internal(No_pages, page_size);
   newHeap->unsafe_stack = unsafe_stack;
@@ -32,7 +32,7 @@ void ***get_valid_ptrs(internal_heap_t *i_heap, int *len)
 {
   int stack_ptrs_len = 0;
 
-  void ***stack_ptrs = NULL; //TODO insert stack function thing.
+  void ***stack_ptrs = NULL; // TODO insert stack function thing.
 
   void *buf[stack_ptrs_len];
 
@@ -50,9 +50,9 @@ void ***get_valid_ptrs(internal_heap_t *i_heap, int *len)
 
   for (size_t i = 0; i < idx; i++)
   {
-    valid_ptrs[i] = buf[i]; 
+    valid_ptrs[i] = buf[i];
   }
-  //free(stack_ptrs);
+  // free(stack_ptrs);
   return valid_ptrs;
 }
 
@@ -73,15 +73,15 @@ int calc_buf_length(char *str)
   char *c = str;
   int sum = 0;
   int term = 0;
-  while(*c != '\0')
+  while (*c != '\0')
   {
-    if(isdigit(*c))
+    if (isdigit(*c))
     {
-      term = term*10 + ((int) *c -'0');
+      term = term * 10 + ((int)*c - '0');
     }
     else
     {
-      sum += term == 0? 1: term;
+      sum += term == 0 ? 1 : term;
       term = 0;
     }
 
@@ -97,15 +97,15 @@ char *handle_input(char *str)
   bool was_number_flag = false;
   int reps = 1;
   int idx = 0;
-  while(*c!='\0')
+  while (*c != '\0')
   {
-    if(strchr("*ilcdf",*c))
+    if (strchr("*ilcdf", *c))
     {
       for (int i = 0; i < reps; i++)
       {
         buf[idx++] = *c;
       }
-      
+
       reps = 1;
       was_number_flag = false;
     }
@@ -113,22 +113,21 @@ char *handle_input(char *str)
     {
       if (was_number_flag)
       {
-        reps = reps *10 + (int) (*c-'0');
+        reps = reps * 10 + (int)(*c - '0');
       }
       else if (*c == '0')
       {
-        return (char *) 0xDEADCAFEBABEBEEF;
+        return (char *)0xDEADCAFEBABEBEEF;
       }
       else
       {
-        reps = (int) (*c-'0');
+        reps = (int)(*c - '0');
         was_number_flag = true;
       }
-      
     }
     else
     {
-      return (char *) 0xDEADCAFEBABEBEEF;
+      return (char *)0xDEADCAFEBABEBEEF;
     }
     c++;
   }
@@ -136,9 +135,8 @@ char *handle_input(char *str)
 
   if (buf[0] == '\0')
   {
-    return (char *) 0xDEADCAFEBABEBEEF;
+    return (char *)0xDEADCAFEBABEBEEF;
   }
-  
 
   char *return_string = calloc(idx, 1);
 
@@ -152,6 +150,12 @@ char *handle_input(char *str)
 void *h_alloc_struct(heap_t *h, char *layout)
 {
   char *format_string = handle_input(layout);
+
+  if (avail_space(h->internal_heap) * h->gcTrigger < strlen(format_string) * 8)
+  {
+    assert(h_gc(h) != 0);
+  }
+
   void *ptr = h_alloc_struct_internal(h->internal_heap, format_string);
   free(format_string);
   return ptr;
@@ -159,19 +163,37 @@ void *h_alloc_struct(heap_t *h, char *layout)
 
 void *h_alloc_data(heap_t *h, unsigned int bytes)
 {
- return  h_alloc_data_internal(h->internal_heap, bytes);
-}
+  if (avail_space(h->internal_heap) * h->gcTrigger < bytes)
+  {
+    assert(h_gc(h) != 0);
+  }
 
+  return h_alloc_data_internal(h->internal_heap, bytes);
+}
 
 unsigned int h_gc(heap_t *h)
 {
-  //TODO: STUB
-  if(h){ puts("Not Null") ; } else { puts("NULL") ; }
-  
+  // TODO: STUB
+  return 0;
+}
+
+unsigned int h_gc_dbg(heap_t *h, bool unsafe_stack)
+{
+  // TODO: STUB
   return 0;
 }
 
 size_t get_heap_actual_size(heap_t *h)
 {
   return sizeof(heap_t) + get_internal_heap_actual_size(h->internal_heap);
+}
+
+unsigned int h_avail(heap_t *h)
+{
+  return avail_space(h->internal_heap);
+}
+
+unsigned int h_used(heap_t *h)
+{
+  return used_space(h->internal_heap);
 }

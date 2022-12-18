@@ -14,39 +14,39 @@ void get_data_id(metadata_t mdata, bool *id)
 {
     assert(is_little_end());
     char *b = (char *)&mdata;
-    id[0] = (*b & 1) == 1 ? true : false;
-    id[1] = (*b >> 1 & 1) == 1 ? true : false;
+    id[0] = (*b & 1) == 1;
+    id[1] = (*b >> 1 & 1) == 1;
 }
 
 bool is_format_vector(metadata_t mdata)
 {
     bool id[2];
     get_data_id(mdata, id);
-    return id[0] == true && id[1] == true;
+    return id[0] && id[1];
 }
 
 bool is_data_size(metadata_t mdata)
 {
     bool id[2];
     get_data_id(mdata, id);
-    return id[0] == true && id[1] == false;
+    return id[0] && !id[1];
 }
 
 bool is_forward_address(metadata_t mdata)
 {
     bool id[2];
     get_data_id(mdata, id);
-    return id[0] == false && id[1] == false;
+    return !id[0] && !id[1];
 }
 
 metadata_t set_forward_address(void *ptr)
 {
-    return (metadata_t) ptr;
+    return (metadata_t)ptr;
 }
 
 void *get_forward_address(metadata_t mdata)
 {
-    return (void *) mdata;
+    return (void *)mdata;
 }
 
 unsigned int get_data_size(metadata_t mdata)
@@ -57,9 +57,9 @@ unsigned int get_data_size(metadata_t mdata)
     char *sb = (char *)&size;
     for (unsigned int i = 0; i < sizeof(unsigned int); i++)
     {
-        sb[i] = mb[i+1];
+        sb[i] = mb[i + 1];
     }
-    
+
     return size;
 }
 
@@ -71,7 +71,7 @@ metadata_t set_data_size(unsigned int size)
     char *sb = (char *)&size;
     for (unsigned int i = 0; i < sizeof(unsigned int); i++)
     {
-        mb[i+1] = sb[i];
+        mb[i + 1] = sb[i];
     }
     mb[0] = mb[0] & ~(1 << 1);
     mb[0] = mb[0] | 1;
@@ -115,6 +115,7 @@ bool *get_format_vector(metadata_t mdata, int *len)
 metadata_t set_format_vector(bool *format_vector, unsigned int len)
 {
     assert(is_little_end());
+    assert(len <= 61);
     metadata_t mdata = 0;
     char *b = (char *)&mdata;
     for (int i = sizeof(metadata_t) - 1; i >= 0; i--)
@@ -168,5 +169,22 @@ size_t get_size_struct(metadata_t md)
             }
         }
     }
-    return idx*8;
+    return idx * 8;
+}
+
+bool is_been_visited(metadata_t md)
+{
+    bool id[2];
+    get_data_id(md, id);
+    return !id[0] && id[1];
+}
+
+metadata_t set_been_visited()
+{
+    assert(is_little_end());
+    metadata_t mdata = 0;
+    char *mb = (char *)&mdata;
+    mb[0] = mb[0] & ~(1);
+    mb[0] = mb[0] | 1 << 1;
+    return mdata;
 }

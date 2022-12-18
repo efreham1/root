@@ -151,6 +151,8 @@ void test_passive_active_pages()
 	make_active(h->page_arr[1]);
 	make_active(h->page_arr[4]);
 
+	h->num_active_pages += 3;
+
 	int lenp = 0;
 	int lena = 0;
 
@@ -166,6 +168,59 @@ void test_passive_active_pages()
 
 	free(pass_pages);
 	free(act_pages);
+	h_delete_internal(h);
+}
+
+void test_avail_used_space()
+{
+	struct person
+	{
+		char *first_name;
+		char *last_name;
+		int age;
+		long prs_num;
+		double d;
+	};
+
+	struct house
+	{
+		int num_windows;
+		char *city;
+		char *wall_colour;
+		int postcode;
+		long price_in_ore;
+	};
+	
+
+	internal_heap_t *h = h_init_internal(8, 2048);
+
+	int *data = h_alloc_data_internal(h, sizeof(int));
+	CU_ASSERT_EQUAL(used_space(h), 16);
+	CU_ASSERT_EQUAL(avail_space(h), 8176);
+
+	int *data2 = h_alloc_data_internal(h, sizeof(int));
+	CU_ASSERT_EQUAL(used_space(h), 32);
+	CU_ASSERT_EQUAL(avail_space(h), 8160);
+
+	struct house *hus = h_alloc_struct_internal(h, "i**il");
+	CU_ASSERT_EQUAL(used_space(h), 80);
+	CU_ASSERT_EQUAL(avail_space(h), 8112);
+
+	struct person *pers = h_alloc_struct_internal(h, "**ild");
+	CU_ASSERT_EQUAL(used_space(h), 128);
+	CU_ASSERT_EQUAL(avail_space(h), 8064);
+
+	if (hus && pers && data && data2);
+
+	h_delete_internal(h);
+}
+
+void test_get_actual_size()
+{
+	internal_heap_t *h = h_init_internal(10, 2048);
+
+	CU_ASSERT_EQUAL(get_internal_heap_actual_size(h), sizeof(internal_heap_t) + sizeof(page_t *) * 10 + 10 * 2112);
+
 	h_delete_internal(h);
 }
 
@@ -196,6 +251,8 @@ int main()
 		(CU_add_test(my_test_suite, "Test for allocating raw data", test_h_alloc_data_internal) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for validating pointer", test_is_valid_ptr) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for getters of passive and active pages", test_passive_active_pages) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for available and used space", test_avail_used_space) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for actual size", test_get_actual_size) == NULL) ||
 
         0
     )

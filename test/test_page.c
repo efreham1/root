@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "page.h"
 #include "metadata.h"
+#include "structs.h"
 
 int init_suite(void)
 {
@@ -103,6 +104,29 @@ void test_page_alloc_data()
 	CU_ASSERT_EQUAL(*j, 456789);
 	CU_ASSERT_TRUE(has_room(p, 88));
 	CU_ASSERT_FALSE(has_room(p, 89));
+
+	page_delete(p);
+	free(memory_block);
+}
+
+void test_make_passive_reset()
+{
+	void *memory_block = calloc(128, 1);
+	page_t *p = page_init(128, memory_block);
+	make_active(p);
+
+	int *i = (int *)page_alloc_data(p, 8);
+	*i = 76543;
+	int *j = (int *)page_alloc_data(p, 8);
+	*j = 456789;
+
+	CU_ASSERT_EQUAL(avail_space_page(p), 96);
+	make_passive(p);
+
+	CU_ASSERT_EQUAL(avail_space_page(p), 128);
+
+	CU_ASSERT_FALSE(is_ptr_to_page(p, i));
+	CU_ASSERT_FALSE(is_ptr_to_page(p, j));
 
 	page_delete(p);
 	free(memory_block);
@@ -278,6 +302,17 @@ void test_avail_used_space()
 	free(memory_block);
 }
 
+void test_get_actual_size()
+{
+	void *memory_block = calloc(256, 1);
+	page_t *p = page_init(256, memory_block);
+
+	CU_ASSERT_EQUAL(get_page_actual_size(p), sizeof(page_t) + 256 + 4);
+
+	page_delete(p);
+	free(memory_block);
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -304,9 +339,11 @@ int main()
 		(CU_add_test(my_test_suite, "Test for make active and passive and is active", test_is_make_active_passive) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for has_room", test_has_room) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for page_alloc_data", test_page_alloc_data) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for make_passives reset", test_make_passive_reset) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for page_alloc_struct", test_page_alloc_struct) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for is_ptr_to_page", test_is_ptr_to_page) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for avail_space and used_space", test_avail_used_space) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for actual size", test_get_actual_size) == NULL) ||
 
 		0)
 

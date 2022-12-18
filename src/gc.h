@@ -59,7 +59,7 @@ void *h_alloc_data(heap_t *h, unsigned int bytes);
 
 /// Manually trigger garbage collection.
 ///
-/// Garbage collection is otherwise run when an allocation pushes
+/// Garbage collection is otherwise run when an allocation would push
 /// the available memory over the threshold.
 ///
 /// \param h the heap
@@ -69,7 +69,7 @@ unsigned int h_gc(heap_t *h);
 /// Manually trigger garbage collection with the ability to 
 /// override the setting for how stack pointers are treated. 
 /// 
-/// Garbage collection is otherwise run when an allocation pushes
+/// Garbage collection is otherwise run when an allocation would push
 /// the available memory over the threshold.
 ///
 /// \param h the heap

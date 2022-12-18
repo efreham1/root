@@ -1,3 +1,5 @@
+/// \file
+
 #include <stddef.h>
 #include <assert.h>
 #include <stdbool.h>
@@ -23,5 +25,9 @@ size_t get_internal_heap_actual_size(internal_heap_t *h);
 page_t **get_passive_pages(internal_heap_t *h, int *len);
 
 page_t **get_active_pages(internal_heap_t *h, int *len);
+
+unsigned long avail_space(internal_heap_t *h);
+
+unsigned long used_space(internal_heap_t *h);
 
 #endif

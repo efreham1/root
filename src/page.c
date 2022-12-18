@@ -59,6 +59,13 @@ void make_passive(page_t *p)
 {
   p->is_active = false;
   p->offset = 0;
+
+  int alloc_map_size = (p->size / 8 - 1) / 8 + 1;
+  char *alloc_map = p->alloc_map;
+  for (size_t i = 0; i < alloc_map_size; i++)
+  {
+    alloc_map[i] = 0;
+  }
 }
 
 bool has_room(page_t *p, unsigned int bytes)
@@ -83,7 +90,7 @@ metadata_t *alloc_metadata(page_t *page)
 {
   assert(page->offset < page->size - sizeof(metadata_t));
 
-  metadata_t* md = (metadata_t *)(page->memory_block + page->offset);
+  metadata_t *md = (metadata_t *)(page->memory_block + page->offset);
 
   page->offset += sizeof(metadata_t);
 

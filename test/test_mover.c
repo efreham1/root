@@ -1,6 +1,7 @@
 #include <CUnit/Basic.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "mover.h"
 #include "structs.h"
 
@@ -147,7 +148,7 @@ void test_do_move_ref_loop()
 	page_t *passive_page = page_init(128, memory_block + 128);
 
 	make_active(active_page);
-	
+
 	bool format_vector[] = {1, 0};
 
 	struct s1 *ss1 = page_alloc_struct(active_page, format_vector, 2, 16);
@@ -160,6 +161,8 @@ void test_do_move_ref_loop()
 
 	ss1->s_ptr->s_ptr->i = 2345;
 	ss1->s_ptr->s_ptr->s_ptr = ss1;
+
+	struct s1 *ss1_old = ss1;
 
 	CU_ASSERT_FALSE(is_active(passive_page));
 
@@ -174,7 +177,7 @@ void test_do_move_ref_loop()
 
 	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
 
-	do_move((void **) &ss1, &passive_page, 1, NULL, 0);
+	do_move((void **)&ss1, &passive_page, 1, NULL, 0);
 
 	CU_ASSERT_TRUE(is_active(passive_page));
 
@@ -191,6 +194,7 @@ void test_do_move_ref_loop()
 	CU_ASSERT_EQUAL(ss1->s_ptr->s_ptr->i, 2345);
 
 	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
+	CU_ASSERT_PTR_NOT_EQUAL(ss1, ss1_old);
 
 	page_delete(active_page);
 	page_delete(passive_page);
@@ -239,9 +243,254 @@ void test_do_move_static_pages()
 
 	struct s1 *ss1 = page_alloc_struct(active_page1, format_vector, 3, 24);
 	ss1->i = 76;
-	ss1->ptr = page_alloc_data(passive_page1, 8);
+	ss1->ptr = page_alloc_data(active_page1, 8);
+	*ss1->ptr = 'a';
+
+	ss1->s_ptr = page_alloc_struct(active_page2, format_vector, 3, 24);
+	ss1->s_ptr->i = 45;
+	ss1->s_ptr->ptr = page_alloc_data(active_page2, 8);
+	*ss1->s_ptr->ptr = 'g';
+
+	ss1->s_ptr->s_ptr = page_alloc_struct(active_page1, format_vector, 3, 24);
+	ss1->s_ptr->s_ptr->i = 765;
+	ss1->s_ptr->s_ptr->ptr = page_alloc_data(active_page2, 8);
+	*ss1->s_ptr->s_ptr->ptr = 't';
+
+	ss1->s_ptr->s_ptr->s_ptr = ss1;
+
+	do_move((void **)&ss1, passive_pages, 2, &active_page1, 1);
+
+	CU_ASSERT_TRUE(is_active(passive_page1));
+	CU_ASSERT_FALSE(is_active(passive_page2));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(active_page1, ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page1, ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1));
+	CU_ASSERT_EQUAL(ss1->i, 76);
+
+	CU_ASSERT_TRUE(is_ptr_to_page(active_page1, ss1->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page1, ss1->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->ptr));
+	CU_ASSERT_EQUAL(*ss1->ptr, 'a');
+
+	CU_ASSERT_TRUE(is_ptr_to_page(passive_page1, ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page1, ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->s_ptr));
+	CU_ASSERT_EQUAL(ss1->s_ptr->i, 45);
+
+	CU_ASSERT_TRUE(is_ptr_to_page(passive_page1, ss1->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page1, ss1->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->s_ptr->ptr));
+	CU_ASSERT_EQUAL(*ss1->s_ptr->ptr, 'g');
+
+	CU_ASSERT_TRUE(is_ptr_to_page(active_page1, ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page1, ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->s_ptr->s_ptr));
+	CU_ASSERT_EQUAL(ss1->s_ptr->s_ptr->i, 765);
+
+	CU_ASSERT_TRUE(is_ptr_to_page(passive_page1, ss1->s_ptr->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->s_ptr->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(active_page1, ss1->s_ptr->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->s_ptr->s_ptr->ptr));
+	CU_ASSERT_EQUAL(*ss1->s_ptr->s_ptr->ptr, 't');
+
+	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
+
+	free(memory_block);
+	page_delete(active_page1);
+	page_delete(active_page2);
+	page_delete(passive_page1);
+	page_delete(passive_page2);
 }
 
+void test_move()
+{
+	struct person
+	{
+		char *first_name;
+		char *last_name;
+		int age;
+		long prs_num;
+		double d;
+	};
+
+	struct house
+	{
+		int num_windows;
+		char *city;
+		char *wall_colour;
+		int postcode;
+		long price_in_ore;
+		struct person *owner;
+	};
+
+	internal_heap_t *h = h_init_internal(6, 2048);
+
+	struct person *pers = h_alloc_struct_internal(h, "**ild");
+	pers->age = 69;
+	pers->first_name = h_alloc_data_internal(h, 8);
+	char *name = "Lennart";
+	memcpy(pers->first_name, name, 8);
+	pers->last_name = h_alloc_data_internal(h, 8);
+	name = "Akesson";
+	memcpy(pers->last_name, name, 8);
+	pers->prs_num = 5308091327;
+	pers->d = 556.234567;
+
+	struct house *hus = h_alloc_struct_internal(h, "i**il*");
+	hus->city = h_alloc_data_internal(h, 11);
+	name = "Atvidaberg";
+	memcpy(hus->city, name, 11);
+	hus->num_windows = 1;
+	hus->postcode = 20000;
+	hus->price_in_ore = 7000000000;
+	hus->wall_colour = h_alloc_data_internal(h, 7);
+	name = "Orange";
+	memcpy(hus->wall_colour, name, 7);
+	hus->owner = pers;
+
+	void **ptrs[] = {(void **)&hus, (void **)&pers};
+	struct house *old_hus = hus;
+	struct person *old_pers = pers;
+
+	move(h, ptrs, 2, false);
+
+	CU_ASSERT_PTR_NOT_EQUAL_FATAL(hus, old_hus);
+	CU_ASSERT_PTR_NOT_EQUAL_FATAL(pers, old_pers);
+
+	CU_ASSERT_EQUAL(pers->age, 69);
+	CU_ASSERT_STRING_EQUAL(pers->first_name, "Lennart");
+	CU_ASSERT_STRING_EQUAL(pers->last_name, "Akesson");
+	CU_ASSERT_EQUAL(pers->prs_num, 5308091327);
+	CU_ASSERT_DOUBLE_EQUAL(pers->d, 556.234567, 0.0001);
+
+	CU_ASSERT_EQUAL(hus->num_windows, 1);
+	CU_ASSERT_EQUAL(hus->postcode, 20000);
+	CU_ASSERT_EQUAL(hus->price_in_ore, 7000000000);
+	CU_ASSERT_STRING_EQUAL(hus->city, "Atvidaberg");
+	CU_ASSERT_STRING_EQUAL(hus->wall_colour, "Orange");
+	CU_ASSERT_PTR_EQUAL(hus->owner, pers);
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[1], hus));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[0], hus));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[1], pers));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[0], pers));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[1], pers->first_name));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[0], pers->first_name));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[1], pers->last_name));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[0], pers->last_name));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[1], hus->city));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[0], hus->city));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[1], hus->wall_colour));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[0], hus->wall_colour));
+
+	CU_ASSERT_TRUE(is_active(h->page_arr[1]));
+	CU_ASSERT_FALSE(is_active(h->page_arr[0]));
+
+	h_delete_internal(h);
+}
+
+void test_move_stationary()
+{
+	struct person
+	{
+		char *first_name;
+		char *last_name;
+		int age;
+		long prs_num;
+		double d;
+	};
+
+	struct house
+	{
+		int num_windows;
+		char *city;
+		char *wall_colour;
+		int postcode;
+		long price_in_ore;
+		struct person *owner;
+	};
+
+	internal_heap_t *h = h_init_internal(6, 2048);
+
+	struct person *pers = h_alloc_struct_internal(h, "**ild");
+	pers->age = 69;
+	pers->first_name = h_alloc_data_internal(h, 8);
+	char *name = "Lennart";
+	memcpy(pers->first_name, name, 8);
+	pers->last_name = h_alloc_data_internal(h, 8);
+	name = "Akesson";
+	memcpy(pers->last_name, name, 8);
+	pers->prs_num = 5308091327;
+	pers->d = 556.234567;
+
+	struct house *hus = h_alloc_struct_internal(h, "i**il*");
+	hus->city = h_alloc_data_internal(h, 11);
+	name = "Atvidaberg";
+	memcpy(hus->city, name, 11);
+	hus->num_windows = 1;
+	hus->postcode = 20000;
+	hus->price_in_ore = 7000000000;
+	hus->wall_colour = h_alloc_data_internal(h, 7);
+	name = "Orange";
+	memcpy(hus->wall_colour, name, 7);
+	hus->owner = pers;
+
+	void **ptrs[] = {(void **)&hus, (void **)&pers};
+	struct house *old_hus = hus;
+	struct person *old_pers = pers;
+
+	move(h, ptrs, 2, true);
+
+	CU_ASSERT_PTR_EQUAL_FATAL(hus, old_hus);
+	CU_ASSERT_PTR_EQUAL_FATAL(pers, old_pers);
+
+	CU_ASSERT_EQUAL(pers->age, 69);
+	CU_ASSERT_STRING_EQUAL(pers->first_name, "Lennart");
+	CU_ASSERT_STRING_EQUAL(pers->last_name, "Akesson");
+	CU_ASSERT_EQUAL(pers->prs_num, 5308091327);
+	CU_ASSERT_DOUBLE_EQUAL(pers->d, 556.234567, 0.0001);
+
+	CU_ASSERT_EQUAL(hus->num_windows, 1);
+	CU_ASSERT_EQUAL(hus->postcode, 20000);
+	CU_ASSERT_EQUAL(hus->price_in_ore, 7000000000);
+	CU_ASSERT_STRING_EQUAL(hus->city, "Atvidaberg");
+	CU_ASSERT_STRING_EQUAL(hus->wall_colour, "Orange");
+	CU_ASSERT_PTR_EQUAL(hus->owner, pers);
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[0], hus));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[1], hus));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[0], pers));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[1], pers));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[0], pers->first_name));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[1], pers->first_name));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[0], pers->last_name));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[1], pers->last_name));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[0], hus->city));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[1], hus->city));
+
+	CU_ASSERT_TRUE(is_ptr_to_page(h->page_arr[0], hus->wall_colour));
+	CU_ASSERT_FALSE(is_ptr_to_page(h->page_arr[1], hus->wall_colour));
+
+	CU_ASSERT_TRUE(is_active(h->page_arr[0]));
+	CU_ASSERT_FALSE(is_active(h->page_arr[1]));
+
+	h_delete_internal(h);
+}
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -266,6 +515,9 @@ int main()
 
 	if ((CU_add_test(my_test_suite, "Test for do_move with 2 structs", test_do_move) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for do_move with 3 structs in loop", test_do_move_ref_loop) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for do_move with a static page", test_do_move_static_pages) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for basic move", test_move) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for trying move but remain stationary", test_move_stationary) == NULL) ||
 
 		0)
 
