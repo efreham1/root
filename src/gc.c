@@ -6,6 +6,8 @@
 #include "gc.h"
 #include "heap.h"
 #include "structs.h"
+#include "stack_scanner.h"
+#include "mover.h"
 
 heap_t *h_init(unsigned long bytes, bool unsafe_stack, float gc_threshold)
 {
@@ -32,14 +34,14 @@ void ***get_valid_ptrs(internal_heap_t *i_heap, int *len)
 {
   int stack_ptrs_len = 0;
 
-  void ***stack_ptrs = NULL; // TODO insert stack function thing.
+  void ***stack_ptrs = stack_addresses(i_heap->end_of_memory_block, i_heap->memory_block, &stack_ptrs_len);
 
-  void *buf[stack_ptrs_len];
+  void **buf[stack_ptrs_len];
 
   int idx = 0;
   for (size_t i = 0; i < stack_ptrs_len; i++)
   {
-    if (is_valid_ptr(i_heap, stack_ptrs[i]))
+    if (is_valid_ptr(i_heap, *stack_ptrs[i]))
     {
       buf[idx++] = stack_ptrs[i];
     }
@@ -52,7 +54,7 @@ void ***get_valid_ptrs(internal_heap_t *i_heap, int *len)
   {
     valid_ptrs[i] = buf[i];
   }
-  // free(stack_ptrs);
+  free(stack_ptrs);
   return valid_ptrs;
 }
 
@@ -173,14 +175,26 @@ void *h_alloc_data(heap_t *h, unsigned int bytes)
 
 unsigned int h_gc(heap_t *h)
 {
-  // TODO: STUB
-  return 0;
+  unsigned int used_prior = h_used(h);
+
+  int len = 0;
+  void ***ptrs = get_valid_ptrs(h->internal_heap, &len);
+
+  move(h->internal_heap, ptrs, len, h->unsafe_stack);
+
+  return used_prior - h_used(h);
 }
 
 unsigned int h_gc_dbg(heap_t *h, bool unsafe_stack)
 {
-  // TODO: STUB
-  return 0;
+  unsigned int used_prior = h_used(h);
+
+  int len = 0;
+  void ***ptrs = get_valid_ptrs(h->internal_heap, &len);
+
+  move(h->internal_heap, ptrs, len, unsafe_stack);
+
+  return used_prior - h_used(h);
 }
 
 size_t get_heap_actual_size(heap_t *h)

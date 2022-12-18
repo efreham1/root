@@ -7,7 +7,7 @@ CC = gcc
 
 FLAGS = -I src -Wall -g -fprofile-arcs -ftest-coverage
 
-MODULES = gc page heap metadata mover
+MODULES = gc page heap metadata mover stack_scanner
 
 OBJS = $(patsubst %,$(ODIR)/%.o,$(MODULES))
 TESTS = $(patsubst %,$(EDIR)/test_%,$(MODULES))
@@ -22,7 +22,7 @@ $(EDIR)/test_%: $(TDIR)/test_%.c $(OBJS)
 	$(CC) $(FLAGS) $^ -lcunit  -o $@
 
 test_%: $(EDIR)/test_%
-	valgrind --error-exitcode=1 --leak-check=full --track-origins=yes ./$^
+	valgrind --error-exitcode=1 --leak-check=full --track-origins=yes --show-leak-kinds=all ./$^
 
 test_cov_%: test_%
 	gcovr -b obj
@@ -32,6 +32,7 @@ test_all: $(TESTS)
 	$(patsubst %,make test_% && ,$(MODULES)) true
 
 test_cov_all: $(TESTS)
+	make clean
 	make test_all
 	gcovr -b obj
 	gcovr obj
