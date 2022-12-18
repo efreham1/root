@@ -182,6 +182,7 @@ unsigned int h_gc(heap_t *h)
 
   move(h->internal_heap, ptrs, len, h->unsafe_stack);
 
+  free(ptrs);
   return used_prior - h_used(h);
 }
 
@@ -194,6 +195,7 @@ unsigned int h_gc_dbg(heap_t *h, bool unsafe_stack)
 
   move(h->internal_heap, ptrs, len, unsafe_stack);
 
+  free(ptrs);
   return used_prior - h_used(h);
 }
 

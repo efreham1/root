@@ -65,7 +65,7 @@ int main()
 	// the test in question. If you want to add another test, just
 	// copy a line below and change the information
 
-	if (//(CU_add_test(my_test_suite, "Test for finding pointers on the stack", test_stack_scanner) == NULL) ||
+	if ((CU_add_test(my_test_suite, "Test for finding pointers on the stack", test_stack_scanner) == NULL) ||
 
 		0)
 

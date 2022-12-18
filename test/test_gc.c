@@ -214,11 +214,11 @@ int main()
 	// copy a line below and change the information
 
 	if ((CU_add_test(my_test_suite, "Test for create and destroy", test_create_destroy) == NULL) ||
-		//(CU_add_test(my_test_suite, "Test for destroy with DBG", test_h_delete_dbg) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for destroy with DBG", test_h_delete_dbg) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for alloc of struct", test_alloc_struct) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for alloc of data", test_alloc_data) == NULL) ||
-		//(CU_add_test(my_test_suite, "Test for manual gc", test_h_gc) == NULL) ||
-		//(CU_add_test(my_test_suite, "Test for manual gc_dbg", test_h_gc_dbg) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for manual gc", test_h_gc) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for manual gc_dbg", test_h_gc_dbg) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for available space", test_h_avail) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for used space", test_h_used) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for the input handler", test_input_handler) == NULL) ||
