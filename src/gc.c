@@ -155,9 +155,9 @@ void *h_alloc_struct(heap_t *h, char *layout)
 {
   char *format_string = handle_input(layout);
 
-  if (avail_space(h->internal_heap) - h->tot_size/2 * (1 - h->gcTrigger) < strlen(format_string) * 8)
+  if (avail_space(h->internal_heap) - h->tot_size/2 * (1 - h->gcTrigger) < strlen(format_string) * 8) + sizeof(void *);
   {
-    assert(h_gc(h) != 0);
+    assert(h_gc(h) != 0 || avail_space(h->internal_heap) > strlen(format_string) * 8 + sizeof(void *));
   }
 
   void *ptr = h_alloc_struct_internal(h->internal_heap, format_string);
@@ -167,9 +167,9 @@ void *h_alloc_struct(heap_t *h, char *layout)
 
 void *h_alloc_data(heap_t *h, unsigned int bytes)
 {
-  if (avail_space(h->internal_heap) * h->gcTrigger < bytes)
+  if (avail_space(h->internal_heap) - h->tot_size/2 * (1 - h->gcTrigger) < bytes + sizeof(void *))
   {
-    assert(h_gc(h) != 0);
+    assert(h_gc(h) != 0 || avail_space(h->internal_heap) > bytes + sizeof(void *));
   }
 
   return h_alloc_data_internal(h->internal_heap, bytes);
@@ -185,6 +185,7 @@ unsigned int h_gc(heap_t *h)
   move(h->internal_heap, ptrs, len, h->unsafe_stack);
 
   free(ptrs);
+  printf("\nSKRKPSAMLING!!! cleaned: %d\n", used_prior - h_used(h));
   return used_prior - h_used(h);
 }
 
