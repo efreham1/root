@@ -11,6 +11,7 @@ struct external_heap
   internal_heap_t *internal_heap;
   bool unsafe_stack;  
   float gcTrigger;
+  unsigned int tot_size;
 };
 
 struct internal_heap
@@ -19,6 +20,7 @@ struct internal_heap
   unsigned int num_pages;
   unsigned int page_size;
   unsigned int num_active_pages;
+  unsigned int padding;
   void *memory_block;
   void *end_of_memory_block;
 };

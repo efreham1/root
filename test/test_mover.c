@@ -21,11 +21,9 @@ int clean_suite(void)
 
 void test_do_move()
 {
-	void *memory_block = calloc(256, 1);
-	page_t *active_page = page_init(128, memory_block);
-	page_t *passive_page = page_init(128, memory_block + 128);
+	internal_heap_t *i_heap = h_init_internal(2, 128);
 
-	make_active(active_page);
+	make_active(i_heap->page_arr[0]);
 
 	struct s1
 	{
@@ -46,77 +44,75 @@ void test_do_move()
 
 	bool format_vector2[] = {0, 1, 0, 1};
 
-	struct s2 *ss2 = page_alloc_struct(active_page, format_vector2, 4, 32);
+	struct s2 *ss2 = page_alloc_struct(i_heap->page_arr[0], format_vector2, 4, 32);
 
 	ss2->c = 'y';
 	ss2->i = 987654;
-	ss2->ptr = page_alloc_data(active_page, 8);
+	ss2->ptr = page_alloc_data(i_heap->page_arr[0], 8);
 	ss2->f = 5.765000;
 
 	*ss2->ptr = 45678;
 
 	bool format_vector1[] = {0, 0, 1};
 
-	ss2->linked_struct = page_alloc_struct(active_page, format_vector1, 3, 24);
+	ss2->linked_struct = page_alloc_struct(i_heap->page_arr[0], format_vector1, 3, 24);
 
 	ss2->linked_struct->i = 5;
 	ss2->linked_struct->j = 987654;
 	ss2->linked_struct->c = 'h';
-	ss2->linked_struct->ptr = page_alloc_data(active_page, 8);
+	ss2->linked_struct->ptr = page_alloc_data(i_heap->page_arr[0], 8);
 
 	*ss2->linked_struct->ptr = 45678;
 
-	CU_ASSERT_FALSE(is_active(passive_page));
+	CU_ASSERT_FALSE(is_active(i_heap->page_arr[1]));
 
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss2));
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss2));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss2));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss2));
 
 	CU_ASSERT_TRUE(ss2->c == 'y');
 	CU_ASSERT_TRUE(ss2->i == 987654);
 	CU_ASSERT_TRUE(*ss2->ptr == 45678);
 
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss2->linked_struct));
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss2->linked_struct));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss2->linked_struct));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss2->linked_struct));
 
 	CU_ASSERT_TRUE(ss2->linked_struct->c == 'h');
 	CU_ASSERT_TRUE(ss2->linked_struct->i == 5);
 	CU_ASSERT_TRUE(ss2->linked_struct->j == 987654);
 	CU_ASSERT_TRUE(*ss2->linked_struct->ptr == 45678);
 
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss2->ptr));
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss2->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss2->ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss2->ptr));
 
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss2->linked_struct->ptr));
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss2->linked_struct->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss2->linked_struct->ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss2->linked_struct->ptr));
 
-	do_move((void **)&ss2, &passive_page, 1, NULL, 0);
+	do_move((void **)&ss2, &i_heap->page_arr[1], 1, NULL, 0, i_heap);
 
-	CU_ASSERT_TRUE(is_active(passive_page));
+	CU_ASSERT_TRUE(is_active(i_heap->page_arr[1]));
 
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss2));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss2));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[1], ss2));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss2));
 
 	CU_ASSERT_TRUE(ss2->c == 'y');
 	CU_ASSERT_TRUE(ss2->i == 987654);
 	CU_ASSERT_TRUE(*ss2->ptr == 45678);
 
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss2->linked_struct));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss2->linked_struct));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[1], ss2->linked_struct));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss2->linked_struct));
 
 	CU_ASSERT_TRUE(ss2->linked_struct->c == 'h');
 	CU_ASSERT_TRUE(ss2->linked_struct->i == 5);
 	CU_ASSERT_TRUE(ss2->linked_struct->j == 987654);
 	CU_ASSERT_TRUE(*ss2->linked_struct->ptr == 45678);
 
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss2->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss2->ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[1], ss2->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss2->ptr));
 
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss2->linked_struct->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss2->linked_struct->ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[1], ss2->linked_struct->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss2->linked_struct->ptr));
 
-	page_delete(active_page);
-	page_delete(passive_page);
-	free(memory_block);
+	h_delete_internal(i_heap);
 }
 
 void test_do_move_ref_loop()
@@ -143,62 +139,58 @@ void test_do_move_ref_loop()
 		int i;
 	};
 
-	void *memory_block = calloc(256, 1);
-	page_t *active_page = page_init(128, memory_block);
-	page_t *passive_page = page_init(128, memory_block + 128);
+	internal_heap_t *i_heap = h_init_internal(2, 128);
 
-	make_active(active_page);
+	make_active(i_heap->page_arr[0]);
 
 	bool format_vector[] = {1, 0};
 
-	struct s1 *ss1 = page_alloc_struct(active_page, format_vector, 2, 16);
+	struct s1 *ss1 = page_alloc_struct(i_heap->page_arr[0], format_vector, 2, 16);
 
 	ss1->i = 567;
-	ss1->s_ptr = page_alloc_struct(active_page, format_vector, 2, 16);
+	ss1->s_ptr = page_alloc_struct(i_heap->page_arr[0], format_vector, 2, 16);
 
 	ss1->s_ptr->i = 987;
-	ss1->s_ptr->s_ptr = page_alloc_struct(active_page, format_vector, 2, 16);
+	ss1->s_ptr->s_ptr = page_alloc_struct(i_heap->page_arr[0], format_vector, 2, 16);
 
 	ss1->s_ptr->s_ptr->i = 2345;
 	ss1->s_ptr->s_ptr->s_ptr = ss1;
 
 	struct s1 *ss1_old = ss1;
 
-	CU_ASSERT_FALSE(is_active(passive_page));
+	CU_ASSERT_FALSE(is_active(i_heap->page_arr[1]));
 
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss1));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss1));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1));
 
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss1->s_ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss1->s_ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1->s_ptr));
 
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page, ss1->s_ptr->s_ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page, ss1->s_ptr->s_ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1->s_ptr->s_ptr));
 
 	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
 
-	do_move((void **)&ss1, &passive_page, 1, NULL, 0);
+	do_move((void **)&ss1, &i_heap->page_arr[1], 1, NULL, 0, i_heap);
 
-	CU_ASSERT_TRUE(is_active(passive_page));
+	CU_ASSERT_TRUE(is_active(i_heap->page_arr[1]));
 
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss1));
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss1));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[1], ss1));
 	CU_ASSERT_EQUAL(ss1->i, 567);
 
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss1->s_ptr));
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss1->s_ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[1], ss1->s_ptr));
 	CU_ASSERT_EQUAL(ss1->s_ptr->i, 987);
 
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page, ss1->s_ptr->s_ptr));
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page, ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss1->s_ptr->s_ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[1], ss1->s_ptr->s_ptr));
 	CU_ASSERT_EQUAL(ss1->s_ptr->s_ptr->i, 2345);
 
 	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
 	CU_ASSERT_PTR_NOT_EQUAL(ss1, ss1_old);
 
-	page_delete(active_page);
-	page_delete(passive_page);
-	free(memory_block);
+	h_delete_internal(i_heap);
 }
 
 void test_do_move_static_pages()
@@ -228,84 +220,76 @@ void test_do_move_static_pages()
 		char *ptr;
 	};
 
-	void *memory_block = calloc(512, 1);
-	page_t *active_page1 = page_init(128, memory_block);
-	page_t *active_page2 = page_init(128, memory_block + 128);
-	page_t *passive_page1 = page_init(128, memory_block + 256);
-	page_t *passive_page2 = page_init(128, memory_block + 384);
+	internal_heap_t *i_heap = h_init_internal(4, 128);
 
-	page_t *passive_pages[] = {passive_page1, passive_page2};
+	page_t *passive_pages[] = {i_heap->page_arr[2], i_heap->page_arr[3]};
 
-	make_active(active_page1);
-	make_active(active_page2);
+	make_active(i_heap->page_arr[0]);
+	make_active(i_heap->page_arr[1]);
 
 	bool format_vector[] = {1, 0, 1};
 
-	struct s1 *ss1 = page_alloc_struct(active_page1, format_vector, 3, 24);
+	struct s1 *ss1 = page_alloc_struct(i_heap->page_arr[0], format_vector, 3, 24);
 	ss1->i = 76;
-	ss1->ptr = page_alloc_data(active_page1, 8);
+	ss1->ptr = page_alloc_data(i_heap->page_arr[0], 8);
 	*ss1->ptr = 'a';
 
-	ss1->s_ptr = page_alloc_struct(active_page2, format_vector, 3, 24);
+	ss1->s_ptr = page_alloc_struct(i_heap->page_arr[1], format_vector, 3, 24);
 	ss1->s_ptr->i = 45;
-	ss1->s_ptr->ptr = page_alloc_data(active_page2, 8);
+	ss1->s_ptr->ptr = page_alloc_data(i_heap->page_arr[1], 8);
 	*ss1->s_ptr->ptr = 'g';
 
-	ss1->s_ptr->s_ptr = page_alloc_struct(active_page1, format_vector, 3, 24);
+	ss1->s_ptr->s_ptr = page_alloc_struct(i_heap->page_arr[0], format_vector, 3, 24);
 	ss1->s_ptr->s_ptr->i = 765;
-	ss1->s_ptr->s_ptr->ptr = page_alloc_data(active_page2, 8);
+	ss1->s_ptr->s_ptr->ptr = page_alloc_data(i_heap->page_arr[1], 8);
 	*ss1->s_ptr->s_ptr->ptr = 't';
 
 	ss1->s_ptr->s_ptr->s_ptr = ss1;
 
-	do_move((void **)&ss1, passive_pages, 2, &active_page1, 1);
+	do_move((void **)&ss1, passive_pages, 2, &i_heap->page_arr[0], 1, i_heap);
 
-	CU_ASSERT_TRUE(is_active(passive_page1));
-	CU_ASSERT_FALSE(is_active(passive_page2));
+	CU_ASSERT_TRUE(is_active(i_heap->page_arr[2]));
+	CU_ASSERT_FALSE(is_active(i_heap->page_arr[3]));
 
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page1, ss1));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page1, ss1));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[2], ss1));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[3], ss1));
 	CU_ASSERT_EQUAL(ss1->i, 76);
 
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page1, ss1->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page1, ss1->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss1->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[2], ss1->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[3], ss1->ptr));
 	CU_ASSERT_EQUAL(*ss1->ptr, 'a');
 
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page1, ss1->s_ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->s_ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page1, ss1->s_ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->s_ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[2], ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss1->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[3], ss1->s_ptr));
 	CU_ASSERT_EQUAL(ss1->s_ptr->i, 45);
 
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page1, ss1->s_ptr->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->s_ptr->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page1, ss1->s_ptr->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->s_ptr->ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[2], ss1->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss1->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[3], ss1->s_ptr->ptr));
 	CU_ASSERT_EQUAL(*ss1->s_ptr->ptr, 'g');
 
-	CU_ASSERT_TRUE(is_ptr_to_page(active_page1, ss1->s_ptr->s_ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->s_ptr->s_ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page1, ss1->s_ptr->s_ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->s_ptr->s_ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[0], ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[2], ss1->s_ptr->s_ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[3], ss1->s_ptr->s_ptr));
 	CU_ASSERT_EQUAL(ss1->s_ptr->s_ptr->i, 765);
 
-	CU_ASSERT_TRUE(is_ptr_to_page(passive_page1, ss1->s_ptr->s_ptr->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page2, ss1->s_ptr->s_ptr->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(active_page1, ss1->s_ptr->s_ptr->ptr));
-	CU_ASSERT_FALSE(is_ptr_to_page(passive_page2, ss1->s_ptr->s_ptr->ptr));
+	CU_ASSERT_TRUE(is_ptr_to_page(i_heap->page_arr[2], ss1->s_ptr->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[1], ss1->s_ptr->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[0], ss1->s_ptr->s_ptr->ptr));
+	CU_ASSERT_FALSE(is_ptr_to_page(i_heap->page_arr[3], ss1->s_ptr->s_ptr->ptr));
 	CU_ASSERT_EQUAL(*ss1->s_ptr->s_ptr->ptr, 't');
 
 	CU_ASSERT_PTR_EQUAL(ss1->s_ptr->s_ptr->s_ptr, ss1);
 
-	free(memory_block);
-	page_delete(active_page1);
-	page_delete(active_page2);
-	page_delete(passive_page1);
-	page_delete(passive_page2);
+	h_delete_internal(i_heap);
 }
 
 void test_move()

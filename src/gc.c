@@ -11,6 +11,7 @@
 
 heap_t *h_init(unsigned long bytes, bool unsafe_stack, float gc_threshold)
 {
+  assert(gc_threshold > 0.0 && gc_threshold <= 1.0);
   heap_t *newHeap = calloc(1, sizeof(heap_t));
 
   unsigned int page_size = 2048;
@@ -20,6 +21,7 @@ heap_t *h_init(unsigned long bytes, bool unsafe_stack, float gc_threshold)
   newHeap->internal_heap = h_init_internal(No_pages, page_size);
   newHeap->unsafe_stack = unsafe_stack;
   newHeap->gcTrigger = gc_threshold;
+  newHeap->tot_size = No_pages * page_size;
 
   return newHeap;
 }
@@ -153,7 +155,7 @@ void *h_alloc_struct(heap_t *h, char *layout)
 {
   char *format_string = handle_input(layout);
 
-  if (avail_space(h->internal_heap) * h->gcTrigger < strlen(format_string) * 8)
+  if (avail_space(h->internal_heap) - h->tot_size/2 * (1 - h->gcTrigger) < strlen(format_string) * 8)
   {
     assert(h_gc(h) != 0);
   }

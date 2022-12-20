@@ -1,0 +1,6 @@
+{
+   <All_Cond>
+   Memcheck:Cond
+   ...
+   fun:stack_addresses
+}

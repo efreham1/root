@@ -11,14 +11,17 @@ internal_heap_t *h_init_internal(unsigned int No_pages, unsigned int page_size)
   new_iheap->num_pages = No_pages;
   new_iheap->page_size = page_size;
   new_iheap->page_arr = calloc(No_pages, sizeof(page_t *));
-  new_iheap->memory_block = calloc(No_pages, page_size);
-  new_iheap->end_of_memory_block = new_iheap->memory_block + No_pages * page_size;
+  new_iheap->memory_block = calloc(No_pages * page_size + 8, 1);
+
+  new_iheap->padding = (unsigned long)new_iheap->memory_block%8 == 0? 0: 8 - (unsigned long)new_iheap->memory_block%8;
+
+  new_iheap->end_of_memory_block = new_iheap->memory_block + new_iheap->padding + No_pages * page_size;
 
   new_iheap->num_active_pages = 0;
 
   for (int i = 0; i < new_iheap->num_pages; i++)
   {
-    void *start_of_page = new_iheap->memory_block + No_pages * page_size * (i) / new_iheap->num_pages;
+    void *start_of_page = new_iheap->memory_block + new_iheap->padding + No_pages * page_size * (i) / new_iheap->num_pages;
     new_iheap->page_arr[i] = page_init(page_size, start_of_page);
   }
   return new_iheap;

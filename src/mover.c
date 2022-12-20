@@ -32,7 +32,7 @@ void move(internal_heap_t *i_heap, void ***stack_ptrs, int ptrs_len, bool unsafe
 
     for (size_t i = 0; i < ptrs_len; i++)
     {
-        do_move(stack_ptrs[i], passive_pages, pass_len, static_pages, len);
+        do_move(stack_ptrs[i], passive_pages, pass_len, static_pages, len, i_heap);
     }
 
     for (size_t i = 0; i < act_len; i++)
@@ -81,7 +81,7 @@ bool is_movable(void *ptr, page_t **static_pages, int static_len)
     return flag;
 }
 
-void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages, int static_len)
+void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages, int static_len, internal_heap_t *i_heap)
 {
 
     metadata_t *md = ((metadata_t *)*data_ptr) - 1;
@@ -116,8 +116,10 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
             {
                 void **internal_ptr = (void **)(*data_ptr + 8 * i);
                 assert(*internal_ptr);
-
-                do_move(internal_ptr, new_pages, len, static_pages, static_len);
+                if(is_valid_ptr(i_heap, *internal_ptr))
+                {
+                    do_move(internal_ptr, new_pages, len, static_pages, static_len, i_heap);
+                }
             }
         }
         

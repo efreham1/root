@@ -20,8 +20,9 @@ int clean_suite(void)
 
 void test_stack_scanner()
 {
-    int *i = calloc(1, sizeof(int));
+    int *i = calloc(5, sizeof(int));
     int *j = calloc(1, sizeof(int));
+	int is[] = {1, 2, 3, 4, 5};
     int *k = calloc(1, sizeof(int));
     int *m = calloc(1, sizeof(int));
 
@@ -35,6 +36,13 @@ void test_stack_scanner()
     CU_ASSERT_PTR_EQUAL(*stack_ptrs[1], j);
     CU_ASSERT_PTR_EQUAL(*stack_ptrs[2], k);
     CU_ASSERT_PTR_EQUAL(*stack_ptrs[3], m);
+
+	for (size_t idx = 0; idx < 4; idx++)
+	{
+		CU_ASSERT_PTR_NOT_EQUAL(*stack_ptrs[idx], is);
+	}
+	
+	
 
     free(i);
     free(j);
