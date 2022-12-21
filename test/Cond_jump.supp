@@ -1,6 +1,39 @@
 {
-   <All_Cond>
+   <Some_Cond>
    Memcheck:Cond
    ...
-   fun:stack_addresses
+   fun:get_valid_ptrs
+}
+
+{
+   <Some_More_Cond>
+   Memcheck:Cond
+   ...
+   fun:h_gc
+}
+
+{
+   <Even_More_Cond>
+   Memcheck:Cond
+   ...
+   fun:h_gc_dbg
+}
+
+{
+   <More_Cond>
+   Memcheck:Cond
+   fun:h_delete_dbg
+}
+
+{
+   <Some_Value8>
+   Memcheck:Value8
+   fun:do_move
+}
+
+{
+   <Some_More_Value8>
+   Memcheck:Value8
+   ...
+   fun:get_valid_ptrs
 }

@@ -30,4 +30,8 @@ unsigned long avail_space(internal_heap_t *h);
 
 unsigned long used_space(internal_heap_t *h);
 
+unsigned int get_size_and_format_vector(bool **format_vector, char *format_string, int *len);
+
+bool heap_has_room(internal_heap_t *i_heap, unsigned int bytes);
+
 #endif

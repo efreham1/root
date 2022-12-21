@@ -100,7 +100,7 @@ void test_alloc_data(void)
 
 void test_h_gc(void)
 {
-	heap_t *h = h_init(6000, false, 0.5);
+	heap_t *h = h_init(6000, true, 0.5);
 
 	int *data_1 = h_alloc_data(h, sizeof(int));
 
@@ -110,8 +110,68 @@ void test_h_gc(void)
 
 	unsigned int bytes_collected = h_gc(h);
 
-	CU_ASSERT_FALSE(0 == bytes_collected);
+	CU_ASSERT_TRUE(0 < bytes_collected);
 
+	h_delete(h);
+}
+
+void test_h_gc_multiple()
+{
+	heap_t *h = h_init(6000, true, 0.5);
+
+	int *data_1 = h_alloc_data(h, sizeof(int));
+	int *data_2 = h_alloc_data(h, sizeof(int));
+
+	CU_ASSERT_PTR_NOT_NULL(data_1);
+
+	int *old_ptr = data_2;
+
+	for (size_t i = 0; i < 126; i++)
+	{
+		data_1 = NULL;
+
+		unsigned int bytes_collected = h_gc(h);
+
+		CU_ASSERT_TRUE(0 == bytes_collected);
+		CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 1);
+		CU_ASSERT_PTR_EQUAL(data_2, old_ptr);
+
+		data_1 = h_alloc_data(h, sizeof(int));
+	}
+	for (size_t i = 0; i < 10; i++)
+	{
+		data_1 = h_alloc_data(h, sizeof(int));
+		data_1 = NULL;
+
+		CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 2);
+
+		unsigned int bytes_collected = h_gc(h);
+
+		CU_ASSERT_EQUAL(bytes_collected, 16);
+		CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 1);
+		CU_ASSERT_PTR_EQUAL(data_2, old_ptr);
+	}
+	h_delete(h);
+}
+
+void test_h_gc_no_collecting()
+{
+	heap_t *h = h_init(6000, true, 1.0);
+
+	int *ptrs[383];
+
+	for (size_t i = 0; i < 383; i++)
+	{
+		ptrs[i] = h_alloc_data(h, 8);
+
+		CU_ASSERT_PTR_NOT_NULL(ptrs[i]);
+
+		unsigned int bytes_collected = h_gc(h);
+
+		CU_ASSERT_TRUE(0 == bytes_collected);
+		int num_act = i / 128 + 1;
+		CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, num_act);
+	}
 	h_delete(h);
 }
 
@@ -126,19 +186,42 @@ void test_h_gc_dbg(void)
 
 	unsigned int bytes_collected = h_gc(h);
 
-	CU_ASSERT_FALSE(0 == bytes_collected);
-	
+	int len = 0;
+	page_t **act_pages = get_active_pages(h->internal_heap, &len);
+	CU_ASSERT_EQUAL_FATAL(1, len);
+	CU_ASSERT_TRUE_FATAL(is_ptr_to_page(act_pages[0], data_2));
+
+	CU_ASSERT_TRUE(0 < bytes_collected);
+
 	data_1 = h_alloc_data(h, sizeof(int));
 
 	CU_ASSERT_PTR_NOT_NULL(data_1);
 
 	data_1 = NULL;
 
+	int *old_ptr = data_2;
+
 	bytes_collected = h_gc_dbg(h, true);
 
 	CU_ASSERT_TRUE(0 == bytes_collected);
 	CU_ASSERT_PTR_NOT_NULL(data_2);
+	CU_ASSERT_PTR_EQUAL(data_2, old_ptr);
 
+	free(act_pages);
+	h_delete(h);
+}
+
+void test_auto_gc()
+{
+	heap_t *h = h_init(4096, true, 0.25);
+
+	for (size_t i = 0; i < 63; i++)
+	{
+		h_alloc_data(h, 8);
+	}
+	CU_ASSERT_EQUAL(h_used(h), 1008);
+	h_alloc_data(h, 16);
+	CU_ASSERT_EQUAL(h_used(h), 24);
 	h_delete(h);
 }
 
@@ -218,7 +301,10 @@ int main()
 		(CU_add_test(my_test_suite, "Test for alloc of struct", test_alloc_struct) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for alloc of data", test_alloc_data) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for manual gc", test_h_gc) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for multiple manual gc-runs", test_h_gc_multiple) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for multiple manual gc-runs with no collecting", test_h_gc_no_collecting) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for manual gc_dbg", test_h_gc_dbg) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for automatic gc", test_auto_gc) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for available space", test_h_avail) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for used space", test_h_used) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for the input handler", test_input_handler) == NULL) ||

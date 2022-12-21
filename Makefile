@@ -27,7 +27,7 @@ $(EDIR)/test_%: $(TDIR)/test_%.c $(OBJS)
 	$(CC) $(FLAGS) $^ -lcunit  -o $@
 
 test_%: $(EDIR)/test_%
-	valgrind --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./$^
+	valgrind --gen-suppressions=all --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./$^
 
 test_cov_%: test_%
 	gcovr -b obj
@@ -51,14 +51,14 @@ $(DDIR)/inlupp2/store: $(DDIR)/inlupp2/store.c $(OBJS) $(INLUPP2_OBJS)
 	$(CC) $(FLAGS) $^ -o $@
 
 demo: $(DDIR)/inlupp2/store
-	valgrind --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./$(DDIR)/inlupp2/store
+	valgrind --gen-suppressions=all --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./$(DDIR)/inlupp2/store
 
 inv_clear:
 	make -C demo/inlupp2 inv_clear
 
 stock: $(DDIR)/inlupp2/store
 	make -C demo/inlupp2 stock
-	valgrind --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./demo/inlupp2/store < demo/inlupp2/Stock.txt
+	valgrind --gen-suppressions=all --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./demo/inlupp2/store < demo/inlupp2/Stock.txt
 
 clean:
 	rm -rf exe/*

@@ -342,7 +342,7 @@ void test_move()
 	struct house *old_hus = hus;
 	struct person *old_pers = pers;
 
-	move(h, ptrs, 2, false);
+	move(h, ptrs, 2, false, *ptrs);
 
 	CU_ASSERT_PTR_NOT_EQUAL_FATAL(hus, old_hus);
 	CU_ASSERT_PTR_NOT_EQUAL_FATAL(pers, old_pers);
@@ -434,7 +434,7 @@ void test_move_stationary()
 	struct house *old_hus = hus;
 	struct person *old_pers = pers;
 
-	move(h, ptrs, 2, true);
+	move(h, ptrs, 2, true, *ptrs);
 
 	CU_ASSERT_PTR_EQUAL_FATAL(hus, old_hus);
 	CU_ASSERT_PTR_EQUAL_FATAL(pers, old_pers);

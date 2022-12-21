@@ -116,9 +116,9 @@ answer_t str_to_int(char *str, void *extra, heap_t *h)
 answer_t str_to_str(char *str, void *extra, heap_t *h)
 {
 	int len = strlen(str) +1;
-	answer_t str_cpy = (answer_t) {.str_t = h_alloc_data(h, len)};
-	memcpy(str_cpy.str_t, str, len);
-	return str_cpy;
+	char *str_cpy = h_alloc_data(h, len);
+	memcpy(str_cpy, str, len);
+	return (answer_t) str_cpy;
 }
 
 int ask_question_int(char *question, heap_t *h) {

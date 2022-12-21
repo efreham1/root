@@ -32,29 +32,34 @@ void h_delete(heap_t *h)
   free(h);
 }
 
-void ***get_valid_ptrs(internal_heap_t *i_heap, int *len)
+void ***get_valid_ptrs(internal_heap_t *i_heap, int *len, void ***proof_reading_arr)
 {
   int stack_ptrs_len = 0;
 
   void ***stack_ptrs = stack_addresses(i_heap->end_of_memory_block, i_heap->memory_block, &stack_ptrs_len);
 
-  void **buf[stack_ptrs_len];
+  void **buf1[stack_ptrs_len];
+  void *buf2[stack_ptrs_len];
 
   int idx = 0;
   for (size_t i = 0; i < stack_ptrs_len; i++)
   {
     if (is_valid_ptr(i_heap, *stack_ptrs[i]))
     {
-      buf[idx++] = stack_ptrs[i];
+      buf1[idx] = stack_ptrs[i];
+      buf2[idx++] = *stack_ptrs[i];
     }
   }
   *len = idx;
 
   void ***valid_ptrs = calloc(idx, sizeof(void **));
 
+  *proof_reading_arr = calloc(idx, sizeof(void *));
+
   for (size_t i = 0; i < idx; i++)
   {
-    valid_ptrs[i] = buf[i];
+    valid_ptrs[i] = buf1[i];
+    (*proof_reading_arr)[i] = buf2[i];
   }
   free(stack_ptrs);
   return valid_ptrs;
@@ -63,12 +68,17 @@ void ***get_valid_ptrs(internal_heap_t *i_heap, int *len)
 void h_delete_dbg(heap_t *h, void *dbg_value)
 {
   int len = 0;
-  void ***ptrs = get_valid_ptrs(h->internal_heap, &len);
+  void **proof_reading_arr = NULL;
+  void ***ptrs = get_valid_ptrs(h->internal_heap, &len, &proof_reading_arr);
   for (size_t i = 0; i < len; i++)
   {
-    *ptrs[i] = NULL;
+    if (proof_reading_arr[i] == *ptrs[i])
+    {
+      *ptrs[i] = NULL;
+    }
   }
   free(ptrs);
+  free(proof_reading_arr);
   h_delete(h);
 }
 
@@ -155,7 +165,7 @@ void *h_alloc_struct(heap_t *h, char *layout)
 {
   char *format_string = handle_input(layout);
 
-  if (avail_space(h->internal_heap) - h->tot_size/2 * (1 - h->gcTrigger) < strlen(format_string) * 8) + sizeof(void *);
+  if (avail_space(h->internal_heap) - h->tot_size / 2 * (1 - h->gcTrigger) < strlen(format_string) * 8 + sizeof(void *))
   {
     assert(h_gc(h) != 0 || avail_space(h->internal_heap) > strlen(format_string) * 8 + sizeof(void *));
   }
@@ -167,9 +177,9 @@ void *h_alloc_struct(heap_t *h, char *layout)
 
 void *h_alloc_data(heap_t *h, unsigned int bytes)
 {
-  if (avail_space(h->internal_heap) - h->tot_size/2 * (1 - h->gcTrigger) < bytes + sizeof(void *))
+  if ((float)((used_space(h->internal_heap) + bytes + sizeof(void *))*2)/h->tot_size >= h->gcTrigger)
   {
-    assert(h_gc(h) != 0 || avail_space(h->internal_heap) > bytes + sizeof(void *));
+    assert(h_gc(h) != 0 || has_room(h->internal_heap) > bytes + sizeof(void *));
   }
 
   return h_alloc_data_internal(h->internal_heap, bytes);
@@ -180,11 +190,13 @@ unsigned int h_gc(heap_t *h)
   unsigned int used_prior = h_used(h);
 
   int len = 0;
-  void ***ptrs = get_valid_ptrs(h->internal_heap, &len);
+  void **proof_reading_arr = NULL;
+  void ***ptrs = get_valid_ptrs(h->internal_heap, &len, &proof_reading_arr);
 
-  move(h->internal_heap, ptrs, len, h->unsafe_stack);
+  move(h->internal_heap, ptrs, len, h->unsafe_stack, proof_reading_arr);
 
   free(ptrs);
+  free(proof_reading_arr);
   printf("\nSKRKPSAMLING!!! cleaned: %d\n", used_prior - h_used(h));
   return used_prior - h_used(h);
 }
@@ -194,11 +206,14 @@ unsigned int h_gc_dbg(heap_t *h, bool unsafe_stack)
   unsigned int used_prior = h_used(h);
 
   int len = 0;
-  void ***ptrs = get_valid_ptrs(h->internal_heap, &len);
+  void **proof_reading_arr = NULL;
+  void ***ptrs = get_valid_ptrs(h->internal_heap, &len, &proof_reading_arr);
 
-  move(h->internal_heap, ptrs, len, unsafe_stack);
+  move(h->internal_heap, ptrs, len, unsafe_stack, proof_reading_arr);
 
   free(ptrs);
+  free(proof_reading_arr);
+  printf("\nSKRKPSAMLING!!! cleaned: %d\n", used_prior - h_used(h));
   return used_prior - h_used(h);
 }
 
