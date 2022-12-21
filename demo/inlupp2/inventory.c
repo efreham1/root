@@ -142,11 +142,14 @@ int ioopm_inventory_get_stock(ioopm_inventory_t *inventory, char *merch_name)
 static int string_sum_hash(elem_t e, int buckets)
 {
     char *name = ((char *)e.ptr_v);
+
+    assert(name != NULL);
+    
     int result = 0;
-    do
+    while (*name != '\0')
     {
-        result += *name;
-    } while (*++name != '\0');
+        result += *name++;
+    }
     return abs(result % buckets);
 }
 

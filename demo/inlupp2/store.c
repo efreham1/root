@@ -122,6 +122,7 @@ void TUI_inventory_list_merch_theoretical_stock(ioopm_inventory_t *inventory, he
 
 void TUI_inventory_list_merch(ioopm_inventory_t *inventory, heap_t *h)
 {
+
     ioopm_list_t *merch_list = ioopm_inventory_get_merchandise_list(inventory, h);
     if (ioopm_linked_list_is_empty(merch_list))
     {
@@ -129,12 +130,19 @@ void TUI_inventory_list_merch(ioopm_inventory_t *inventory, heap_t *h)
         return;
     }
 
+    if (ioopm_hash_table_has_key(inventory->warehouse, (elem_t){.ptr_v = "vara4"}))
+    {
+        printf("vara4 still in warehouse\n");
+    }
+
     ioopm_list_iterator_t *iterator = ioopm_list_iterator(merch_list, h);
 
     int i = 1;
     while (true)
     {
+
         char *current_name = ioopm_iterator_current(iterator).ptr_v;
+        printf("\n%d\n", current_name == NULL);
         inventory_merch_t *current_merch = ioopm_hash_table_lookup(inventory->warehouse, (elem_t){.ptr_v = current_name})->ptr_v;
         int current_price = current_merch->price;
         printf("%d) %s %d.%d SEK  %d in stock\n", i, current_name, current_price / 100, current_price % 100, current_merch->total_stock);
@@ -478,7 +486,7 @@ void destroy_carts(ioopm_list_t *cart_list, ioopm_inventory_t *inventory, heap_t
 
 int main(void)
 {
-    heap_t *heap = h_init(32000, true, 0.5);
+    heap_t *heap = h_init(8192, true, 0.3);
     ioopm_inventory_t *inventory = ioopm_inventory_load("demo/inlupp2/inventory.bin", heap);
     ioopm_list_t *cart_list = ioopm_linked_list_create(cart_eq_fun, heap);
 

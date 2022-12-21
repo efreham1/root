@@ -339,10 +339,11 @@ void test_move()
 	hus->owner = pers;
 
 	void **ptrs[] = {(void **)&hus, (void **)&pers};
+	void *ptrs2[] = {(void *) hus, (void *) pers};
 	struct house *old_hus = hus;
 	struct person *old_pers = pers;
 
-	move(h, ptrs, 2, false, *ptrs);
+	move(h, ptrs, 2, false, ptrs2);
 
 	CU_ASSERT_PTR_NOT_EQUAL_FATAL(hus, old_hus);
 	CU_ASSERT_PTR_NOT_EQUAL_FATAL(pers, old_pers);
@@ -431,10 +432,11 @@ void test_move_stationary()
 	hus->owner = pers;
 
 	void **ptrs[] = {(void **)&hus, (void **)&pers};
+	void *ptrs2[] = {(void *) hus, (void *) pers};
 	struct house *old_hus = hus;
 	struct person *old_pers = pers;
 
-	move(h, ptrs, 2, true, *ptrs);
+	move(h, ptrs, 2, true, ptrs2);
 
 	CU_ASSERT_PTR_EQUAL_FATAL(hus, old_hus);
 	CU_ASSERT_PTR_EQUAL_FATAL(pers, old_pers);
@@ -475,6 +477,12 @@ void test_move_stationary()
 
 	h_delete_internal(h);
 }
+
+void test_do_move_unions()
+{
+	internal_heap_t *h = h_init_internal(2, 
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail

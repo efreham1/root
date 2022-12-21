@@ -151,6 +151,7 @@ elem_t ioopm_hash_table_remove(ioopm_hash_table_t *ht, elem_t key)
     
     if (curr_entry != NULL && ht->compare_equal_keys(curr_entry->key, key)) // key found
     {
+        prev_entry->next = curr_entry->next;
         elem_t data_ptr = curr_entry->value;
         ht->NO_entries--;
         return data_ptr;
@@ -193,6 +194,7 @@ ioopm_list_t *ioopm_hash_table_keys(ioopm_hash_table_t *ht, heap_t *h)
         ht_entry_t *next_entry = sentinel->next;
         while (next_entry != NULL)
         {
+            printf("\nappend\n");
             ioopm_linked_list_append(list, next_entry->key, h);
             next_entry = next_entry->next;
         }

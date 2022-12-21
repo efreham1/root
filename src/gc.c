@@ -16,7 +16,7 @@ heap_t *h_init(unsigned long bytes, bool unsafe_stack, float gc_threshold)
 
   unsigned int page_size = 2048;
 
-  unsigned int No_pages = (bytes / page_size) * 2 + 2;
+  unsigned int No_pages = ((bytes-1) / page_size) * 2 + 2;
 
   newHeap->internal_heap = h_init_internal(No_pages, page_size);
   newHeap->unsafe_stack = unsafe_stack;
@@ -165,9 +165,11 @@ void *h_alloc_struct(heap_t *h, char *layout)
 {
   char *format_string = handle_input(layout);
 
-  if (avail_space(h->internal_heap) - h->tot_size / 2 * (1 - h->gcTrigger) < strlen(format_string) * 8 + sizeof(void *))
+  unsigned int bytes = get_size_of_struct(format_string);
+
+  if ((float)((used_space(h->internal_heap) + bytes + sizeof(void *))*2)/h->tot_size >= h->gcTrigger)
   {
-    assert(h_gc(h) != 0 || avail_space(h->internal_heap) > strlen(format_string) * 8 + sizeof(void *));
+    assert(h_gc(h) != 0 || heap_has_room(h->internal_heap, bytes));
   }
 
   void *ptr = h_alloc_struct_internal(h->internal_heap, format_string);
@@ -179,7 +181,7 @@ void *h_alloc_data(heap_t *h, unsigned int bytes)
 {
   if ((float)((used_space(h->internal_heap) + bytes + sizeof(void *))*2)/h->tot_size >= h->gcTrigger)
   {
-    assert(h_gc(h) != 0 || has_room(h->internal_heap) > bytes + sizeof(void *));
+    assert(h_gc(h) != 0 || heap_has_room(h->internal_heap, bytes));
   }
 
   return h_alloc_data_internal(h->internal_heap, bytes);
@@ -187,6 +189,7 @@ void *h_alloc_data(heap_t *h, unsigned int bytes)
 
 unsigned int h_gc(heap_t *h)
 {
+  printf("\nSkräpsamling!!!\n");
   unsigned int used_prior = h_used(h);
 
   int len = 0;
@@ -197,7 +200,8 @@ unsigned int h_gc(heap_t *h)
 
   free(ptrs);
   free(proof_reading_arr);
-  printf("\nSKRKPSAMLING!!! cleaned: %d\n", used_prior - h_used(h));
+
+  printf("collected: %d\n", used_prior - h_used(h));
   return used_prior - h_used(h);
 }
 
@@ -213,7 +217,6 @@ unsigned int h_gc_dbg(heap_t *h, bool unsafe_stack)
 
   free(ptrs);
   free(proof_reading_arr);
-  printf("\nSKRKPSAMLING!!! cleaned: %d\n", used_prior - h_used(h));
   return used_prior - h_used(h);
 }
 

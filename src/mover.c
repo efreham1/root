@@ -44,6 +44,7 @@ void move(internal_heap_t *i_heap, void ***stack_ptrs, int ptrs_len, bool unsafe
         {
             make_passive(active_pages[i]);
             i_heap->num_active_pages--;
+            printf("\nmade page passive\n");
         }
     }
 
@@ -51,14 +52,20 @@ void move(internal_heap_t *i_heap, void ***stack_ptrs, int ptrs_len, bool unsafe
     free(active_pages);
 }
 
-page_t *get_moveto_page(unsigned int bytes, page_t **new_pages, int len, internal_heap_t *i_heap)
+page_t *get_moveto_page(unsigned int bytes, page_t **new_pages, int len, internal_heap_t *i_heap, int static_len)
 {
     for (size_t i = 0; i < len; i++)
     {
-        make_active(new_pages[i]);
-        i_heap->num_active_pages++;
         if (has_room(new_pages[i], bytes))
         {
+            return new_pages[i];
+        }
+        else if (!is_active(new_pages[i]))
+        {
+            printf("\nmade page active\n"); 
+            make_active(new_pages[i]);
+            i_heap->num_active_pages++;
+            assert(i_heap->num_active_pages <= i_heap->num_pages - static_len);
             return new_pages[i];
         }
     }
@@ -67,7 +74,7 @@ page_t *get_moveto_page(unsigned int bytes, page_t **new_pages, int len, interna
 
 void move_data_block(unsigned int bytes, metadata_t *md, page_t *new_page, void *new_data_ptr, void **data_ptr)
 {
-    assert(new_data_ptr > new_page->memory_block && new_data_ptr < new_page->memory_block + new_page->offset);
+    assert(new_data_ptr > new_page->memory_block && new_data_ptr < new_page->memory_block + new_page->offset && is_active(new_page));
     *md = set_forward_address(new_data_ptr);
     memcpy(new_data_ptr, *data_ptr, bytes);
     *data_ptr = new_data_ptr;
@@ -101,7 +108,7 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
         {
             size_t bytes = get_size_struct(*md);
 
-            page_t *new_page = get_moveto_page(bytes, new_pages, len, i_heap);
+            page_t *new_page = get_moveto_page(bytes, new_pages, len, i_heap, static_len);
             assert(new_page);
 
             void *new_data_ptr = page_alloc_struct(new_page, format_vector, len_fv, bytes);
@@ -119,13 +126,13 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
             if (format_vector[i])
             {
                 void **internal_ptr = (void **)(*data_ptr + 8 * i);
-                if(*internal_ptr != NULL && is_valid_ptr(i_heap, *internal_ptr))
+                if (*internal_ptr != NULL && is_valid_ptr(i_heap, *internal_ptr))
                 {
                     do_move(internal_ptr, new_pages, len, static_pages, static_len, i_heap);
                 }
             }
         }
-        
+
         if (reset_md)
         {
             *md = og_md;
@@ -139,7 +146,7 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
         {
             size_t bytes = get_data_size(*md);
 
-            page_t *new_page = get_moveto_page(bytes, new_pages, len, i_heap);
+            page_t *new_page = get_moveto_page(bytes, new_pages, len, i_heap, static_len);
             assert(new_page);
 
             void *new_data_ptr = page_alloc_data(new_page, bytes);

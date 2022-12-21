@@ -38,7 +38,7 @@ void h_delete_internal(internal_heap_t *h)
   free(h);
 }
 
-unsigned int get_size_and_format_vector(bool **format_vector, char *format_string, int *len)
+unsigned int get_size_and_format_vector(bool *format_vector, char *format_string, int *len, bool get_format_vector)
 {
   unsigned int bytes = 0;
   size_t size = 0;
@@ -78,9 +78,9 @@ unsigned int get_size_and_format_vector(bool **format_vector, char *format_strin
 
     int padding = bytes % size == 0 ? 0 : size - bytes % size;
 
-    if ((bytes + padding) % 8 == 0)
+    if (get_format_vector && (bytes + padding) % 8 == 0)
     {
-      (*format_vector)[idx++] = *c == '*';
+      format_vector[idx++] = *c == '*';
     }
     bytes += padding + size;
   }
@@ -88,8 +88,17 @@ unsigned int get_size_and_format_vector(bool **format_vector, char *format_strin
   int padding = bytes % 8 == 0 ? 0 : 8 - bytes % 8;
   bytes += padding;
 
-  *len = idx;
+  if (get_format_vector)
+  {
+    *len = idx;
+  }
+
   return bytes;
+}
+
+unsigned int get_size_of_struct(char *format_string)
+{
+  return get_size_and_format_vector(NULL, format_string, NULL, false);
 }
 
 bool heap_has_room(internal_heap_t *i_heap, unsigned int bytes)
@@ -121,12 +130,16 @@ page_t *get_alloc_page(internal_heap_t *h, unsigned int bytes)
     }
   }
 
+  assert(h->num_active_pages < h->num_pages/2);
+
   for (int i = 0; i < h->num_pages; i++)
   {
     if (!is_active(h->page_arr[i]))
     {
       make_active(h->page_arr[i]);
       h->num_active_pages++;
+
+      assert(h->num_active_pages <= h->num_pages/2);
 
       return h->page_arr[i];
     }
@@ -140,7 +153,9 @@ void *h_alloc_struct_internal(internal_heap_t *h, char *format_string)
   bool format_vector[strlen(format_string)];
   int len = 0;
 
-  unsigned int bytes = get_size_and_format_vector(&format_vector, format_string, &len);
+  unsigned int bytes = get_size_and_format_vector(format_vector, format_string, &len, true);
+
+  assert(bytes + sizeof(void *) <= h->page_size);
 
   return page_alloc_struct(get_alloc_page(h, bytes), format_vector, len, bytes);
 }
@@ -149,6 +164,8 @@ void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
 {
   int padding = bytes % 8 == 0 ? 0 : 8 - bytes % 8;
   bytes = bytes >= 8 ? bytes + padding : 8;
+
+  assert(bytes + sizeof(void *) <= h->page_size);
 
   return page_alloc_data(get_alloc_page(h, bytes), bytes);
 }
@@ -221,7 +238,7 @@ page_t **get_passive_pages(internal_heap_t *h, int *len)
 unsigned long avail_space(internal_heap_t *h)
 {
   int max_pages = h->num_pages / 2;
-  assert(max_pages - h->num_active_pages >= 0);
+  assert(max_pages >= h->num_active_pages);
   unsigned long avail_space = (max_pages - h->num_active_pages) * h->page_size;
   for (size_t i = 0; i < h->num_pages; i++)
   {

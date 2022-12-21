@@ -18,6 +18,8 @@ static ll_entry_t *create_link(elem_t value, ll_entry_t *next, heap_t *h) {
 
 ioopm_list_t *ioopm_linked_list_create(ioopm_eq_function eq_fn, heap_t *h) {
     ioopm_list_t *ll = h_alloc_struct(h, "2*l*");
+    ll->head = NULL;
+    ll->tail = NULL;
     ll->eq_fn = eq_fn;
     return ll;
 }

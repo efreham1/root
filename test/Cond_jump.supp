@@ -26,6 +26,13 @@
 }
 
 {
+   <Much_Cond>
+   Memcheck:Cond
+   ...
+   fun:stack_addresses
+}
+
+{
    <Some_Value8>
    Memcheck:Value8
    fun:do_move
@@ -36,4 +43,17 @@
    Memcheck:Value8
    ...
    fun:get_valid_ptrs
+}
+
+{
+   <Even_More_Value8>
+   Memcheck:Value8
+   fun:get_bit_alloc_map
+}
+
+{
+   <Much_Value8>
+   Memcheck:Value8
+   fun:move_data_block
+
 }
