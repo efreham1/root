@@ -127,7 +127,6 @@ void test_h_gc_multiple()
 	CU_ASSERT_PTR_NOT_NULL(data_1);
 	CU_ASSERT_PTR_NOT_NULL(data_2);
 
-
 	for (size_t i = 0; i < 126; i++)
 	{
 		data_1 = NULL;
@@ -201,7 +200,6 @@ void test_h_gc_dbg(void)
 
 	data_1 = NULL;
 
-
 	bytes_collected = h_gc_dbg(h, true);
 
 	CU_ASSERT_TRUE(0 == bytes_collected);
@@ -223,7 +221,7 @@ void test_auto_gc()
 	CU_ASSERT_EQUAL(h_used(h), 1008);
 	h_alloc_data(h, 16);
 	CU_ASSERT_EQUAL(h_used(h), 24);
-	
+
 	h_delete(h);
 }
 
@@ -271,7 +269,7 @@ void test_auto_gc_unsafe_ptr()
 	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 2);
 	CU_ASSERT_EQUAL(s1->i, 7);
 	CU_ASSERT_EQUAL(*s1->ptr, 5);
-	
+
 	h_delete(h);
 }
 
@@ -289,7 +287,6 @@ void test_auto_gc_no_collection()
 
 		int num_act = i / 128 + 1;
 		CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, num_act);
-
 	}
 	CU_ASSERT_EQUAL(h_avail(h), 0)
 	h_delete(h);
@@ -375,12 +372,12 @@ void test_h_gc_ht_one_entry_safe_sptrs()
 	CU_ASSERT_EQUAL_FATAL(h_used(h), 2048);
 	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 1);
 
-	ioopm_hash_table_insert(ht, (elem_t) {.int_v = 6}, (elem_t) {.int_v = 7}, h);
+	ioopm_hash_table_insert(ht, (elem_t){.int_v = 6}, (elem_t){.int_v = 7}, h);
 
 	CU_ASSERT_EQUAL_FATAL(h_used(h), 2080);
 	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
 
-	int bucket = 6%ioopm_hash_table_number_of_buckets(ht);
+	int bucket = 6 % ioopm_hash_table_number_of_buckets(ht);
 
 	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->key.int_v, 6);
 	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->value.int_v, 7);
@@ -393,7 +390,7 @@ void test_h_gc_ht_one_entry_safe_sptrs()
 	CU_ASSERT_EQUAL(ht->buckets[bucket].next->key.int_v, 6);
 	CU_ASSERT_EQUAL(ht->buckets[bucket].next->value.int_v, 7);
 
-	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t) {.int_v = 6})->int_v, 7);
+	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.int_v = 6})->int_v, 7);
 
 	h_delete(h);
 }
@@ -414,7 +411,7 @@ void test_h_gc_ht_one_entry_unsafe_sptrs()
 	CU_ASSERT_EQUAL_FATAL(h_used(h), 2048);
 	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 1);
 
-	ioopm_hash_table_insert(ht, (elem_t) {.int_v = 6}, (elem_t) {.int_v = 7}, h);
+	ioopm_hash_table_insert(ht, (elem_t){.int_v = 6}, (elem_t){.int_v = 7}, h);
 
 	CU_ASSERT_EQUAL_FATAL(h_used(h), 2080);
 	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
@@ -424,7 +421,7 @@ void test_h_gc_ht_one_entry_unsafe_sptrs()
 	CU_ASSERT_EQUAL_FATAL(h_used(h), 2096);
 	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
 
-	int bucket = 6%ioopm_hash_table_number_of_buckets(ht);
+	int bucket = 6 % ioopm_hash_table_number_of_buckets(ht);
 
 	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->key.int_v, 6);
 	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->value.int_v, 7);
@@ -437,8 +434,42 @@ void test_h_gc_ht_one_entry_unsafe_sptrs()
 	CU_ASSERT_EQUAL(ht->buckets[bucket].next->key.int_v, 6);
 	CU_ASSERT_EQUAL(ht->buckets[bucket].next->value.int_v, 7);
 
-	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t) {.int_v = 6})->int_v, 7);
+	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.int_v = 6})->int_v, 7);
 
+	h_delete(h);
+}
+
+void test_auto_gc_ht_many_entries()
+{
+	heap_t *h = h_init(8192, true, 0.1);
+
+	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 528);
+
+	for (size_t i = 0; i < 95; i++)
+	{
+		h_alloc_data(h, 1);
+	}
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2048);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 1);
+
+	for (size_t i = 0; i < 64; i++)
+	{
+		ioopm_hash_table_insert(ht, (elem_t){.int_v = i}, (elem_t){.int_v = (i + 1) * 2}, h);
+		CU_ASSERT_EQUAL(h_used(h), 2048 + 32 * (i + 1));
+		CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
+
+		h_alloc_data(h, 1);
+
+		for (size_t j = 0; j < i + 1; j++)
+		{
+			printf("\ni: %ld j: %ld number of buckets: %d\n", i, j, ioopm_hash_table_number_of_buckets(ht));
+			CU_ASSERT_TRUE_FATAL(ioopm_hash_table_has_key(ht, (elem_t){.int_v = j}));
+			CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.int_v = j})->int_v, 2 * (j + 1));
+		}
+	}
 	h_delete(h);
 }
 
@@ -480,6 +511,7 @@ int main()
 		(CU_add_test(my_test_suite, "Test for automatic gc", test_auto_gc) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for automatic gc with unsafe ptr and movement", test_auto_gc_unsafe_ptr) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for automatic gc with no collection", test_auto_gc_no_collection) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for automatic gc on a hash table with many entries", test_auto_gc_ht_many_entries) == NULL) ||
 
 		(CU_add_test(my_test_suite, "Test for available space", test_h_avail) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for used space", test_h_used) == NULL) ||

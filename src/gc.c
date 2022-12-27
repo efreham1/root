@@ -189,6 +189,7 @@ void *h_alloc_data(heap_t *h, unsigned int bytes)
 
 unsigned int h_gc(heap_t *h)
 {
+  printf("\nSkräpsamling!!!\n");
   unsigned int used_prior = h_used(h);
 
   int len = 0;
@@ -200,6 +201,7 @@ unsigned int h_gc(heap_t *h)
   free(ptrs);
   free(proof_reading_arr);
 
+  printf("collected: %d\n", used_prior - h_used(h));
   return used_prior - h_used(h);
 }
 

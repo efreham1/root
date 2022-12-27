@@ -59,6 +59,12 @@
 }
 
 {
+   <So_Much_Value8>
+   Memcheck:Value8
+   fun:reset_all_been_visited
+}
+
+{
    <Some_Addr8>
    Memcheck:Addr8
    fun:test_trash

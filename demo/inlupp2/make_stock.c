@@ -5,11 +5,11 @@
 
 int main(void)
 {
-    FILE *f = fopen("Stock.txt", "w");
+    FILE *f = fopen("demo/inlupp2/Stock.txt", "w");
     assert(f != NULL);
 
     fprintf(f, "y\n1234\n");
-    for (int i = 1; i < 10; i++)
+    for (int i = 1; i < 5; i++)
     {
         fprintf(f, "1\nvara%d\nbeskrivning\n9999\n5\n", i);
         if (i > 20)

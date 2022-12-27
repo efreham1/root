@@ -61,9 +61,7 @@ static void set_NO_buckets(ioopm_hash_table_t *ht, heap_t *h)
 }
 
 static void transfer_and_delete(ioopm_hash_table_t *from_ht, ioopm_hash_table_t *to_ht)
-{
-    ioopm_hash_table_clear(to_ht);
-    
+{   
     to_ht->buckets = from_ht->buckets;
     to_ht->number_of_buckets = from_ht->number_of_buckets;
     to_ht->NO_entries = from_ht->NO_entries;
@@ -72,6 +70,7 @@ static void transfer_and_delete(ioopm_hash_table_t *from_ht, ioopm_hash_table_t 
 
 static void update_NO_buckets(ioopm_hash_table_t *ht, heap_t *h)
 {
+    printf("\nupdating buckets\n");
     int new_capacity = ht->capacity*1.5;
     ht->capacity = new_capacity;
     ioopm_hash_table_t *new_ht = ioopm_hash_table_create_spec(ht->load_factor, new_capacity, ht->h_fnc, ht->compare_equal_keys, ht->compare_equal_values, ht->compare_lessthan_keys, h);
@@ -110,7 +109,7 @@ ioopm_hash_table_t *ioopm_hash_table_create_spec(float load_factor, int capacity
 // add key => value entry in hash table ht
 void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value, heap_t *h)
 {
-    if (ht->capacity == ht->NO_entries)
+    if (ht->capacity >= ht->NO_entries && ht->number_of_buckets != 19)
     {
         update_NO_buckets(ht, h);
     }
@@ -292,7 +291,7 @@ bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, elem_t key)
         while (next_entry != NULL)
         {
             elem_t current_key = next_entry->key;
-            printf("\nentry: %p\nkey: %s\nvalue: %p\nptr: %p\n", next_entry, (char *) next_entry->key.ptr_v, next_entry->value.ptr_v, next_entry->next);
+            printf("\nentry: %p\nkey: %d\nvalue: %d\nptr: %p\n", next_entry, next_entry->key.int_v, next_entry->value.int_v, next_entry->next);
             if (ht->compare_equal_keys(current_key, key))
             {
                 return true;
