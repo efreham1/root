@@ -4,6 +4,35 @@
 #include <string.h>
 #include <stdio.h>
 
+void reset_all_been_visited(void *data_ptr, internal_heap_t *i_heap)
+{
+    metadata_t *md = ((metadata_t *)data_ptr) - 1;
+    if (is_format_vector(*md))
+    {
+        *md = reset_been_visited(*md);
+        int len_fv = 0;
+        bool *format_vector = get_format_vector(*md, &len_fv);
+
+        for (size_t i = 0; i < len_fv; i++)
+        {
+            if (format_vector[i])
+            {
+                void *internal_ptr = (void *)*((void **)data_ptr + 8 * i);
+                if (is_valid_ptr(i_heap, internal_ptr))
+                {
+                    reset_all_been_visited(internal_ptr, i_heap);
+                }
+            }
+        }
+
+        free(format_vector);
+    }
+    else if (is_data_size(*md))
+    {
+        *md = reset_been_visited(*md);
+    }
+}
+
 void move(internal_heap_t *i_heap, void ***stack_ptrs, int ptrs_len, bool unsafe_stack, void **proof_reading_arr)
 {
     int pass_len = 0;
@@ -44,7 +73,14 @@ void move(internal_heap_t *i_heap, void ***stack_ptrs, int ptrs_len, bool unsafe
         {
             make_passive(active_pages[i]);
             i_heap->num_active_pages--;
-            printf("\nmade page passive\n");
+        }
+    }
+
+    for (size_t i = 0; i < ptrs_len; i++)
+    {
+        if (*stack_ptrs[i] == proof_reading_arr[i])
+        {
+            reset_all_been_visited(*stack_ptrs[i], i_heap);
         }
     }
 
@@ -62,7 +98,6 @@ page_t *get_moveto_page(unsigned int bytes, page_t **new_pages, int len, interna
         }
         else if (!is_active(new_pages[i]))
         {
-            printf("\nmade page active\n"); 
             make_active(new_pages[i]);
             i_heap->num_active_pages++;
             assert(i_heap->num_active_pages <= i_heap->num_pages - static_len);
@@ -82,25 +117,25 @@ void move_data_block(unsigned int bytes, metadata_t *md, page_t *new_page, void 
 
 bool is_movable(void *ptr, page_t **static_pages, int static_len)
 {
-    bool flag = true;
     for (size_t i = 0; i < static_len; i++)
     {
         if (is_ptr_to_page(static_pages[i], ptr))
         {
-            flag = false;
+            return false;
         }
     }
-    return flag;
+    return true;
 }
 
 void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages, int static_len, internal_heap_t *i_heap)
 {
     metadata_t *md = ((metadata_t *)*data_ptr) - 1;
-    if (is_format_vector(*md))
+    if (is_been_visited(*md))
     {
-        metadata_t og_md = *md;
-        bool reset_md = false;
-
+        return;
+    }
+    else if (is_format_vector(*md))
+    {
         int len_fv = 0;
         bool *format_vector = get_format_vector(*md, &len_fv);
 
@@ -117,8 +152,7 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
         }
         else
         {
-            *md = set_been_visited();
-            reset_md = true;
+            *md = set_been_visited(*md);
         }
 
         for (size_t i = 0; i < len_fv; i++)
@@ -126,16 +160,11 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
             if (format_vector[i])
             {
                 void **internal_ptr = (void **)(*data_ptr + 8 * i);
-                if (*internal_ptr != NULL && is_valid_ptr(i_heap, *internal_ptr))
+                if (is_valid_ptr(i_heap, *internal_ptr))
                 {
                     do_move(internal_ptr, new_pages, len, static_pages, static_len, i_heap);
                 }
             }
-        }
-
-        if (reset_md)
-        {
-            *md = og_md;
         }
 
         free(format_vector);
@@ -153,14 +182,13 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
 
             move_data_block(bytes, md, new_page, new_data_ptr, data_ptr);
         }
+        else
+        {
+        }
     }
     else if (is_forward_address(*md))
     {
         *data_ptr = get_forward_address(*md);
-    }
-    else if (is_been_visited(*md))
-    {
-        return;
     }
     else
     {

@@ -11,6 +11,8 @@ static bool string_compare_function(elem_t e1, elem_t e2)
     char *str1 = ((char *)e1.ptr_v);
     char *str2 = ((char *)e2.ptr_v);
 
+    printf("\nstr1: %s str2: %s\n", str1, str2);
+
     return strcmp(str1, str2) == 0;
 }
 
@@ -27,6 +29,7 @@ static inventory_merch_t *create_merchandise(char *name, char *desc, int price, 
 
 void ioopm_inventory_add_merchandise(ioopm_inventory_t *inventory, char *name, char *desc, int price, heap_t *h)
 {
+    printf("\nname: %s desc: %s price: %d\n", name, desc, price);
     inventory_merch_t *merch = create_merchandise(name, desc, price, h);
 
     elem_t key = {.ptr_v = name};
@@ -117,13 +120,14 @@ void ioopm_inventory_replenish_new_shelf_stock(ioopm_inventory_t *inventory, cha
     ioopm_list_t *storage_locations = merch->storage_locations;
 
     storage_location_t *new_shelf = h_alloc_struct(h, "*i");
-    new_shelf->shelf = shelf;
-    new_shelf->stock = quantity;
-
-    ioopm_linked_list_append(storage_locations, (elem_t){.ptr_v = new_shelf}, h);
     int len = strlen(shelf) + 1;
     char *shelf_cpy = h_alloc_data(h, len);
     memcpy(shelf_cpy, shelf, len);
+    new_shelf->shelf = shelf_cpy;
+    new_shelf->stock = quantity;
+
+    ioopm_linked_list_append(storage_locations, (elem_t){.ptr_v = new_shelf}, h);
+    
     ioopm_linked_list_append(inventory->used_shelves, (elem_t){.ptr_v = shelf_cpy}, h);
     merch->total_stock += quantity;
     merch->theoretical_stock += quantity;
@@ -214,7 +218,7 @@ static ioopm_list_t *load_storage_locs_from_file(FILE *f, heap_t *h)
     ll_entry_t *curr_entry = list->head;
     while (curr_entry)
     {
-        storage_location_t *sto_loc = h_alloc_struct(h, "*i"); 
+        storage_location_t *sto_loc = h_alloc_struct(h, "*i");
         fread(sto_loc, sizeof(storage_location_t), 1, f);
         curr_entry->value.ptr_v = sto_loc;
         int str_len = get_str_len_file(f);

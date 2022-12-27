@@ -57,3 +57,9 @@
    fun:move_data_block
 
 }
+
+{
+   <Some_Addr8>
+   Memcheck:Addr8
+   fun:test_trash
+}

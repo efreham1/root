@@ -4,6 +4,8 @@
 #include "input_handler.h"
 #include "heap.h"
 #include "structs.h"
+#include "hash_table.h"
+#include "hash_table_internal.h"
 
 int init_suite(void)
 {
@@ -342,6 +344,104 @@ void test_get_actual_size()
 	h_delete(h);
 }
 
+int simple_hash_int(elem_t key, int buckets)
+{
+	return abs(key.int_v % buckets);
+}
+
+bool compare_eq_int(elem_t a, elem_t b)
+{
+	return a.int_v == b.int_v;
+}
+
+bool compare_lt_int(elem_t a, elem_t b)
+{
+	return a.int_v < b.int_v;
+}
+
+void test_h_gc_ht_one_entry_safe_sptrs()
+{
+	heap_t *h = h_init(8192, false, 1.0);
+
+	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 528);
+
+	for (size_t i = 0; i < 95; i++)
+	{
+		h_alloc_data(h, 1);
+	}
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2048);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 1);
+
+	ioopm_hash_table_insert(ht, (elem_t) {.int_v = 6}, (elem_t) {.int_v = 7}, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2080);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
+
+	int bucket = 6%ioopm_hash_table_number_of_buckets(ht);
+
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->key.int_v, 6);
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->value.int_v, 7);
+
+	CU_ASSERT_EQUAL(h_gc(h), 1520);
+
+	CU_ASSERT_EQUAL(h_used(h), 560);
+	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 1);
+
+	CU_ASSERT_EQUAL(ht->buckets[bucket].next->key.int_v, 6);
+	CU_ASSERT_EQUAL(ht->buckets[bucket].next->value.int_v, 7);
+
+	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t) {.int_v = 6})->int_v, 7);
+
+	h_delete(h);
+}
+
+void test_h_gc_ht_one_entry_unsafe_sptrs()
+{
+	heap_t *h = h_init(8192, true, 1.0);
+
+	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 528);
+
+	for (size_t i = 0; i < 95; i++)
+	{
+		h_alloc_data(h, 1);
+	}
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2048);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 1);
+
+	ioopm_hash_table_insert(ht, (elem_t) {.int_v = 6}, (elem_t) {.int_v = 7}, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2080);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
+
+	h_alloc_data(h, 1);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2096);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
+
+	int bucket = 6%ioopm_hash_table_number_of_buckets(ht);
+
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->key.int_v, 6);
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->value.int_v, 7);
+
+	CU_ASSERT_EQUAL(h_gc(h), 16);
+
+	CU_ASSERT_EQUAL(h_used(h), 2080);
+	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 2);
+
+	CU_ASSERT_EQUAL(ht->buckets[bucket].next->key.int_v, 6);
+	CU_ASSERT_EQUAL(ht->buckets[bucket].next->value.int_v, 7);
+
+	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t) {.int_v = 6})->int_v, 7);
+
+	h_delete(h);
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -372,6 +472,8 @@ int main()
 		(CU_add_test(my_test_suite, "Test for manual gc", test_h_gc) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for multiple manual gc-runs", test_h_gc_multiple) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for multiple manual gc-runs with no collecting", test_h_gc_no_collecting) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for manual gc on a hash table with one entry and safe stack pointers", test_h_gc_ht_one_entry_safe_sptrs) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for manual gc on a hash table with one entry and unsafe stack pointers", test_h_gc_ht_one_entry_unsafe_sptrs) == NULL) ||
 
 		(CU_add_test(my_test_suite, "Test for manual gc_dbg", test_h_gc_dbg) == NULL) ||
 

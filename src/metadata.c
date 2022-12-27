@@ -81,7 +81,7 @@ metadata_t set_data_size(unsigned int size)
 bool *get_format_vector(metadata_t mdata, int *len)
 {
     assert(is_format_vector(mdata));
-    bool buf[61] = {false};
+    bool buf[60] = {false};
     char *b = (char *)&mdata;
     bool flag = false;
     int idx = 0;
@@ -89,7 +89,7 @@ bool *get_format_vector(metadata_t mdata, int *len)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (i != 0 || j > 1)
+            if (i != 0 || j > 2)
             {
                 if (flag)
                 {
@@ -115,7 +115,7 @@ bool *get_format_vector(metadata_t mdata, int *len)
 metadata_t set_format_vector(bool *format_vector, unsigned int len)
 {
     assert(is_little_end());
-    assert(len <= 61);
+    assert(len <= 60);
     metadata_t mdata = 0;
     char *b = (char *)&mdata;
     for (int i = sizeof(metadata_t) - 1; i >= 0; i--)
@@ -156,7 +156,7 @@ size_t get_size_struct(metadata_t md)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (i != 0 || j > 1)
+            if (i != 0 || j > 2)
             {
                 if (flag)
                 {
@@ -174,17 +174,23 @@ size_t get_size_struct(metadata_t md)
 
 bool is_been_visited(metadata_t md)
 {
-    bool id[2];
-    get_data_id(md, id);
-    return !id[0] && id[1];
+    assert(is_little_end());
+    char *b = (char *)&md;
+    return (*b >> 2 & 1) == 1;
 }
 
-metadata_t set_been_visited()
+metadata_t set_been_visited(metadata_t md)
 {
     assert(is_little_end());
-    metadata_t mdata = 0;
-    char *mb = (char *)&mdata;
-    mb[0] = mb[0] & ~(1);
-    mb[0] = mb[0] | 1 << 1;
-    return mdata;
+    char *mb = (char *)&md;
+    mb[0] = mb[0] | 1 << 2;
+    return md;
+}
+
+metadata_t reset_been_visited(metadata_t md)
+{
+    assert(is_little_end());
+    char *mb = (char *)&md;
+    mb[0] = mb[0] & ~(1 << 2);
+    return md;
 }

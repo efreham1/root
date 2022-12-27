@@ -60,7 +60,7 @@ void make_passive(page_t *p)
   p->is_active = false;
   p->offset = 0;
 
-  unsigned long address_num = p->memory_block;
+  unsigned long address_num = (unsigned long) p->memory_block;
 
   for (size_t i = 0; i < p->size; i++)
   {

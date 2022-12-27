@@ -89,8 +89,17 @@ void test_get_size_struct()
 
 void test_been_visited()
 {
-	metadata_t md = set_been_visited();
+	metadata_t md = set_data_size(23456);
+	md = set_been_visited(md);
 	CU_ASSERT_TRUE(is_been_visited(md));
+	CU_ASSERT_TRUE(is_data_size(md));
+	CU_ASSERT_EQUAL(get_data_size(md), 23456);
+	CU_ASSERT_FALSE(is_format_vector(md));
+	md = reset_been_visited(md);
+	CU_ASSERT_FALSE(is_been_visited(md));
+	CU_ASSERT_TRUE(is_data_size(md));
+	CU_ASSERT_EQUAL(get_data_size(md), 23456);
+	CU_ASSERT_FALSE(is_format_vector(md));
 }
 
 int main()

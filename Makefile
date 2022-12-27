@@ -8,19 +8,21 @@ CC = gcc
 
 FLAGS = -I src -Wall -g -fprofile-arcs -ftest-coverage
 
-MODULES = gc page heap metadata mover stack_scanner
+MODULES = gc page heap metadata mover stack_scanner hash_table linked_list
+
+MODULESTEST = gc page heap metadata mover stack_scanner
 
 OBJS = $(patsubst %,$(ODIR)/%.o,$(MODULES))
-TESTS = $(patsubst %,$(EDIR)/test_%,$(MODULES))
+TESTS = $(patsubst %,$(EDIR)/test_%,$(MODULESTEST))
 
-INLUPP2 = hash_table.o linked_list.o cart.o inventory.o ask.o general_TUI.o
+INLUPP2 = cart.o inventory.o ask.o general_TUI.o
 
 INLUPP2_OBJS = $(patsubst %,$(DDIR)/inlupp2/%,$(INLUPP2))
 
-$(ODIR)/%.o: $(SDIR)/%.c $(SDIR)/%.h $(SDIR)/structs.h
+$(ODIR)/%.o: $(SDIR)/%.c $(SDIR)/%.h
 	$(CC) $(FLAGS) $< -c -o $@ 
 
-$(EDIR)/%: $(SDIR)/%.c $(OBJS) 
+$(EDIR)/%: $(SDIR)/%.c $(OBJS)
 	$(CC) $(FLAGS) $^ -o $@
 
 $(EDIR)/test_%: $(TDIR)/test_%.c $(OBJS)
@@ -34,7 +36,7 @@ test_cov_%: test_%
 	gcovr obj
 
 test_all: $(TESTS)
-	$(patsubst %,make test_% && ,$(MODULES)) true
+	$(patsubst %,make test_% && ,$(MODULESTEST)) true
 
 test_cov_all: $(TESTS)
 	make clean
@@ -44,7 +46,7 @@ test_cov_all: $(TESTS)
 	gcovr obj -x cov/cov.xml
 
 
-$(DDIR)/inlupp2/%.o: $(DDIR)/inlupp2/%.c $(DDIR)/inlupp2/%.h $(DDIR)/inlupp2/data_structure.h $(DDIR)/inlupp2/iterator.h $(DDIR)/inlupp2/hash_table_internal.h $(DDIR)/inlupp2/linked_list_internal.h
+$(DDIR)/inlupp2/%.o: $(DDIR)/inlupp2/%.c $(DDIR)/inlupp2/%.h
 	$(CC) $(FLAGS) $< -c -o $@
 
 $(DDIR)/inlupp2/store: $(DDIR)/inlupp2/store.c $(OBJS) $(INLUPP2_OBJS)
@@ -57,8 +59,11 @@ inv_clear:
 	make -C demo/inlupp2 inv_clear
 
 stock: $(DDIR)/inlupp2/store
-	make -C demo/inlupp2 stock
-	valgrind --gen-suppressions=all --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./demo/inlupp2/store < demo/inlupp2/Stock.txt
+	rm -f $(DDIR)/inlupp2/inventory.bin
+	touch $(DDIR)/inlupp2/inventory.bin
+	gcc $(DDIR)/inlupp2/make_stock.c -o $(DDIR)/inlupp2/make_stock
+	valgrind --error-exitcode=1 --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(DDIR)/inlupp2/make_stock
+	valgrind --gen-suppressions=all --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./$(DDIR)/inlupp2/store < demo/inlupp2/Stock.txt
 
 clean:
 	rm -rf exe/*

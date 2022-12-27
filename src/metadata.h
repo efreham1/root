@@ -33,6 +33,8 @@ size_t get_size_struct(metadata_t md);
 
 bool is_been_visited(metadata_t md);
 
-metadata_t set_been_visited();
+metadata_t set_been_visited(metadata_t md);
+
+metadata_t reset_been_visited(metadata_t md);
 
 #endif

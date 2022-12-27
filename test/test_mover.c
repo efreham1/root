@@ -4,6 +4,8 @@
 #include <string.h>
 #include "mover.h"
 #include "structs.h"
+#include "hash_table.h"
+#include "hash_table_internal.h"
 
 int init_suite(void)
 {
@@ -339,7 +341,7 @@ void test_move()
 	hus->owner = pers;
 
 	void **ptrs[] = {(void **)&hus, (void **)&pers};
-	void *ptrs2[] = {(void *) hus, (void *) pers};
+	void *ptrs2[] = {(void *)hus, (void *)pers};
 	struct house *old_hus = hus;
 	struct person *old_pers = pers;
 
@@ -432,7 +434,7 @@ void test_move_stationary()
 	hus->owner = pers;
 
 	void **ptrs[] = {(void **)&hus, (void **)&pers};
-	void *ptrs2[] = {(void *) hus, (void *) pers};
+	void *ptrs2[] = {(void *)hus, (void *)pers};
 	struct house *old_hus = hus;
 	struct person *old_pers = pers;
 
@@ -478,9 +480,219 @@ void test_move_stationary()
 	h_delete_internal(h);
 }
 
-void test_do_move_unions()
+void test_move_unions()
 {
-	internal_heap_t *h = h_init_internal(2, 
+
+	union u
+	{
+		int *ptr;
+		int i;
+	};
+
+	struct s
+	{
+		union u un;
+		int j;
+		int *ptr;
+	};
+
+	internal_heap_t *h = h_init_internal(2, 128);
+
+	struct s *s1 = h_alloc_struct_internal(h, "*i*");
+	struct s *old_s1 = s1;
+
+	s1->j = 5;
+	s1->ptr = h_alloc_data_internal(h, 8);
+	int *old_ptr = s1->ptr;
+	*s1->ptr = 6;
+	s1->un.i = 7;
+
+	void **ptrs[] = {(void **)&s1};
+	void *proof_ptrs[] = {(void *)s1};
+
+	CU_ASSERT_TRUE(h->num_active_pages == 1);
+
+	move(h, ptrs, 1, false, proof_ptrs);
+
+	CU_ASSERT_TRUE(h->num_active_pages == 1);
+	CU_ASSERT_PTR_NOT_EQUAL(s1, old_s1);
+	CU_ASSERT_PTR_NOT_EQUAL(s1->ptr, old_ptr);
+
+	CU_ASSERT_EQUAL(s1->j, 5);
+	CU_ASSERT_EQUAL(*s1->ptr, 6);
+	CU_ASSERT_EQUAL(s1->un.i, 7);
+
+	old_s1 = s1;
+	old_ptr = s1->ptr;
+
+	s1->un.ptr = h_alloc_data_internal(h, 8);
+
+	*s1->un.ptr = 8;
+
+	int *old_un_ptr = s1->un.ptr;
+
+	ptrs[0] = (void **)&s1;
+	proof_ptrs[0] = (void *)s1;
+
+	CU_ASSERT_TRUE(h->num_active_pages == 1);
+
+	move(h, ptrs, 1, false, proof_ptrs);
+
+	CU_ASSERT_TRUE(h->num_active_pages == 1);
+	CU_ASSERT_PTR_NOT_EQUAL(s1, old_s1);
+	CU_ASSERT_PTR_NOT_EQUAL(s1->ptr, old_ptr);
+	CU_ASSERT_PTR_NOT_EQUAL(s1->un.ptr, old_un_ptr);
+
+	CU_ASSERT_EQUAL(s1->j, 5);
+	CU_ASSERT_EQUAL(*s1->ptr, 6);
+	CU_ASSERT_EQUAL(*s1->un.ptr, 8);
+
+	h_delete_internal(h);
+}
+
+int simple_hash_int(elem_t key, int buckets)
+{
+	return abs(key.int_v % buckets);
+}
+
+bool compare_eq_int(elem_t a, elem_t b)
+{
+	return a.int_v == b.int_v;
+}
+
+bool compare_lt_int(elem_t a, elem_t b)
+{
+	return a.int_v < b.int_v;
+}
+
+void test_do_move_ht_no_entries()
+{
+	heap_t *h = h_init(8192, false, 1.0);
+
+	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	ioopm_hash_table_t *old_ht = ht;
+
+	CU_ASSERT_EQUAL(h_used(h), 528);
+
+	for (size_t i = 0; i < 95; i++)
+	{
+		h_alloc_data(h, 1);
+	}
+	
+	CU_ASSERT_EQUAL(h_used(h), 2048);
+
+	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 1);
+
+	do_move((void **)&ht, &h->internal_heap->page_arr[1], 1, NULL, 0, h->internal_heap);
+
+	CU_ASSERT_PTR_NOT_EQUAL(ht, old_ht);
+	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets, old_ht->buckets);
+	CU_ASSERT_PTR_EQUAL(ht->compare_equal_keys, old_ht->compare_equal_keys);
+	CU_ASSERT_PTR_EQUAL(ht->compare_equal_values, old_ht->compare_equal_values);
+	CU_ASSERT_PTR_EQUAL(ht->compare_lessthan_keys, old_ht->compare_lessthan_keys);
+	CU_ASSERT_PTR_EQUAL(ht->h_fnc, old_ht->h_fnc);
+	CU_ASSERT_EQUAL(ht->load_factor, old_ht->load_factor);
+	CU_ASSERT_EQUAL(ht->capacity, old_ht->capacity);
+	CU_ASSERT_EQUAL(ht->NO_entries, old_ht->NO_entries);
+	CU_ASSERT_EQUAL(ht->number_of_buckets, old_ht->number_of_buckets);
+
+	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 2);
+
+	CU_ASSERT_EQUAL(h_used(h), 2576);
+
+	h_delete(h);
+}
+
+void test_do_move_ht_one_entry()
+{
+	heap_t *h = h_init(8192, false, 1.0);
+
+	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 528);
+
+	for (size_t i = 0; i < 95; i++)
+	{
+		h_alloc_data(h, 1);
+	}
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2048);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 1);
+
+	ioopm_hash_table_insert(ht, (elem_t) {.int_v = 6}, (elem_t) {.int_v = 7}, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2080);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
+
+	ioopm_hash_table_t *old_ht = ht;
+
+	int bucket = 6%ioopm_hash_table_number_of_buckets(ht);
+
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->key.int_v, 6);
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->value.int_v, 7);
+
+	do_move((void **)&ht, &h->internal_heap->page_arr[2], 1, NULL, 0, h->internal_heap);
+
+	CU_ASSERT_EQUAL(h_used(h), 2640);
+	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 3);
+
+	CU_ASSERT_EQUAL(ht->buckets[bucket].next->key.int_v, 6);
+	CU_ASSERT_EQUAL(ht->buckets[bucket].next->value.int_v, 7);
+
+	CU_ASSERT_PTR_NOT_EQUAL(ht, old_ht);
+	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets, old_ht->buckets);
+	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets[bucket].next, old_ht->buckets[bucket].next);
+
+	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t) {.int_v = 6})->int_v, 7);
+
+	h_delete(h);
+}
+
+void test_move_ht_one_entry()
+{
+	heap_t *h = h_init(8192, false, 1.0);
+
+	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 528);
+
+	for (size_t i = 0; i < 95; i++)
+	{
+		h_alloc_data(h, 1);
+	}
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2048);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 1);
+
+	ioopm_hash_table_insert(ht, (elem_t) {.int_v = 6}, (elem_t) {.int_v = 7}, h);
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2080);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
+
+	int bucket = 6%ioopm_hash_table_number_of_buckets(ht);
+
+	ht_entry_t *old_entry = ht->buckets[bucket].next;
+
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->key.int_v, 6);
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->value.int_v, 7);
+
+	void **ptrs[] = {(void **) &ht};
+	void *ctrl_ptrs[] = {(void *) ht};
+
+	move(h->internal_heap, ptrs, 1, true, ctrl_ptrs);
+
+	CU_ASSERT_EQUAL(h_used(h), 2080);
+	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 2);
+
+	CU_ASSERT_EQUAL(ht->buckets[bucket].next->key.int_v, 6);
+	CU_ASSERT_EQUAL(ht->buckets[bucket].next->value.int_v, 7);
+
+	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets[bucket].next, old_entry);
+
+	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t) {.int_v = 6})->int_v, 7);
+
+	h_delete(h);
 }
 
 int main()
@@ -510,6 +722,10 @@ int main()
 		(CU_add_test(my_test_suite, "Test for do_move with a static page", test_do_move_static_pages) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for basic move", test_move) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for trying move but remain stationary", test_move_stationary) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for move with a union ", test_move_unions) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for do_move with a hash table with no entries", test_do_move_ht_no_entries) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for do_move with a hash table with one entry", test_do_move_ht_one_entry) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for move with a hash table with one entry", test_move_ht_one_entry) == NULL) ||
 
 		0)
 

@@ -53,7 +53,11 @@ static ht_entry_t *get_sentinel_bucket(ioopm_hash_table_t *ht, int i)
 static void set_NO_buckets(ioopm_hash_table_t *ht, heap_t *h)
 {
     ht->number_of_buckets = ht->capacity/ht->load_factor > 19? 19: ht->capacity/ht->load_factor;
-    ht->buckets = h_alloc_data(h, ht->number_of_buckets * sizeof(ht_entry_t));
+    
+    char str[ht->number_of_buckets*2+2];
+    sprintf(str, "%d*", 3*ht->number_of_buckets);
+
+    ht->buckets = h_alloc_struct(h, str);
 }
 
 static void transfer_and_delete(ioopm_hash_table_t *from_ht, ioopm_hash_table_t *to_ht)
@@ -288,6 +292,7 @@ bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, elem_t key)
         while (next_entry != NULL)
         {
             elem_t current_key = next_entry->key;
+            printf("\nentry: %p\nkey: %s\nvalue: %p\nptr: %p\n", next_entry, (char *) next_entry->key.ptr_v, next_entry->value.ptr_v, next_entry->next);
             if (ht->compare_equal_keys(current_key, key))
             {
                 return true;

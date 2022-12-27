@@ -67,13 +67,13 @@ void test_trash(){
     int len = 0;
     void ***stack_ptrs = stack_addresses(top_address, bottom_address, &len);
 	CU_ASSERT_EQUAL(len, 0);
-	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[0], a);
-	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[1], b);
-	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[2], c);
-	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[3], d);
-	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[4], e);
-	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[5], f);
-	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[6], g);
+	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[0], &a);
+	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[2], &c);
+	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[1], &b);
+	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[3], &d);
+	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[4], &e);
+	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[5], &f);
+	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[6], &g);
 
 	free(stack_ptrs);
 }
