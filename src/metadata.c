@@ -66,7 +66,7 @@ unsigned int get_data_size(metadata_t mdata)
 metadata_t set_data_size(unsigned int size)
 {
     assert(is_little_end());
-    metadata_t mdata = 0;
+    metadata_t mdata = NULL;
     char *mb = (char *)&mdata;
     char *sb = (char *)&size;
     for (unsigned int i = 0; i < sizeof(unsigned int); i++)
@@ -81,24 +81,21 @@ metadata_t set_data_size(unsigned int size)
 bool *get_format_vector(metadata_t mdata, int *len)
 {
     assert(is_format_vector(mdata));
-    bool buf[60] = {false};
+    bool buf[59] = {false};
     char *b = (char *)&mdata;
     bool flag = false;
     int idx = 0;
-    for (int i = 0; i < sizeof(metadata_t); i++)
+    for (int i = 1; i < sizeof(metadata_t); i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (i != 0 || j > 2)
+            if (flag)
             {
-                if (flag)
-                {
-                    buf[idx++] = (b[i] >> j) & 1;
-                }
-                else
-                {
-                    flag = (b[i] >> j) & 1;
-                }
+                buf[idx++] = (b[i] >> j) & 1;
+            }
+            else
+            {
+                flag = (b[i] >> j) & 1;
             }
         }
     }
@@ -115,10 +112,10 @@ bool *get_format_vector(metadata_t mdata, int *len)
 metadata_t set_format_vector(bool *format_vector, unsigned int len)
 {
     assert(is_little_end());
-    assert(len <= 60);
-    metadata_t mdata = 0;
+    assert(len <= 59);
+    metadata_t mdata = NULL;
     char *b = (char *)&mdata;
-    for (int i = sizeof(metadata_t) - 1; i >= 0; i--)
+    for (int i = sizeof(metadata_t) - 1; i >= 1; i--)
     {
         for (int j = 7; j >= 0; j--)
         {
@@ -152,20 +149,17 @@ size_t get_size_struct(metadata_t md)
     char *b = (char *)&md;
     bool flag = false;
     int idx = 0;
-    for (int i = 0; i < sizeof(metadata_t); i++)
+    for (int i = 1; i < sizeof(metadata_t); i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (i != 0 || j > 2)
+            if (flag)
             {
-                if (flag)
-                {
-                    idx++;
-                }
-                else
-                {
-                    flag = (b[i] >> j) & 1;
-                }
+                idx++;
+            }
+            else
+            {
+                flag = (b[i] >> j) & 1;
             }
         }
     }

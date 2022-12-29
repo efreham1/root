@@ -84,6 +84,7 @@ void test_page_alloc_data()
 	metadata_t *md = (metadata_t *) i - 1;
 
 	CU_ASSERT_TRUE_FATAL(is_data_size(*md));
+	CU_ASSERT_FALSE_FATAL(is_been_visited(*md));
 
 	CU_ASSERT_EQUAL(get_data_size(*md), 8);
 	CU_ASSERT_EQUAL(*i, 76543);
@@ -98,6 +99,7 @@ void test_page_alloc_data()
 	md = (metadata_t *) i - 1;
 
 	CU_ASSERT_TRUE_FATAL(is_data_size(*md));
+	CU_ASSERT_FALSE_FATAL(is_been_visited(*md));
 
 	CU_ASSERT_EQUAL(get_data_size(*md), 8);
 
@@ -178,6 +180,7 @@ void test_page_alloc_struct()
 	int len1 = 0;
 
 	CU_ASSERT_TRUE_FATAL(is_format_vector(*md1));
+	CU_ASSERT_FALSE_FATAL(is_been_visited(*md1));
 
 	bool *format_vector1 = get_format_vector(*md1, &len1);
 
@@ -215,6 +218,7 @@ void test_page_alloc_struct()
 	int len2 = 0;
 
 	CU_ASSERT_TRUE_FATAL(is_format_vector(*md2));
+	CU_ASSERT_FALSE_FATAL(is_been_visited(*md2));
 
 	bool *format_vector2 = get_format_vector(*md2, &len2);
 

@@ -11,7 +11,7 @@ struct entry_ht
 
 struct hash_table
 {
-    ht_entry_t *buckets;
+    ht_entry_t **buckets;
     ioopm_hash_function h_fnc;
     ioopm_eq_function compare_equal_keys;
     ioopm_eq_function compare_equal_values;

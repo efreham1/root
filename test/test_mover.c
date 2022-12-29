@@ -573,9 +573,9 @@ void test_do_move_ht_no_entries()
 
 	ioopm_hash_table_t *old_ht = ht;
 
-	CU_ASSERT_EQUAL(h_used(h), 528);
+	CU_ASSERT_EQUAL(h_used(h), 832);
 
-	for (size_t i = 0; i < 95; i++)
+	for (size_t i = 0; i < 76; i++)
 	{
 		h_alloc_data(h, 1);
 	}
@@ -599,7 +599,7 @@ void test_do_move_ht_no_entries()
 
 	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 2);
 
-	CU_ASSERT_EQUAL(h_used(h), 2576);
+	CU_ASSERT_EQUAL(h_used(h), 2880);
 
 	h_delete(h);
 }
@@ -610,9 +610,9 @@ void test_do_move_ht_one_entry()
 
 	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
 
-	CU_ASSERT_EQUAL_FATAL(h_used(h), 528);
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 832);
 
-	for (size_t i = 0; i < 95; i++)
+	for (size_t i = 0; i < 76; i++)
 	{
 		h_alloc_data(h, 1);
 	}
@@ -629,20 +629,20 @@ void test_do_move_ht_one_entry()
 
 	int bucket = 6 % ioopm_hash_table_number_of_buckets(ht);
 
-	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->key.int_v, 6);
-	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->value.int_v, 7);
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket]->next->key.int_v, 6);
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket]->next->value.int_v, 7);
 
 	do_move((void **)&ht, &h->internal_heap->page_arr[2], 1, NULL, 0, h->internal_heap);
 
-	CU_ASSERT_EQUAL(h_used(h), 2640);
+	CU_ASSERT_EQUAL(h_used(h), 2944);
 	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 3);
 
-	CU_ASSERT_EQUAL(ht->buckets[bucket].next->key.int_v, 6);
-	CU_ASSERT_EQUAL(ht->buckets[bucket].next->value.int_v, 7);
+	CU_ASSERT_EQUAL(ht->buckets[bucket]->next->key.int_v, 6);
+	CU_ASSERT_EQUAL(ht->buckets[bucket]->next->value.int_v, 7);
 
 	CU_ASSERT_PTR_NOT_EQUAL(ht, old_ht);
 	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets, old_ht->buckets);
-	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets[bucket].next, old_ht->buckets[bucket].next);
+	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets[bucket]->next, old_ht->buckets[bucket]->next);
 
 	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.int_v = 6})->int_v, 7);
 
@@ -655,9 +655,9 @@ void test_move_ht_one_entry()
 
 	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
 
-	CU_ASSERT_EQUAL_FATAL(h_used(h), 528);
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 832);
 
-	for (size_t i = 0; i < 95; i++)
+	for (size_t i = 0; i < 76; i++)
 	{
 		h_alloc_data(h, 1);
 	}
@@ -672,10 +672,10 @@ void test_move_ht_one_entry()
 
 	int bucket = 6 % ioopm_hash_table_number_of_buckets(ht);
 
-	ht_entry_t *old_entry = ht->buckets[bucket].next;
+	ht_entry_t *old_entry = ht->buckets[bucket]->next;
 
-	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->key.int_v, 6);
-	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket].next->value.int_v, 7);
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket]->next->key.int_v, 6);
+	CU_ASSERT_EQUAL_FATAL(ht->buckets[bucket]->next->value.int_v, 7);
 
 	void **ptrs[] = {(void **)&ht};
 	void *ctrl_ptrs[] = {(void *)ht};
@@ -685,10 +685,10 @@ void test_move_ht_one_entry()
 	CU_ASSERT_EQUAL(h_used(h), 2080);
 	CU_ASSERT_EQUAL(h->internal_heap->num_active_pages, 2);
 
-	CU_ASSERT_EQUAL(ht->buckets[bucket].next->key.int_v, 6);
-	CU_ASSERT_EQUAL(ht->buckets[bucket].next->value.int_v, 7);
+	CU_ASSERT_EQUAL(ht->buckets[bucket]->next->key.int_v, 6);
+	CU_ASSERT_EQUAL(ht->buckets[bucket]->next->value.int_v, 7);
 
-	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets[bucket].next, old_entry);
+	CU_ASSERT_PTR_NOT_EQUAL(ht->buckets[bucket]->next, old_entry);
 
 	CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.int_v = 6})->int_v, 7);
 
@@ -701,9 +701,9 @@ void test_move_ht_many_entries()
 
 	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
 
-	CU_ASSERT_EQUAL_FATAL(h_used(h), 528);
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 832);
 
-	for (size_t i = 0; i < 95; i++)
+	for (size_t i = 0; i < 76; i++)
 	{
 		h_alloc_data(h, 1);
 	}
@@ -721,7 +721,7 @@ void test_move_ht_many_entries()
 
 		buckets[i] = i % ioopm_hash_table_number_of_buckets(ht);
 
-		ht_entry_t *next_entry = ht->buckets[buckets[i]].next;
+		ht_entry_t *next_entry = ht->buckets[buckets[i]]->next;
 
 		while (next_entry->next != NULL)
 		{
@@ -738,7 +738,7 @@ void test_move_ht_many_entries()
 
 		move(h->internal_heap, ptrs, 1, true, ctrl_ptrs);
 
-		next_entry = ht->buckets[buckets[i]].next;
+		next_entry = ht->buckets[buckets[i]]->next;
 
 		while (next_entry->next != NULL)
 		{
@@ -753,7 +753,7 @@ void test_move_ht_many_entries()
 
 		CU_ASSERT_PTR_NOT_EQUAL(next_entry, old_entry);
 
-		printf("\nentry: %p\nkey: %d\nvalue: %d\nptr: %p\n", next_entry, next_entry->key.int_v, next_entry->value.int_v, next_entry->next);
+		//printf("\nentry: %p\nkey: %d\nvalue: %d\nptr: %p\n", next_entry, next_entry->key.int_v, next_entry->value.int_v, next_entry->next);
 		CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.int_v = i})->int_v, 2*(i+1));
 	}
 
@@ -762,6 +762,46 @@ void test_move_ht_many_entries()
 		CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.int_v = i})->int_v, 2*(i+1));
 	}
 
+	h_delete(h);
+}
+
+void test_move_ht_many_entries_2()
+{
+	heap_t *h = h_init(8192, true, 1.0);
+
+	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	void **ptrs[] = {(void **)&ht};
+	void *ctrl_ptrs[] = {(void *)ht};
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 832);
+
+	for (size_t i = 0; i < 76; i++)
+	{
+		move(h->internal_heap, ptrs, 1, true, ctrl_ptrs);
+		h_alloc_data(h, 1);
+	}
+
+	CU_ASSERT_EQUAL_FATAL(h_used(h), 2048);
+	CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 1);
+
+	for (size_t i = 0; i < 64; i++)
+	{
+		move(h->internal_heap, ptrs, 1, true, ctrl_ptrs);
+		ioopm_hash_table_insert(ht, (elem_t){.int_v = i}, (elem_t){.int_v = (i + 1) * 2}, h);
+		CU_ASSERT_EQUAL(h_used(h), 2048 + 32 * (i + 1));
+		CU_ASSERT_EQUAL_FATAL(h->internal_heap->num_active_pages, 2);
+
+		move(h->internal_heap, ptrs, 1, true, ctrl_ptrs);
+		h_alloc_data(h, 1);
+
+		for (size_t j = 0; j < i + 1; j++)
+		{
+			//printf("\ni: %ld j: %ld number of buckets: %d\n", i, j, ioopm_hash_table_number_of_buckets(ht));
+			CU_ASSERT_TRUE_FATAL(ioopm_hash_table_has_key(ht, (elem_t){.int_v = j}));
+			CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.int_v = j})->int_v, 2 * (j + 1));
+		}
+	}
 	h_delete(h);
 }
 
@@ -797,6 +837,7 @@ int main()
 		(CU_add_test(my_test_suite, "Test for do_move with a hash table with one entry", test_do_move_ht_one_entry) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for move with a hash table with one entry", test_move_ht_one_entry) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for move with a hash table with many entries", test_move_ht_many_entries) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for move with a hash table with many entries and trash", test_move_ht_many_entries_2) == NULL) ||
 
 		0)
 

@@ -10,6 +10,7 @@ void reset_all_been_visited(void *data_ptr, internal_heap_t *i_heap) //This func
     if (is_format_vector(*md))
     {
         *md = reset_been_visited(*md); //do the reset
+        assert(!is_been_visited(*md));
         int len_fv = 0;
         bool *format_vector = get_format_vector(*md, &len_fv); //get the block's format vector
 
@@ -17,7 +18,7 @@ void reset_all_been_visited(void *data_ptr, internal_heap_t *i_heap) //This func
         {
             if (format_vector[i]) //if it's a pointer
             {
-                void *internal_ptr = (void *)*((void **)data_ptr + 8 * i); //cast to the internal ptr
+                void *internal_ptr = (void *)*((void **)data_ptr + i); //cast to the internal ptr
                 if (is_valid_ptr(i_heap, internal_ptr))
                 {
                     reset_all_been_visited(internal_ptr, i_heap); // if it's valid recursivly call the function

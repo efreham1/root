@@ -36,7 +36,7 @@ static ht_entry_t *get_sentinel(ioopm_hash_table_t *ht, elem_t key)
     /// Calculate the bucket for this entry
     int bucket = ht->h_fnc(key, ht->number_of_buckets);
     // get correct sentinel from buckets
-    ht_entry_t *sentinel = &ht->buckets[bucket];
+    ht_entry_t *sentinel = ht->buckets[bucket];
     return sentinel;
 }
 
@@ -46,7 +46,7 @@ static ht_entry_t *get_sentinel_bucket(ioopm_hash_table_t *ht, int i)
     /// Calculate the bucket for this entry
     int bucket = i;
     // get correct sentinel from buckets
-    ht_entry_t *sentinel = &ht->buckets[bucket];
+    ht_entry_t *sentinel = ht->buckets[bucket];
     return sentinel;
 }
 
@@ -54,10 +54,21 @@ static void set_NO_buckets(ioopm_hash_table_t *ht, heap_t *h)
 {
     ht->number_of_buckets = ht->capacity/ht->load_factor > 19? 19: ht->capacity/ht->load_factor;
     
-    char str[ht->number_of_buckets*2+2];
-    sprintf(str, "%d*", 3*ht->number_of_buckets);
+    char str[ht->number_of_buckets+2];
+    sprintf(str, "%d*", ht->number_of_buckets);
 
-    ht->buckets = h_alloc_struct(h, str);
+    ht_entry_t **buckets = h_alloc_struct(h, str);
+    ht->buckets = buckets;
+
+    for (size_t i = 0; i < ht->number_of_buckets; i++)
+    {
+        ht_entry_t *sentinel = h_alloc_struct(h, "3*");
+        ht->buckets[i] = sentinel;
+        ht->buckets[i]->key.ptr_v = NULL;
+        ht->buckets[i]->value.ptr_v = NULL;
+        ht->buckets[i]->next = NULL;
+    }
+    
 }
 
 static void transfer_and_delete(ioopm_hash_table_t *from_ht, ioopm_hash_table_t *to_ht)
@@ -70,7 +81,6 @@ static void transfer_and_delete(ioopm_hash_table_t *from_ht, ioopm_hash_table_t 
 
 static void update_NO_buckets(ioopm_hash_table_t *ht, heap_t *h)
 {
-    printf("\nupdating buckets\n");
     int new_capacity = ht->capacity*1.5;
     ht->capacity = new_capacity;
     ioopm_hash_table_t *new_ht = ioopm_hash_table_create_spec(ht->load_factor, new_capacity, ht->h_fnc, ht->compare_equal_keys, ht->compare_equal_values, ht->compare_lessthan_keys, h);
@@ -109,7 +119,7 @@ ioopm_hash_table_t *ioopm_hash_table_create_spec(float load_factor, int capacity
 // add key => value entry in hash table ht
 void ioopm_hash_table_insert(ioopm_hash_table_t *ht, elem_t key, elem_t value, heap_t *h)
 {
-    if (ht->capacity >= ht->NO_entries && ht->number_of_buckets != 19)
+    if (ht->capacity <= ht->NO_entries && ht->number_of_buckets != 19)
     {
         update_NO_buckets(ht, h);
     }
@@ -197,7 +207,6 @@ ioopm_list_t *ioopm_hash_table_keys(ioopm_hash_table_t *ht, heap_t *h)
         ht_entry_t *next_entry = sentinel->next;
         while (next_entry != NULL)
         {
-            printf("\nappend\n");
             ioopm_linked_list_append(list, next_entry->key, h);
             next_entry = next_entry->next;
         }
@@ -291,7 +300,6 @@ bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, elem_t key)
         while (next_entry != NULL)
         {
             elem_t current_key = next_entry->key;
-            printf("\nentry: %p\nkey: %d\nvalue: %d\nptr: %p\n", next_entry, next_entry->key.int_v, next_entry->value.int_v, next_entry->next);
             if (ht->compare_equal_keys(current_key, key))
             {
                 return true;
@@ -333,7 +341,9 @@ void ioopm_hash_table_save_to_file(ioopm_hash_table_t *ht, FILE *f)
     fwrite(ht->buckets, sizeof(ht_entry_t), ht->number_of_buckets, f);
     for (int i = 0; i < ht->number_of_buckets; i++)
     {
-        ht_entry_t *current_entry = ht->buckets[i].next;
+        ht_entry_t *prev_entry = ht->buckets[i];
+        fwrite(prev_entry, sizeof(ht_entry_t), 1, f);
+        ht_entry_t *current_entry = prev_entry->next;
         while (current_entry != NULL)
         {
             fwrite(current_entry, sizeof(ht_entry_t), 1, f);
@@ -346,14 +356,20 @@ ioopm_hash_table_t *ioopm_hash_table_load_from_file(heap_t *h, FILE *f, ioopm_ha
 {
     ioopm_hash_table_t *ht = h_alloc_struct(h, "5*f3i");
     fread(ht, sizeof(ioopm_hash_table_t), 1, f);
-    char str[ht->number_of_buckets*2+2];
-    sprintf(str, "%d*", 3*ht->number_of_buckets);
-    ht->buckets = h_alloc_struct(h, str);
+
+    char str[ht->number_of_buckets+2];
+    sprintf(str, "%d*", ht->number_of_buckets);
+
+    ht_entry_t **buckets = h_alloc_struct(h, str);
+    ht->buckets = buckets;
     fread(ht->buckets, sizeof(ht_entry_t), ht->number_of_buckets, f);
     for (int i = 0; i < ht->number_of_buckets; i++)
     {
-        ht_entry_t *prev_entry = get_sentinel_bucket(ht, i);
-        ht_entry_t *current_entry = ht->buckets[i].next;
+        ht_entry_t *sentinel = h_alloc_struct(h, "3*");
+        ht->buckets[i] = sentinel;
+        ht_entry_t *prev_entry = ht->buckets[i];
+        fread(prev_entry, sizeof(ht_entry_t), 1, f);
+        ht_entry_t *current_entry = prev_entry->next;
         while (current_entry != NULL)
         {
             current_entry = h_alloc_struct(h, "3*");

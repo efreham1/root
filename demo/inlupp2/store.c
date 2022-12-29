@@ -130,11 +130,6 @@ void TUI_inventory_list_merch(ioopm_inventory_t *inventory, heap_t *h)
         return;
     }
 
-    if (ioopm_hash_table_has_key(inventory->warehouse, (elem_t){.ptr_v = "vara4"}))
-    {
-        printf("vara4 still in warehouse\n");
-    }
-
     ioopm_list_iterator_t *iterator = ioopm_list_iterator(merch_list, h);
 
     int i = 1;
@@ -486,7 +481,7 @@ void destroy_carts(ioopm_list_t *cart_list, ioopm_inventory_t *inventory, heap_t
 
 int main(void)
 {
-    heap_t *heap = h_init(8192, true, 0.3);
+    heap_t *heap = h_init(32768, true, 0.5);
     ioopm_inventory_t *inventory = ioopm_inventory_load("demo/inlupp2/inventory.bin", heap);
     ioopm_list_t *cart_list = ioopm_linked_list_create(cart_eq_fun, heap);
 

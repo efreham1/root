@@ -167,9 +167,10 @@ void *h_alloc_struct(heap_t *h, char *layout)
 
   unsigned int bytes = get_size_of_struct(format_string);
 
-  if ((float)((used_space(h->internal_heap) + bytes + sizeof(void *))*2)/h->tot_size >= h->gcTrigger)
+  if (used_space(h->internal_heap) + bytes + sizeof(void *) >= (int)(h->gcTrigger*h->tot_size/2) + 1)
   {
-    assert(h_gc(h) != 0 || heap_has_room(h->internal_heap, bytes));
+    h_gc(h);
+    assert(heap_has_room(h->internal_heap, bytes));
   }
 
   void *ptr = h_alloc_struct_internal(h->internal_heap, format_string);
@@ -179,9 +180,10 @@ void *h_alloc_struct(heap_t *h, char *layout)
 
 void *h_alloc_data(heap_t *h, unsigned int bytes)
 {
-  if ((float)((used_space(h->internal_heap) + bytes + sizeof(void *))*2)/h->tot_size >= h->gcTrigger)
+  if (used_space(h->internal_heap) + bytes + sizeof(void *) >= (int)(h->gcTrigger*h->tot_size/2) + 1)
   {
-    assert(h_gc(h) != 0 || heap_has_room(h->internal_heap, bytes));
+    h_gc(h);
+    assert(heap_has_room(h->internal_heap, bytes));
   }
 
   return h_alloc_data_internal(h->internal_heap, bytes);
@@ -189,7 +191,7 @@ void *h_alloc_data(heap_t *h, unsigned int bytes)
 
 unsigned int h_gc(heap_t *h)
 {
-  printf("\nSkräpsamling!!!\n");
+  //printf("Skräpsamling!!!\n");
   unsigned int used_prior = h_used(h);
 
   int len = 0;
@@ -201,7 +203,7 @@ unsigned int h_gc(heap_t *h)
   free(ptrs);
   free(proof_reading_arr);
 
-  printf("collected: %d\n", used_prior - h_used(h));
+  //printf("collected: %d\n", used_prior - h_used(h));
   return used_prior - h_used(h);
 }
 

@@ -11,8 +11,6 @@ static bool string_compare_function(elem_t e1, elem_t e2)
     char *str1 = ((char *)e1.ptr_v);
     char *str2 = ((char *)e2.ptr_v);
 
-    printf("\nstr1: %s str2: %s\n", str1, str2);
-
     return strcmp(str1, str2) == 0;
 }
 
@@ -29,7 +27,6 @@ static inventory_merch_t *create_merchandise(char *name, char *desc, int price, 
 
 void ioopm_inventory_add_merchandise(ioopm_inventory_t *inventory, char *name, char *desc, int price, heap_t *h)
 {
-    printf("\nname: %s desc: %s price: %d\n", name, desc, price);
     inventory_merch_t *merch = create_merchandise(name, desc, price, h);
 
     elem_t key = {.ptr_v = name};
@@ -262,7 +259,7 @@ void ioopm_inventory_save(ioopm_inventory_t *inventory, char *file_name)
 
     for (int i = 0; i < inventory->warehouse->number_of_buckets; i++)
     {
-        ht_entry_t *current_entry = inventory->warehouse->buckets[i].next;
+        ht_entry_t *current_entry = inventory->warehouse->buckets[i]->next;
         while (current_entry != NULL)
         {
             save_merch_to_file(current_entry->value.ptr_v, f);
@@ -304,7 +301,7 @@ ioopm_inventory_t *ioopm_inventory_load(char *file_name, heap_t *h)
 
     for (int i = 0; i < inventory->warehouse->number_of_buckets; i++)
     {
-        ht_entry_t *current_entry = inventory->warehouse->buckets[i].next;
+        ht_entry_t *current_entry = inventory->warehouse->buckets[i]->next;
         while (current_entry != NULL)
         {
             current_entry->value.ptr_v = load_merch_from_file(f, h);

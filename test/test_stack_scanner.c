@@ -24,36 +24,37 @@ int clean_suite(void)
 
 void test_stack_scanner()
 {
-    int *i = calloc(5, sizeof(int));
-    int *j = calloc(1, sizeof(int));
+	int *i = calloc(5, sizeof(int));
+	int *j = calloc(1, sizeof(int));
 	int is[] = {1, 2, 3, 4, 5};
-    int *k = calloc(1, sizeof(int));
-    int *m = calloc(1, sizeof(int));
+	int *k = calloc(1, sizeof(int));
+	int *m = calloc(1, sizeof(int));
 
-    CU_ASSERT_FATAL(i < j && j < k && k < m);
+	CU_ASSERT_FATAL(i < j && j < k && k < m);
 
-    int len = 0;
-    void ***stack_ptrs = stack_addresses((void *) m, (void *) i, &len);
+	int len = 0;
+	void ***stack_ptrs = stack_addresses((void *)m, (void *)i, &len);
 
-    CU_ASSERT_EQUAL(len, 4);
-    CU_ASSERT_PTR_EQUAL(*stack_ptrs[0], i);
-    CU_ASSERT_PTR_EQUAL(*stack_ptrs[1], j);
-    CU_ASSERT_PTR_EQUAL(*stack_ptrs[2], k);
-    CU_ASSERT_PTR_EQUAL(*stack_ptrs[3], m);
+	CU_ASSERT_EQUAL(len, 4);
+	CU_ASSERT_PTR_EQUAL(*stack_ptrs[0], i);
+	CU_ASSERT_PTR_EQUAL(*stack_ptrs[1], j);
+	CU_ASSERT_PTR_EQUAL(*stack_ptrs[2], k);
+	CU_ASSERT_PTR_EQUAL(*stack_ptrs[3], m);
 
 	for (size_t idx = 0; idx < 4; idx++)
 	{
 		CU_ASSERT_PTR_NOT_EQUAL(*stack_ptrs[idx], is);
 	}
-	
-    free(i);
-    free(j);
-    free(k);
-    free(m);
-    free(stack_ptrs);
+
+	free(i);
+	free(j);
+	free(k);
+	free(m);
+	free(stack_ptrs);
 }
 
-void test_trash(){
+void test_trash()
+{
 
 	int a = 1;
 	int b = 2;
@@ -64,10 +65,10 @@ void test_trash(){
 	char g = 'g';
 
 	void *bottom_address = (void *)environ;
-    void *top_address = __builtin_frame_address(0);
+	void *top_address = __builtin_frame_address(0);
 
-    int len = 0;
-    void ***stack_ptrs = stack_addresses(top_address, bottom_address, &len);
+	int len = 0;
+	void ***stack_ptrs = stack_addresses(top_address, bottom_address, &len);
 	CU_ASSERT_EQUAL(len, 0);
 	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[0], &a);
 	CU_ASSERT_PTR_NOT_EQUAL(stack_ptrs[2], &c);
@@ -80,7 +81,8 @@ void test_trash(){
 	free(stack_ptrs);
 }
 
-void test_calloc_array(){
+void test_calloc_array()
+{
 
 	int *t1 = calloc(1, sizeof(int));
 	int *t2 = calloc(1, sizeof(int));
@@ -90,16 +92,16 @@ void test_calloc_array(){
 	int *t6 = calloc(1, sizeof(int));
 	int *t7 = calloc(1, sizeof(int));
 
-	int **array[] ={&t1,&t2,&t3,&t4,&t5,&t6,&t7};
+	int **array[] = {&t1, &t2, &t3, &t4, &t5, &t6, &t7};
 	int length = 0;
-	void ***stack = stack_addresses((void*) t7, (void*) t1, &length);
+	void ***stack = stack_addresses((void *)t7, (void *)t1, &length);
 	CU_ASSERT_EQUAL(length, 7);
 
 	for (int i = 0; i < 7; i++)
 	{
 		CU_ASSERT_PTR_EQUAL(*stack[i], *array[i]);
 	}
-	
+
 	free(t1);
 	free(t2);
 	free(t3);
@@ -110,7 +112,8 @@ void test_calloc_array(){
 	free(stack);
 }
 
-void test_mix(){
+void test_mix()
+{
 	char *s1 = calloc(1, sizeof(char));
 	char *s2 = calloc(1, sizeof(char));
 	char *s3 = calloc(1, sizeof(char));
@@ -120,7 +123,7 @@ void test_mix(){
 	int *v2 = calloc(1, sizeof(int));
 
 	int length = 0;
-	void ***stack = stack_addresses((void*) v2, (void*) s1, &length);
+	void ***stack = stack_addresses((void *)v2, (void *)s1, &length);
 	CU_ASSERT_EQUAL(length, 5);
 
 	CU_ASSERT_PTR_EQUAL(*stack[0], s1);
@@ -129,8 +132,8 @@ void test_mix(){
 	CU_ASSERT_PTR_NOT_EQUAL(*stack[3], a);
 	CU_ASSERT_PTR_EQUAL(*stack[3], v1);
 	CU_ASSERT_PTR_NOT_EQUAL(*stack[4], i);
-	CU_ASSERT_PTR_EQUAL(*stack[4], v2);	
-	
+	CU_ASSERT_PTR_EQUAL(*stack[4], v2);
+
 	free(s1);
 	free(s2);
 	free(s3);
@@ -226,6 +229,118 @@ void test_find_pointer_to_entry_ht(){
 	h_delete(h);
 }
 
+void f4(void **ptr)
+{
+	int *ptr1 = calloc(1, 4);
+	int *ptr2 = calloc(1, 4);
+	ptr[6] = ptr1;
+	ptr[7] = ptr2;
+
+	*ptr1 = 234;
+	*ptr2 = 345;
+
+	int length = 0;
+	void ***stack = stack_addresses((void *)ptr2, (void *)ptr, &length);
+
+	int list[] = {123, 234, 345, 567, 678, 789, 890, 901};
+
+	void *ptrs[length];
+
+	bool flag = false;
+
+	for (size_t i = 0; i < length; i++)
+	{
+		for (size_t j = 0; j < 8 && flag; j++)
+		{
+			if (*stack[i] == ptr[j])
+			{
+				ptrs[i] = *stack[i];
+				flag = true;
+			}
+		}
+		if (!flag)
+		{
+			ptrs[i] = NULL;
+		}
+	}
+
+	for (size_t i = 0; i < length; i++)
+	{
+		if (ptrs != NULL)
+		{
+			for (size_t j = 0; j < 9; j++)
+			{
+				if (*((int *)*stack[i]) == list[j])
+				{
+					list[j] = 0;
+					break;
+				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < 9; i++)
+	{
+		CU_ASSERT_EQUAL(list[i], 0);
+	}
+
+	free(ptr1);
+	free(ptr2);
+	free(stack);
+}
+
+void f3(void **ptr)
+{
+	int *ptr1 = calloc(1, 4);
+	int *ptr2 = calloc(1, 4);
+	ptr[4] = ptr1;
+	ptr[5] = ptr2;
+
+	*ptr1 = 901;
+	*ptr2 = 123;
+
+	f4(ptr);
+	free(ptr1);
+	free(ptr2);
+}
+
+void f2(void **ptr)
+{
+	int *ptr1 = calloc(1, 4);
+	int *ptr2 = calloc(1, 4);
+	ptr[2] = ptr1;
+	ptr[3] = ptr2;
+
+	*ptr1 = 789;
+	*ptr2 = 890;
+
+	f3(ptr);
+	free(ptr1);
+	free(ptr2);
+}
+
+void f1(void **ptr)
+{
+	int *ptr1 = calloc(1, 4);
+	int *ptr2 = calloc(1, 4);
+	ptr[0] = ptr1;
+	ptr[1] = ptr2;
+
+	*ptr1 = 567;
+	*ptr2 = 678;
+
+	f2(ptr);
+	free(ptr1);
+	free(ptr2);
+}
+
+void test_function_variables()
+{
+	void **ptr = calloc(8, 8);
+	f1((void **)ptr);
+	free(ptr);
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -254,6 +369,7 @@ int main()
 		(CU_add_test(my_test_suite, "Test for finding pointers on the stack with other garbage", test_mix) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for finding pointers on the stack to hash_tables", test_hash_table) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for finding pointers on the stack to entrys in ht", test_find_pointer_to_entry_ht) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for finding pointers on different stack levels", test_function_variables) == NULL) ||
 		0)
 
 	{

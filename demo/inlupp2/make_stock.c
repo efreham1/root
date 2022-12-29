@@ -9,7 +9,7 @@ int main(void)
     assert(f != NULL);
 
     fprintf(f, "y\n1234\n");
-    for (int i = 1; i < 5; i++)
+    for (int i = 1; i < 46; i++)
     {
         fprintf(f, "1\nvara%d\nbeskrivning\n9999\n5\n", i);
         if (i > 20)
