@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "stack_scanner.h"
+#include "hash_table.h"
+#include "hash_table_internal.h"
 
 extern char **environ;
 
@@ -137,6 +139,93 @@ void test_mix(){
 	free(stack);
 }
 
+int simple_hash_int(elem_t key, int buckets)
+{
+	return abs(key.int_v % buckets);
+}
+
+bool compare_eq_int(elem_t a, elem_t b)
+{
+	return a.int_v == b.int_v;
+}
+
+bool compare_lt_int(elem_t a, elem_t b)
+{
+	return a.int_v < b.int_v;
+}
+
+void test_hash_table(){
+
+	heap_t *h = h_init(8192, true, 0.1);
+
+	ioopm_hash_table_t *ht1 = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+	ioopm_hash_table_t *ht2 = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+	ioopm_hash_table_t *ht3 = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+	ioopm_hash_table_t *ht4 = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+	ioopm_hash_table_t *ht5 = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+	ioopm_hash_table_t *ht6 = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+	ioopm_hash_table_t *ht7 = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	int length = 0;
+	void ***stack = stack_addresses((void*) ht7, (void*) ht1, &length);
+
+	CU_ASSERT_EQUAL(length, 7);
+    CU_ASSERT_PTR_EQUAL(*stack[0], ht1);
+    CU_ASSERT_PTR_EQUAL(*stack[1], ht2);
+    CU_ASSERT_PTR_EQUAL(*stack[2], ht3);
+    CU_ASSERT_PTR_EQUAL(*stack[3], ht4);
+    CU_ASSERT_PTR_EQUAL(*stack[4], ht5);
+    CU_ASSERT_PTR_EQUAL(*stack[5], ht6);
+    CU_ASSERT_PTR_EQUAL(*stack[6], ht7);
+
+	free(stack);
+	h_delete(h);
+}
+
+void test_find_pointer_to_entry_ht(){
+
+	heap_t *h = h_init(8192, true, 0.1);
+
+	ioopm_hash_table_t *ht = ioopm_hash_table_create(simple_hash_int, compare_eq_int, compare_eq_int, compare_lt_int, h);
+
+	for (size_t i = 0; i < 20; i++)
+	{
+		ioopm_hash_table_insert(ht, (elem_t){.int_v = i}, (elem_t){.int_v = (i + 1) * 2}, h);
+
+	}
+
+	elem_t *find1 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 1});
+	elem_t *find2 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 2});
+	elem_t *find3 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 3});
+	elem_t *find4 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 4});
+	elem_t *find5 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 5});
+	elem_t *find6 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 6});
+	elem_t *find7 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 7});
+	elem_t *find8 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 8});
+	elem_t *find9 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 9});
+	elem_t *find10 = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 10});
+	elem_t *findLast = ioopm_hash_table_lookup(ht, (elem_t){.int_v = 19});
+
+	int length = 0;
+	void ***stack = stack_addresses((void*) findLast, (void*) find1, &length);
+
+	CU_ASSERT_EQUAL(length, 11);
+    CU_ASSERT_PTR_EQUAL(*stack[0], find1);
+    CU_ASSERT_PTR_EQUAL(*stack[1], find2);
+    CU_ASSERT_PTR_EQUAL(*stack[2], find3);
+    CU_ASSERT_PTR_EQUAL(*stack[3], find4);
+    CU_ASSERT_PTR_EQUAL(*stack[4], find5);
+    CU_ASSERT_PTR_EQUAL(*stack[5], find6);
+    CU_ASSERT_PTR_EQUAL(*stack[6], find7);
+    CU_ASSERT_PTR_EQUAL(*stack[7], find8);
+    CU_ASSERT_PTR_EQUAL(*stack[8], find9);
+    CU_ASSERT_PTR_EQUAL(*stack[9], find10);
+    CU_ASSERT_PTR_EQUAL(*stack[10], findLast);
+
+	free(stack);
+	h_delete(h);
+}
+
 int main()
 {
 	// First we try to set up CUnit, and exit if we fail
@@ -163,6 +252,8 @@ int main()
 		(CU_add_test(my_test_suite, "Test for non-pointers on the stack", test_trash) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for finding pointers in an array", test_calloc_array) == NULL) ||
 		(CU_add_test(my_test_suite, "Test for finding pointers on the stack with other garbage", test_mix) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for finding pointers on the stack to hash_tables", test_hash_table) == NULL) ||
+		(CU_add_test(my_test_suite, "Test for finding pointers on the stack to entrys in ht", test_find_pointer_to_entry_ht) == NULL) ||
 		0)
 
 	{
