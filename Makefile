@@ -32,8 +32,8 @@ test_%: $(EDIR)/test_%
 	valgrind --gen-suppressions=all --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./$^
 
 test_cov_%: test_%
-	gcovr -b obj
-	gcovr obj
+	gcovr -b obj -e src/hash_table -e src/linked_list
+	gcovr obj -e src/hash_table -e src/linked_list
 
 test_all: $(TESTS)
 	$(patsubst %,make test_% && ,$(MODULESTEST)) true
@@ -41,9 +41,9 @@ test_all: $(TESTS)
 test_cov_all: $(TESTS)
 	make clean
 	make test_all
-	gcovr -b obj
-	gcovr obj
-	gcovr obj -x cov/cov.xml
+	gcovr -b obj -e src/hash_table -e src/linked_list
+	gcovr obj -e src/hash_table -e src/linked_list
+	gcovr obj -e src/hash_table -e src/linked_list -x cov/cov.xml
 
 
 $(DDIR)/inlupp2/%.o: $(DDIR)/inlupp2/%.c $(DDIR)/inlupp2/%.h
