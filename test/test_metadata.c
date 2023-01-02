@@ -63,28 +63,25 @@ void test_set_get_format_vector()
 {
 	bool format_vector[13] = {0,1,0,0,0,1,1,0,1,0,0,1,1};
 	metadata_t md = set_format_vector(format_vector, 13);
-	int len = 0;
-	bool *gotten_format_vector = get_format_vector(md, &len);
 	for (unsigned int i = 0; i < 13; i++)
 	{
-		CU_ASSERT_EQUAL(format_vector[i], gotten_format_vector[i]);
+		CU_ASSERT_EQUAL(get_format_vector_idx(md, i), format_vector[i]);
 	}
-	free(gotten_format_vector);
 }
 
 void test_get_size_struct()
 {
 	bool format_vector[13] = {0,1,0,0,0,1,1,0,1,0,0,1,1};
 	metadata_t md = set_format_vector(format_vector, 13);
-	CU_ASSERT_TRUE(get_size_struct(md) == 13*8);
+	CU_ASSERT_TRUE(get_size_format_vector(md) == 13);
 
 	bool format_vector2[0] = {};
 	metadata_t md2 = set_format_vector(format_vector2, 0);
-	CU_ASSERT_TRUE(get_size_struct(md2) == 0);
+	CU_ASSERT_TRUE(get_size_format_vector(md2) == 0);
 	
 	bool format_vector3[1] = {0};
 	metadata_t md3 = set_format_vector(format_vector3, 1);
-	CU_ASSERT_TRUE(get_size_struct(md3) == 1*8);
+	CU_ASSERT_TRUE(get_size_format_vector(md3) == 1);
 }
 
 void test_been_visited()
@@ -109,28 +106,21 @@ void test_been_visited_and_format_vector()
 	CU_ASSERT_FALSE(is_been_visited(md));
 	md = set_been_visited(md);
 	CU_ASSERT_TRUE(is_been_visited(md));
-	int len = 0;
-	bool *gotten_format_vector = get_format_vector(md, &len);
 	for (unsigned int i = 0; i < 13; i++)
 	{
-		CU_ASSERT_EQUAL(format_vector[i], gotten_format_vector[i]);
+		CU_ASSERT_EQUAL(get_format_vector_idx(md, i) ,format_vector[i]);
 	}
 	CU_ASSERT_TRUE(is_been_visited(md));
 
 	md = reset_been_visited(md);
 	CU_ASSERT_FALSE(is_been_visited(md));
 
-	free(gotten_format_vector);
-
-	gotten_format_vector = get_format_vector(md, &len);
 	for (unsigned int i = 0; i < 13; i++)
 	{
-		CU_ASSERT_EQUAL(format_vector[i], gotten_format_vector[i]);
+		CU_ASSERT_EQUAL(get_format_vector_idx(md, i) ,format_vector[i]);
 	}
 
 	CU_ASSERT_FALSE(is_been_visited(md));
-
-	free(gotten_format_vector);
 }
 
 int main()

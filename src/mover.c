@@ -11,12 +11,12 @@ void reset_all_been_visited(void *data_ptr, internal_heap_t *i_heap) //This func
     {
         *md = reset_been_visited(*md); //do the reset
         assert(!is_been_visited(*md));
-        int len_fv = 0;
-        bool *format_vector = get_format_vector(*md, &len_fv); //get the block's format vector
+
+        int len_fv = get_size_format_vector(*md);
 
         for (size_t i = 0; i < len_fv; i++)
         {
-            if (format_vector[i]) //if it's a pointer
+            if (get_format_vector_idx(*md, i)) //if it's a pointer
             {
                 void *internal_ptr = (void *)*((void **)data_ptr + i); //cast to the internal ptr
                 if (is_valid_ptr(i_heap, internal_ptr))
@@ -25,8 +25,6 @@ void reset_all_been_visited(void *data_ptr, internal_heap_t *i_heap) //This func
                 }
             }
         }
-
-        free(format_vector);
     }
     else if (is_data_size(*md))
     {
@@ -152,15 +150,21 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
     }
     else if (is_format_vector(*md)) //"if is struct"
     {
-        int len_fv = 0;
-        bool *format_vector = get_format_vector(*md, &len_fv);
+        int len_fv = get_size_format_vector(*md);
 
         if (is_movable(*data_ptr, static_pages, static_len))
         {
-            size_t bytes = get_size_struct(*md); //get the size in bytes of the struct
+            size_t bytes = len_fv*8; //get the size in bytes of the struct
 
             page_t *new_page = get_moveto_page(bytes, new_pages, len, i_heap, static_len);
             assert(new_page);
+
+            bool format_vector[len_fv];
+            for (size_t i = 0; i < len_fv; i++)
+            {
+                /* code */
+            }
+            
 
             void *new_data_ptr = page_alloc_struct(new_page, format_vector, len_fv, bytes);
             //allocate an identical block on the new page
@@ -176,7 +180,7 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
         for (size_t i = 0; i < len_fv; i++)
         //iterate over the format vector
         {
-            if (format_vector[i]) // if the data is a ptr
+            if (get_format_vector_idx(*md, i)) // if the data is a ptr
             {
                 void **internal_ptr = (void **)(*data_ptr + 8 * i); //get the ptr
                 if (is_valid_ptr(i_heap, *internal_ptr)) // check its validity

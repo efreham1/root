@@ -6,7 +6,7 @@ DDIR = demo
 
 CC = gcc
 
-FLAGS = -I src -Wall -g -fprofile-arcs -ftest-coverage
+FLAGS = -I src -Wall -g -pg -fprofile-arcs -ftest-coverage
 
 MODULES = gc page heap metadata mover stack_scanner hash_table linked_list
 
@@ -69,6 +69,7 @@ clean:
 	rm -rf exe/*
 	rm -rf obj/*
 	rm -rf cov/*
+	rm -rf gmon.out
 	make -C demo/inlupp2 clean
 
 .PHONY: clean test_% demo inv_clear

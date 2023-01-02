@@ -23,13 +23,13 @@ metadata_t set_data_size(unsigned int size);
 
 /// @brief 
 /// @param mdata 
-/// @param len a pointer to where the length should be written
-/// @return a malloc'd array of booleans
-bool *get_format_vector(metadata_t mdata, int *len);
+/// @param idx the index from where the boolean should be read
+/// @return a the corresponding boolean
+bool get_format_vector_idx(metadata_t mdata, int idx);
 
 metadata_t set_format_vector(bool *format_vector, unsigned int len);
 
-size_t get_size_struct(metadata_t md);
+size_t get_size_format_vector(metadata_t md);
 
 bool is_been_visited(metadata_t md);
 

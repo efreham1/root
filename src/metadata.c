@@ -78,35 +78,12 @@ metadata_t set_data_size(unsigned int size)
     return mdata;
 }
 
-bool *get_format_vector(metadata_t mdata, int *len)
-{
-    assert(is_format_vector(mdata));
-    bool buf[59] = {false};
-    char *b = (char *)&mdata;
-    bool flag = false;
-    int idx = 0;
-    for (int i = 1; i < sizeof(metadata_t); i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            if (flag)
-            {
-                buf[idx++] = (b[i] >> j) & 1;
-            }
-            else
-            {
-                flag = (b[i] >> j) & 1;
-            }
-        }
-    }
-    bool *format_vector = calloc(idx, sizeof(bool));
-    *len = idx;
-    for (unsigned int i = 0; i < idx; i++)
-    {
-        format_vector[i] = buf[i];
-    }
 
-    return format_vector;
+
+bool get_format_vector_idx(metadata_t mdata, int idx)
+{
+    char *b = (char *)&mdata;
+    return (b[idx/8] >> idx%8) & (char)1;
 }
 
 metadata_t set_format_vector(bool *format_vector, unsigned int len)
@@ -143,9 +120,8 @@ metadata_t set_format_vector(bool *format_vector, unsigned int len)
     return mdata;
 }
 
-size_t get_size_struct(metadata_t md)
+size_t get_size_format_vector(metadata_t md)
 {
-    assert(is_format_vector(md));
     char *b = (char *)&md;
     bool flag = false;
     int idx = 0;
@@ -163,7 +139,7 @@ size_t get_size_struct(metadata_t md)
             }
         }
     }
-    return idx * 8;
+    return idx;
 }
 
 bool is_been_visited(metadata_t md)
