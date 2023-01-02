@@ -140,6 +140,21 @@ bool is_movable(void *ptr, page_t **static_pages, int static_len)
     return true;
 }
 
+void printBits(size_t const size, void const * const ptr)
+{
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char byte;
+    int i, j;
+    
+    for (i = size-1; i >= 0; i--) {
+        for (j = 7; j >= 0; j--) {
+            byte = (b[i] >> j) & 1;
+            printf("%u", byte);
+        }
+    }
+    puts("");
+}
+
 void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages, int static_len, internal_heap_t *i_heap)
 {
     metadata_t *md = ((metadata_t *)*data_ptr) - 1; //get metadata
@@ -151,6 +166,7 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
     else if (is_format_vector(*md)) //"if is struct"
     {
         int len_fv = get_size_format_vector(*md);
+        metadata_t old_md = *md;
 
         if (is_movable(*data_ptr, static_pages, static_len))
         {
@@ -162,9 +178,8 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
             bool format_vector[len_fv];
             for (size_t i = 0; i < len_fv; i++)
             {
-                /* code */
+                format_vector[i] = get_format_vector_idx(*md, i);
             }
-            
 
             void *new_data_ptr = page_alloc_struct(new_page, format_vector, len_fv, bytes);
             //allocate an identical block on the new page
@@ -180,7 +195,7 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
         for (size_t i = 0; i < len_fv; i++)
         //iterate over the format vector
         {
-            if (get_format_vector_idx(*md, i)) // if the data is a ptr
+            if (get_format_vector_idx(old_md, i)) // if the data is a ptr
             {
                 void **internal_ptr = (void **)(*data_ptr + 8 * i); //get the ptr
                 if (is_valid_ptr(i_heap, *internal_ptr)) // check its validity
@@ -190,8 +205,6 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
                 }
             }
         }
-
-        free(format_vector);
     }
     else if (is_data_size(*md))
     {

@@ -177,21 +177,17 @@ void test_page_alloc_struct()
 
 	metadata_t *md1 = (metadata_t *)ss1 - 1;
 
-	int len1 = 0;
+	int len1 = get_size_format_vector(*md1);
 
 	CU_ASSERT_TRUE_FATAL(is_format_vector(*md1));
 	CU_ASSERT_FALSE_FATAL(is_been_visited(*md1));
-
-	bool *format_vector1 = get_format_vector(*md1, &len1);
 
 	CU_ASSERT_EQUAL_FATAL(len1, 3);
 
 	for (size_t i = 0; i < 3; i++)
 	{
-		CU_ASSERT_EQUAL(format_vector1[i], actual_format_vector1[i]);
+		CU_ASSERT_EQUAL(get_format_vector_idx(*md1, i), actual_format_vector1[i]);
 	}
-
-	free(format_vector1);
 
 	bool actual_format_vector2[] = {0, 1, 0};
 
@@ -215,21 +211,17 @@ void test_page_alloc_struct()
 
 	metadata_t *md2 = (metadata_t *)ss2 - 1;
 
-	int len2 = 0;
+	int len2 = get_size_format_vector(*md2);
 
 	CU_ASSERT_TRUE_FATAL(is_format_vector(*md2));
 	CU_ASSERT_FALSE_FATAL(is_been_visited(*md2));
-
-	bool *format_vector2 = get_format_vector(*md2, &len2);
 
 	CU_ASSERT_EQUAL_FATAL(len2, 3);
 
 	for (size_t i = 0; i < 3; i++)
 	{
-		CU_ASSERT_EQUAL(format_vector2[i], actual_format_vector2[i]);
+		CU_ASSERT_EQUAL(get_format_vector_idx(*md2, i), actual_format_vector2[i]);
 	}
-
-	free(format_vector2);
 
 	page_delete(p);
 	free(memory_block);

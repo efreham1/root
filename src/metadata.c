@@ -78,41 +78,64 @@ metadata_t set_data_size(unsigned int size)
     return mdata;
 }
 
-
-
 bool get_format_vector_idx(metadata_t mdata, int idx)
 {
     char *b = (char *)&mdata;
-    return (b[idx/8] >> idx%8) & (char)1;
+    assert(idx <= 55);
+    return (b[7 - idx / 8] >> (7 - idx % 8)) & (char)1;
 }
 
 metadata_t set_format_vector(bool *format_vector, unsigned int len)
 {
     assert(is_little_end());
-    assert(len <= 59);
+    assert(len <= 55);
     metadata_t mdata = NULL;
     char *b = (char *)&mdata;
+    int idx = 0;
     for (int i = sizeof(metadata_t) - 1; i >= 1; i--)
     {
         for (int j = 7; j >= 0; j--)
         {
-            if (len > 0)
+            if (i == 1 && j == 0)
             {
-                if (format_vector[len - 1])
+            }
+            else if (len > idx)
+            {
+                if (format_vector[idx++])
                 {
                     b[i] = b[i] | 1 << j;
                 }
                 else
                 {
-                    b[i] = b[i] & ~1 << j;
+                    b[i] = b[i] & ~(1 << j);
                 }
-                len--;
             }
             else
             {
-                b[i] = b[i] | 1 << j;
+                char *sb = (char *)&len;
                 b[0] = b[0] | 1;
                 b[0] = b[0] | 1 << 1;
+                for (size_t i = 0; i < 5; i++)
+                {
+                    if (sb[0] >> i & 1)
+                    {
+                        b[0] = b[0] | 1 << (i + 3);
+                    }
+                    else
+                    {
+                        b[0] = b[0] & ~(1 << (i + 3));
+                    }
+                }
+
+                if (sb[0] >> 5 & 1)
+                {
+                    b[1] = b[1] | 1;
+                }
+                else
+                {
+                    b[1] = b[1] & ~1;
+                }
+
                 return mdata;
             }
         }
@@ -120,26 +143,33 @@ metadata_t set_format_vector(bool *format_vector, unsigned int len)
     return mdata;
 }
 
-size_t get_size_format_vector(metadata_t md)
+unsigned int get_size_format_vector(metadata_t md)
 {
     char *b = (char *)&md;
-    bool flag = false;
-    int idx = 0;
-    for (int i = 1; i < sizeof(metadata_t); i++)
+    unsigned int len = 0;
+    char *sb = (char *)&len;
+    for (size_t i = 0; i < 5; i++)
     {
-        for (int j = 0; j < 8; j++)
+        if (b[0] >> (i + 3) & 1)
         {
-            if (flag)
-            {
-                idx++;
-            }
-            else
-            {
-                flag = (b[i] >> j) & 1;
-            }
+            sb[0] = sb[0] | 1 << i;
+        }
+        else
+        {
+            sb[0] = sb[0] & ~(1 << i);
         }
     }
-    return idx;
+
+    if (b[1] & 1)
+    {
+        sb[0] = sb[0] & 1 << 5;
+    }
+    else
+    {
+        sb[0] = sb[0] & ~(1 << 5);
+    }
+
+    return len;
 }
 
 bool is_been_visited(metadata_t md)

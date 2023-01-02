@@ -69,7 +69,7 @@ clean:
 	rm -rf exe/*
 	rm -rf obj/*
 	rm -rf cov/*
-	rm -rf gmon.out
+	rm -f gmon.out
 	make -C demo/inlupp2 clean
 
 .PHONY: clean test_% demo inv_clear
