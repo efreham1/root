@@ -959,3 +959,5 @@ Index by function name
   [59] h_alloc_struct_internal [43] ioopm_list_iterator   [88] string_sum_hash (inventory.c)
  [120] h_delete               [41] is_active              [57] used_space
  [121] h_delete_internal      [54] is_data_size           [65] used_space_page
+
+memory usage: total heap usage: 7,767 allocs, 7,767 frees, 621,461 bytes allocated
