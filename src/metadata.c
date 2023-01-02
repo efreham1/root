@@ -172,25 +172,26 @@ unsigned int get_size_format_vector(metadata_t md)
     return len;
 }
 
-bool is_been_visited(metadata_t md)
+bool get_visitation_bit(metadata_t md)
 {
     assert(is_little_end());
     char *b = (char *)&md;
     return (*b >> 2 & 1) == 1;
 }
 
-metadata_t set_been_visited(metadata_t md)
+metadata_t set_visitation_bit(metadata_t md, bool visitation_bit)
 {
     assert(is_little_end());
-    char *mb = (char *)&md;
-    mb[0] = mb[0] | 1 << 2;
-    return md;
-}
+        char *mb = (char *)&md;
 
-metadata_t reset_been_visited(metadata_t md)
-{
-    assert(is_little_end());
-    char *mb = (char *)&md;
-    mb[0] = mb[0] & ~(1 << 2);
-    return md;
+    if (visitation_bit)
+    {
+        mb[0] = mb[0] | 1 << 2;
+        return md;
+    }
+    else
+    {
+        mb[0] = mb[0] & ~(1 << 2);
+        return md;
+    }
 }

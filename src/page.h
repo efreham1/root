@@ -20,9 +20,9 @@ bool is_active(page_t *p);
 
 bool has_room(page_t *p, unsigned int bytes);
 
-void *page_alloc_data(page_t *page, unsigned int bytes);
+void *page_alloc_data(page_t *page, unsigned int bytes, bool visitation_bit);
 
-void *page_alloc_struct(page_t *page, bool *format_vector, int len, unsigned int bytes);
+void *page_alloc_struct(page_t *page, bool *format_vector, int len, unsigned int bytes, bool visitation_bit);
 
 void make_active(page_t *p);
 

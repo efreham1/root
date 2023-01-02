@@ -76,7 +76,7 @@ void test_page_alloc_data()
 	CU_ASSERT_TRUE(has_room(p, 120));
 	CU_ASSERT_FALSE(has_room(p, 121));
 
-	int *i = (int *)page_alloc_data(p, 8);
+	int *i = (int *)page_alloc_data(p, 8, 1);
 
 	CU_ASSERT_PTR_NOT_NULL(i);
 
@@ -84,14 +84,14 @@ void test_page_alloc_data()
 	metadata_t *md = (metadata_t *) i - 1;
 
 	CU_ASSERT_TRUE_FATAL(is_data_size(*md));
-	CU_ASSERT_FALSE_FATAL(is_been_visited(*md));
+	CU_ASSERT_FALSE_FATAL(get_visitation_bit(*md) == 0);
 
 	CU_ASSERT_EQUAL(get_data_size(*md), 8);
 	CU_ASSERT_EQUAL(*i, 76543);
 	CU_ASSERT_TRUE(has_room(p, 104));
 	CU_ASSERT_FALSE(has_room(p, 105));
 
-	int *j = (int *)page_alloc_data(p, 8);
+	int *j = (int *)page_alloc_data(p, 8, 1);
 
 	CU_ASSERT_PTR_NOT_NULL(i);
 
@@ -99,7 +99,7 @@ void test_page_alloc_data()
 	md = (metadata_t *) i - 1;
 
 	CU_ASSERT_TRUE_FATAL(is_data_size(*md));
-	CU_ASSERT_FALSE_FATAL(is_been_visited(*md));
+	CU_ASSERT_FALSE_FATAL(get_visitation_bit(*md) == 0);
 
 	CU_ASSERT_EQUAL(get_data_size(*md), 8);
 
@@ -117,9 +117,9 @@ void test_make_passive_reset()
 	page_t *p = page_init(128, memory_block);
 	make_active(p);
 
-	int *i = (int *)page_alloc_data(p, 8);
+	int *i = (int *)page_alloc_data(p, 8, 1);
 	*i = 76543;
-	int *j = (int *)page_alloc_data(p, 8);
+	int *j = (int *)page_alloc_data(p, 8, 0);
 	*j = 456789;
 
 	CU_ASSERT_EQUAL(avail_space_page(p), 96);
@@ -158,7 +158,7 @@ void test_page_alloc_struct()
 
 	bool actual_format_vector1[] = {0, 0, 1};
 
-	struct s1 *ss1 = page_alloc_struct(p, actual_format_vector1, 3, 24);
+	struct s1 *ss1 = page_alloc_struct(p, actual_format_vector1, 3, 24, 0);
 	CU_ASSERT_TRUE(has_room(p, 88));
 	CU_ASSERT_FALSE(has_room(p, 89));
 
@@ -180,7 +180,7 @@ void test_page_alloc_struct()
 	int len1 = get_size_format_vector(*md1);
 
 	CU_ASSERT_TRUE_FATAL(is_format_vector(*md1));
-	CU_ASSERT_FALSE_FATAL(is_been_visited(*md1));
+	CU_ASSERT_FALSE_FATAL(get_visitation_bit(*md1) == 1);
 
 	CU_ASSERT_EQUAL_FATAL(len1, 3);
 
@@ -191,7 +191,7 @@ void test_page_alloc_struct()
 
 	bool actual_format_vector2[] = {0, 1, 0};
 
-	struct s2 *ss2 = page_alloc_struct(p, actual_format_vector2, 3, 24);
+	struct s2 *ss2 = page_alloc_struct(p, actual_format_vector2, 3, 24, 1);
 	CU_ASSERT_TRUE(has_room(p, 56));
 	CU_ASSERT_FALSE(has_room(p, 57));
 
@@ -214,7 +214,7 @@ void test_page_alloc_struct()
 	int len2 = get_size_format_vector(*md2);
 
 	CU_ASSERT_TRUE_FATAL(is_format_vector(*md2));
-	CU_ASSERT_FALSE_FATAL(is_been_visited(*md2));
+	CU_ASSERT_FALSE_FATAL(get_visitation_bit(*md2) == 0);
 
 	CU_ASSERT_EQUAL_FATAL(len2, 3);
 
@@ -232,8 +232,8 @@ void test_is_ptr_to_page()
 	void *memory_block = calloc(128, 1);
 	page_t *p = page_init(128, memory_block);
 	make_active(p);
-	int *i = (int *)page_alloc_data(p, 8);
-	int *j = (int *)page_alloc_data(p, 8);
+	int *i = (int *)page_alloc_data(p, 8, 0);
+	int *j = (int *)page_alloc_data(p, 8, 1);
 	struct s1
 	{
 		int i;
@@ -250,8 +250,8 @@ void test_is_ptr_to_page()
 	};
 	bool actual_format_vector1[] = {0, 0, 1};
 	bool actual_format_vector2[] = {0, 1, 0};
-	struct s1 *ss1 = page_alloc_struct(p, actual_format_vector1, 3, 24);
-	struct s2 *ss2 = page_alloc_struct(p, actual_format_vector2, 3, 24);
+	struct s1 *ss1 = page_alloc_struct(p, actual_format_vector1, 3, 24, 1);
+	struct s2 *ss2 = page_alloc_struct(p, actual_format_vector2, 3, 24, 1);
 
 	int m = 5;
 	int n = 7;
@@ -277,19 +277,19 @@ void test_avail_used_space()
 	CU_ASSERT_EQUAL(avail_space_page(p), 256);
 	CU_ASSERT_EQUAL(used_space_page(p), 0);
 
-	page_alloc_data(p, 64);
+	page_alloc_data(p, 64, 0);
 
 	CU_ASSERT_EQUAL(avail_space_page(p), 184);
 	CU_ASSERT_EQUAL(used_space_page(p), 72);
 
 	bool fv[3] = {0, 0, 0};
 
-	page_alloc_struct(p, fv, 3, 32);
+	page_alloc_struct(p, fv, 3, 32, 0);
 
 	CU_ASSERT_EQUAL(avail_space_page(p), 144);
 	CU_ASSERT_EQUAL(used_space_page(p), 112);
 
-	page_alloc_data(p, 136);
+	page_alloc_data(p, 136, 1);
 
 	CU_ASSERT_EQUAL(avail_space_page(p), 0);
 	CU_ASSERT_EQUAL(used_space_page(p), 256);

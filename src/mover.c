@@ -4,36 +4,10 @@
 #include <string.h>
 #include <stdio.h>
 
-void reset_all_been_visited(void *data_ptr, internal_heap_t *i_heap) //This function resets all visited (still active) blocks of memory to be unvisited
-{
-    metadata_t *md = ((metadata_t *)data_ptr) - 1; //get metadata for current memoryblock
-    if (is_format_vector(*md))
-    {
-        *md = reset_been_visited(*md); //do the reset
-        assert(!is_been_visited(*md));
-
-        int len_fv = get_size_format_vector(*md);
-
-        for (size_t i = 0; i < len_fv; i++)
-        {
-            if (get_format_vector_idx(*md, i)) //if it's a pointer
-            {
-                void *internal_ptr = (void *)*((void **)data_ptr + i); //cast to the internal ptr
-                if (is_valid_ptr(i_heap, internal_ptr))
-                {
-                    reset_all_been_visited(internal_ptr, i_heap); // if it's valid recursivly call the function
-                }
-            }
-        }
-    }
-    else if (is_data_size(*md))
-    {
-        *md = reset_been_visited(*md); // nothing more is needed since there are no additional ptrs
-    }
-}
-
 void move(internal_heap_t *i_heap, void ***stack_ptrs, int ptrs_len, bool unsafe_stack, void **proof_reading_arr)
 {
+    i_heap->visitation_bit = !i_heap->visitation_bit; //change the visitation bit
+
     int pass_len = 0;
     page_t **passive_pages = get_passive_pages(i_heap, &pass_len);
 
@@ -79,15 +53,6 @@ void move(internal_heap_t *i_heap, void ***stack_ptrs, int ptrs_len, bool unsafe
         }
     }
 
-    for (size_t i = 0; i < ptrs_len; i++)
-    //reset all the ptrs
-    {
-        if (*stack_ptrs[i] == proof_reading_arr[i])
-        {
-            reset_all_been_visited(*stack_ptrs[i], i_heap);
-        }
-    }
-
     free(passive_pages);
     free(active_pages);
 }
@@ -116,7 +81,7 @@ page_t *get_moveto_page(unsigned int bytes, page_t **new_pages, int len, interna
     return NULL;
 }
 
-void move_data_block(unsigned int bytes, metadata_t *md, page_t *new_page, void *new_data_ptr, void **data_ptr)
+void move_data_block(unsigned int bytes, metadata_t *md, page_t *new_page, void *new_data_ptr, void **data_ptr, internal_heap_t *i_heap)
 {
     assert(is_ptr_to_page(new_page, new_data_ptr));
     *md = set_forward_address(new_data_ptr);
@@ -140,25 +105,15 @@ bool is_movable(void *ptr, page_t **static_pages, int static_len)
     return true;
 }
 
-void printBits(size_t const size, void const * const ptr)
-{
-    unsigned char *b = (unsigned char*) ptr;
-    unsigned char byte;
-    int i, j;
-    
-    for (i = size-1; i >= 0; i--) {
-        for (j = 7; j >= 0; j--) {
-            byte = (b[i] >> j) & 1;
-            printf("%u", byte);
-        }
-    }
-    puts("");
-}
-
 void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages, int static_len, internal_heap_t *i_heap)
 {
     metadata_t *md = ((metadata_t *)*data_ptr) - 1; //get metadata
-    if (is_been_visited(*md))
+    if (is_forward_address(*md))
+    {
+        //the block has already been moved so this ptr just neds to be relinked.
+        *data_ptr = get_forward_address(*md);
+    }
+    else if (get_visitation_bit(*md) == i_heap->visitation_bit)
     {
         //the mem block has already been visited this mover-run so nothing needs to be done
         return;
@@ -181,15 +136,15 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
                 format_vector[i] = get_format_vector_idx(*md, i);
             }
 
-            void *new_data_ptr = page_alloc_struct(new_page, format_vector, len_fv, bytes);
+            void *new_data_ptr = page_alloc_struct(new_page, format_vector, len_fv, bytes, i_heap->visitation_bit);
             //allocate an identical block on the new page
 
-            move_data_block(bytes, md, new_page, new_data_ptr, data_ptr);
+            move_data_block(bytes, md, new_page, new_data_ptr, data_ptr, i_heap);
             //move the old block
         }
         else
         {
-            *md = set_been_visited(*md);
+            *md = set_visitation_bit(*md, i_heap->visitation_bit);
         }
 
         for (size_t i = 0; i < len_fv; i++)
@@ -216,19 +171,14 @@ void do_move(void **data_ptr, page_t **new_pages, int len, page_t **static_pages
             page_t *new_page = get_moveto_page(bytes, new_pages, len, i_heap, static_len);
             assert(new_page);
 
-            void *new_data_ptr = page_alloc_data(new_page, bytes);
+            void *new_data_ptr = page_alloc_data(new_page, bytes, i_heap->visitation_bit);
 
-            move_data_block(bytes, md, new_page, new_data_ptr, data_ptr);
+            move_data_block(bytes, md, new_page, new_data_ptr, data_ptr, i_heap);
         }
         else
         {
-            *md = set_been_visited(*md);
+            *md = set_visitation_bit(*md, i_heap->visitation_bit);
         }
-    }
-    else if (is_forward_address(*md))
-    {
-        //the block has already been moved so this ptr just neds to be relinked.
-        *data_ptr = get_forward_address(*md);
     }
     else
     {

@@ -31,10 +31,8 @@ metadata_t set_format_vector(bool *format_vector, unsigned int len);
 
 unsigned int get_size_format_vector(metadata_t md);
 
-bool is_been_visited(metadata_t md);
+bool get_visitation_bit(metadata_t md);
 
-metadata_t set_been_visited(metadata_t md);
-
-metadata_t reset_been_visited(metadata_t md);
+metadata_t set_visitation_bit(metadata_t md, bool visitation_bit);
 
 #endif

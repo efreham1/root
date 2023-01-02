@@ -20,7 +20,7 @@ struct internal_heap
   unsigned int num_pages;
   unsigned int page_size;
   unsigned int num_active_pages;
-  unsigned int padding;
+  bool visitation_bit;
   void *memory_block;
   void *end_of_memory_block;
 };

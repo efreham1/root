@@ -6,7 +6,7 @@ DDIR = demo
 
 CC = gcc
 
-FLAGS = -I src -Wall -g -pg -fprofile-arcs -ftest-coverage
+FLAGS = -I src -Wall -g -fprofile-arcs -ftest-coverage
 
 MODULES = gc page heap metadata mover stack_scanner hash_table linked_list
 

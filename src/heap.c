@@ -12,16 +12,17 @@ internal_heap_t *h_init_internal(unsigned int No_pages, unsigned int page_size)
   new_iheap->page_size = page_size;
   new_iheap->page_arr = calloc(No_pages, sizeof(page_t *));
   new_iheap->memory_block = calloc(No_pages * page_size + 8, 1);
+  new_iheap->visitation_bit = 1;
 
-  new_iheap->padding = (unsigned long)new_iheap->memory_block % 8 == 0 ? 0 : 8 - (unsigned long)new_iheap->memory_block % 8;
+  int padding = (unsigned long)new_iheap->memory_block % 8 == 0 ? 0 : 8 - (unsigned long)new_iheap->memory_block % 8;
 
-  new_iheap->end_of_memory_block = new_iheap->memory_block + new_iheap->padding + No_pages * page_size;
+  new_iheap->end_of_memory_block = new_iheap->memory_block + padding + No_pages * page_size;
 
   new_iheap->num_active_pages = 0;
 
   for (int i = 0; i < new_iheap->num_pages; i++)
   {
-    void *start_of_page = new_iheap->memory_block + new_iheap->padding + No_pages * page_size * (i) / new_iheap->num_pages;
+    void *start_of_page = new_iheap->memory_block + padding + No_pages * page_size * (i) / new_iheap->num_pages;
     new_iheap->page_arr[i] = page_init(page_size, start_of_page);
   }
   return new_iheap;
@@ -157,7 +158,7 @@ void *h_alloc_struct_internal(internal_heap_t *h, char *format_string)
 
   assert(bytes + sizeof(void *) <= h->page_size);
 
-  return page_alloc_struct(get_alloc_page(h, bytes), format_vector, len, bytes);
+  return page_alloc_struct(get_alloc_page(h, bytes), format_vector, len, bytes, h->visitation_bit);
 }
 
 void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
@@ -167,7 +168,7 @@ void *h_alloc_data_internal(internal_heap_t *h, unsigned int bytes)
 
   assert(bytes + sizeof(void *) <= h->page_size);
 
-  return page_alloc_data(get_alloc_page(h, bytes), bytes);
+  return page_alloc_data(get_alloc_page(h, bytes), bytes, h->visitation_bit);
 }
 
 bool is_valid_ptr(internal_heap_t *h, void *ptr)

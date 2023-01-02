@@ -117,24 +117,26 @@ void *alloc_mem_block(page_t *page, unsigned int bytes)
   return pointer;
 }
 
-void *page_alloc_data(page_t *page, unsigned int bytes)
+void *page_alloc_data(page_t *page, unsigned int bytes, bool visitation_bit)
 {
   assert(bytes % 8 == 0);
 
   metadata_t *metadata = alloc_metadata(page);
 
   *metadata = set_data_size((unsigned int)bytes);
+  *metadata = set_visitation_bit(*metadata, visitation_bit);
 
   return alloc_mem_block(page, bytes);
 }
 
-void *page_alloc_struct(page_t *page, bool *format_vector, int len, unsigned int bytes)
+void *page_alloc_struct(page_t *page, bool *format_vector, int len, unsigned int bytes, bool visitation_bit)
 {
   assert(bytes % 8 == 0);
 
   metadata_t *metadata = alloc_metadata(page);
 
   *metadata = set_format_vector(format_vector, len);
+  *metadata = set_visitation_bit(*metadata, visitation_bit);
 
   return alloc_mem_block(page, bytes);
 }
