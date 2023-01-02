@@ -250,7 +250,7 @@ void f4(void **ptr)
 
 	for (size_t i = 0; i < length; i++)
 	{
-		for (size_t j = 0; j < 8 && flag; j++)
+		for (size_t j = 0; j < 8 && !flag; j++)
 		{
 			if (*stack[i] == ptr[j])
 			{
@@ -262,11 +262,12 @@ void f4(void **ptr)
 		{
 			ptrs[i] = NULL;
 		}
+		flag = false;
 	}
 
 	for (size_t i = 0; i < length; i++)
 	{
-		if (ptrs != NULL)
+		if (ptrs[i] != NULL)
 		{
 			for (size_t j = 0; j < 9; j++)
 			{

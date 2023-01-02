@@ -29,7 +29,7 @@ bool get_format_vector_idx(metadata_t mdata, int idx);
 
 metadata_t set_format_vector(bool *format_vector, unsigned int len);
 
-size_t get_size_format_vector(metadata_t md);
+unsigned int get_size_format_vector(metadata_t md);
 
 bool is_been_visited(metadata_t md);
 
