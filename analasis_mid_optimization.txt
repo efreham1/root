@@ -1,0 +1,986 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 26.00      3.12     3.12  3953463     0.00     0.00  is_valid_ptr
+ 16.25      5.07     1.95     9287     0.00     0.00  reset_all_been_visited
+ 14.25      6.78     1.71 22906112     0.00     0.00  is_ptr_to_page
+  6.33      7.54     0.76  1771990     0.00     0.00  get_size_format_vector
+  5.00      8.14     0.60  9330239     0.00     0.00  is_little_end
+  4.33      8.66     0.52  4401781     0.00     0.00  get_data_id
+  3.83      9.12     0.46  2727627     0.00     0.00  reset_been_visited
+  3.33      9.52     0.40     9287     0.00     0.00  do_move
+  3.25      9.91     0.39  3035908     0.00     0.00  is_format_vector
+  3.08     10.28     0.37  5292131     0.00     0.00  get_format_vector_idx
+  2.33     10.56     0.28  3324907     0.00     0.00  get_bit_alloc_map
+  2.08     10.81     0.25     2365     0.00     0.00  make_passive
+  1.83     11.03     0.22  1942753     0.00     0.00  is_been_visited
+  1.83     11.25     0.22  1310570     0.00     0.00  is_data_size
+  1.33     11.41     0.16   252978     0.00     0.00  is_movable
+  1.00     11.53     0.12   115360     0.00     0.00  set_format_vector
+  0.75     11.62     0.09   157501     0.00     0.00  get_moveto_page
+  0.58     11.69     0.07   640297     0.00     0.00  avail_space_page
+  0.42     11.74     0.05   542640     0.00     0.00  has_room
+  0.33     11.78     0.04   162601     0.00     0.00  alloc_mem_block
+  0.33     11.82     0.04   115360     0.00     0.00  page_alloc_struct
+  0.25     11.85     0.03    47241     0.00     0.00  set_data_size
+  0.25     11.88     0.03      467     0.00     0.00  stack_addresses
+  0.17     11.90     0.02    47241     0.00     0.00  page_alloc_data
+  0.17     11.92     0.02    46652     0.00     0.00  get_data_size
+  0.17     11.94     0.02     6034     0.00     0.00  used_space
+  0.08     11.95     0.01   772853     0.00     0.00  is_active
+  0.08     11.96     0.01   157501     0.00     0.00  move_data_block
+  0.08     11.97     0.01   157501     0.00     0.00  set_forward_address
+  0.08     11.98     0.01    95477     0.00     0.00  set_been_visited
+  0.08     11.99     0.01    55303     0.00     0.00  get_forward_address
+  0.08     12.00     0.01     3939     0.00     0.00  ioopm_linked_list_append
+  0.00     12.00     0.00   162601     0.00     0.00  alloc_metadata
+  0.00     12.00     0.00   162601     0.00     0.00  set_bit_alloc_map
+  0.00     12.00     0.00    55303     0.00     0.00  is_forward_address
+  0.00     12.00     0.00    47481     0.00     0.00  used_space_page
+  0.00     12.00     0.00    15889     0.00     0.00  string_compare_function
+  0.00     12.00     0.00     9022     0.00     0.00  get_size_and_format_vector
+  0.00     12.00     0.00     8652     0.00     0.00  string_lt
+  0.00     12.00     0.00     6754     0.00     0.00  get_sentinel_bucket
+  0.00     12.00     0.00     5100     0.00     0.00  get_alloc_page
+  0.00     12.00     0.00     4511     0.00     0.00  calc_buf_length
+  0.00     12.00     0.00     4511     0.00     0.00  get_size_of_struct
+  0.00     12.00     0.00     4511     0.00     0.00  h_alloc_struct
+  0.00     12.00     0.00     4511     0.00     0.00  h_alloc_struct_internal
+  0.00     12.00     0.00     4511     0.00     0.00  handle_input
+  0.00     12.00     0.00     4020     0.00     0.00  find_previous_entry_for_key
+  0.00     12.00     0.00     4020     0.00     0.00  get_sentinel
+  0.00     12.00     0.00     4020     0.00     0.00  string_sum_hash
+  0.00     12.00     0.00     3939     0.00     0.00  create_link
+  0.00     12.00     0.00     3873     0.00     0.00  ioopm_hash_table_lookup
+  0.00     12.00     0.00     3822     0.00     0.00  ioopm_iterator_current
+  0.00     12.00     0.00     3822     0.00     0.00  ioopm_iterator_has_next
+  0.00     12.00     0.00     3723     0.00     0.00  ioopm_iterator_next
+  0.00     12.00     0.00     2373     0.00     0.00  make_active
+  0.00     12.00     0.00      946     0.00     0.00  read_string
+  0.00     12.00     0.00      934     0.00     0.00  h_used
+  0.00     12.00     0.00      888     0.00     0.00  ask_question
+  0.00     12.00     0.00      589     0.00     0.00  h_alloc_data
+  0.00     12.00     0.00      589     0.00     0.00  h_alloc_data_internal
+  0.00     12.00     0.00      538     0.00     0.00  str_to_str
+  0.00     12.00     0.00      511     0.00     0.00  is_menu_choice_list
+  0.00     12.00     0.00      467     0.00     0.00  get_active_pages
+  0.00     12.00     0.00      467     0.00     0.00  get_passive_pages
+  0.00     12.00     0.00      467     0.00     0.00  get_valid_ptrs
+  0.00     12.00     0.00      467     0.00     0.03  h_gc
+  0.00     12.00     0.00      467     0.00     0.00  heap_has_room
+  0.00     12.00     0.00      467     0.00     0.03  move
+  0.00     12.00     0.00      355     0.00     0.00  ioopm_hash_table_has_key
+  0.00     12.00     0.00      350     0.00     0.00  str_to_int
+  0.00     12.00     0.00      289     0.00     0.00  ask_question_string
+  0.00     12.00     0.00      289     0.00     0.00  not_empty
+  0.00     12.00     0.00      289     0.00     0.00  not_empty_
+  0.00     12.00     0.00      252     0.00     0.00  is_number
+  0.00     12.00     0.00      201     0.00     0.00  ioopm_linked_list_create
+  0.00     12.00     0.00      199     0.00     0.00  ioopm_ask_menu
+  0.00     12.00     0.00      199     0.00     0.00  ioopm_linked_list_any
+  0.00     12.00     0.00      199     0.00     0.00  is_menu_choice
+  0.00     12.00     0.00      189     0.00     0.00  ioopm_ask_question_string
+  0.00     12.00     0.00      157     0.00     0.00  is_existing_inv_merch
+  0.00     12.00     0.00      150     0.00     0.00  ask_question_u_int
+  0.00     12.00     0.00      150     0.00     0.00  is_pos_number
+  0.00     12.00     0.00      150     0.00     0.00  is_pos_number_
+  0.00     12.00     0.00      100     0.00     0.00  ioopm_list_iterator
+  0.00     12.00     0.00       99     0.00     0.01  TUI_inventory_add_merch
+  0.00     12.00     0.00       99     0.00     0.09  TUI_inventory_list_merch
+  0.00     12.00     0.00       99     0.00     0.00  create_merchandise
+  0.00     12.00     0.00       99     0.00     0.00  entry_create
+  0.00     12.00     0.00       99     0.00     0.00  ioopm_ask_existing_inventory_merch
+  0.00     12.00     0.00       99     0.00     0.01  ioopm_ask_new_inventory_merch
+  0.00     12.00     0.00       99     0.00     0.00  ioopm_hash_table_insert
+  0.00     12.00     0.00       99     0.00     0.09  ioopm_hash_table_keys
+  0.00     12.00     0.00       99     0.00     0.01  ioopm_inventory_add_merchandise
+  0.00     12.00     0.00       99     0.00     0.09  ioopm_inventory_get_merchandise_list
+  0.00     12.00     0.00       99     0.00     0.00  ioopm_linked_list_is_empty
+  0.00     12.00     0.00       99     0.00     0.00  is_new_inv_merch
+  0.00     12.00     0.00       52     0.00     0.00  ioopm_linked_list_save_to_file
+  0.00     12.00     0.00       51     0.00     0.11  TUI_inventory_replenish_stock
+  0.00     12.00     0.00       51     0.00     0.00  ioopm_ask_new_shelf
+  0.00     12.00     0.00       51     0.00     0.00  ioopm_ask_question_u_int
+  0.00     12.00     0.00       51     0.00     0.00  ioopm_hash_table_is_empty
+  0.00     12.00     0.00       51     0.00     0.01  ioopm_inventory_replenish_new_shelf_stock
+  0.00     12.00     0.00       51     0.00     0.00  ioopm_linked_list_contains
+  0.00     12.00     0.00       51     0.00     0.00  is_new_shelf
+  0.00     12.00     0.00       51     0.00     0.00  save_merch_to_file
+  0.00     12.00     0.00       51     0.00     0.00  save_storage_locs_to_file
+  0.00     12.00     0.00       48     0.00     0.10  TUI_inventory_remove_merch
+  0.00     12.00     0.00       48     0.00     0.00  ioopm_hash_table_remove
+  0.00     12.00     0.00       48     0.00     0.00  ioopm_inventory_remove_merchandise
+  0.00     12.00     0.00       32     0.00     0.00  page_delete
+  0.00     12.00     0.00       32     0.00     0.00  page_init
+  0.00     12.00     0.00        1     0.00     0.00  ask_question_int
+  0.00     12.00     0.00        1     0.00     0.00  destroy_carts
+  0.00     12.00     0.00        1     0.00    11.94  event_loop
+  0.00     12.00     0.00        1     0.00     0.00  get_password
+  0.00     12.00     0.00        1     0.00     0.00  h_delete
+  0.00     12.00     0.00        1     0.00     0.00  h_delete_internal
+  0.00     12.00     0.00        1     0.00     0.00  h_init
+  0.00     12.00     0.00        1     0.00     0.00  h_init_internal
+  0.00     12.00     0.00        1     0.00     0.00  ioopm_ask_admin_access
+  0.00     12.00     0.00        1     0.00     0.05  ioopm_hash_table_create_spec
+  0.00     12.00     0.00        1     0.00     0.00  ioopm_hash_table_save_to_file
+  0.00     12.00     0.00        1     0.00     0.05  ioopm_inventory_create
+  0.00     12.00     0.00        1     0.00     0.05  ioopm_inventory_load
+  0.00     12.00     0.00        1     0.00     0.00  ioopm_inventory_save
+  0.00     12.00     0.00        1     0.00     0.00  ioopm_linked_list_size
+  0.00     12.00     0.00        1     0.00     0.00  is_number_
+  0.00     12.00     0.00        1     0.00     0.04  set_NO_buckets
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.08% of 12.00 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]    100.0    0.00   12.00                 main [1]
+                0.00   11.94       1/1           event_loop [3]
+                0.00    0.05       1/1           ioopm_inventory_load [55]
+                0.00    0.00       1/201         ioopm_linked_list_create [31]
+                0.00    0.00       1/1           destroy_carts [73]
+                0.00    0.00       1/1           h_init [124]
+                0.00    0.00       1/1           ioopm_inventory_save [127]
+                0.00    0.00       1/1           h_delete [122]
+-----------------------------------------------
+                0.00    1.92      75/467         h_alloc_data [17]
+                0.00   10.03     392/467         h_alloc_struct [5]
+[2]     99.6    0.00   11.95     467         h_gc [2]
+                0.00   11.91     467/467         move [4]
+                0.00    0.04     467/467         get_valid_ptrs [58]
+                0.00    0.00     934/934         h_used [72]
+-----------------------------------------------
+                0.00   11.94       1/1           main [1]
+[3]     99.5    0.00   11.94       1         event_loop [3]
+                0.00    5.68      51/51          TUI_inventory_replenish_stock [12]
+                0.00    4.58      48/48          TUI_inventory_remove_merch [14]
+                0.00    1.25      99/99          TUI_inventory_add_merch [20]
+                0.00    0.39     199/199         ioopm_ask_menu [33]
+                0.00    0.03      15/3939        ioopm_linked_list_append [8]
+                0.00    0.00       1/1           ioopm_ask_admin_access [71]
+                0.00    0.00       1/201         ioopm_linked_list_create [31]
+-----------------------------------------------
+                0.00   11.91     467/467         h_gc [2]
+[4]     99.2    0.00   11.91     467         move [4]
+                1.95    7.62    9287/9287        reset_all_been_visited [6]
+                0.40    1.69    9287/9287        do_move [15]
+                0.25    0.00    2365/2365        make_passive [39]
+                0.00    0.00   54248/22906112     is_ptr_to_page [16]
+                0.00    0.00     467/467         get_passive_pages [77]
+                0.00    0.00     467/467         get_active_pages [76]
+-----------------------------------------------
+                0.00    0.00       1/4511        ioopm_hash_table_create_spec [56]
+                0.00    0.00       1/4511        ioopm_inventory_create [54]
+                0.00    0.04      20/4511        set_NO_buckets [57]
+                0.00    0.11      51/4511        ioopm_inventory_replenish_new_shelf_stock [29]
+                0.00    0.22      99/4511        entry_create [42]
+                0.00    0.22      99/4511        create_merchandise [32]
+                0.00    0.22     100/4511        ioopm_list_iterator [41]
+                0.00    0.45     201/4511        ioopm_linked_list_create [31]
+                0.00    8.79    3939/4511        create_link [9]
+[5]     83.9    0.00   10.07    4511         h_alloc_struct [5]
+                0.00   10.03     392/467         h_gc [2]
+                0.01    0.00    4511/6034        used_space [63]
+                0.00    0.02    4511/4511        h_alloc_struct_internal [64]
+                0.00    0.00    4511/4511        handle_input [87]
+                0.00    0.00    4511/4511        get_size_of_struct [86]
+                0.00    0.00     392/467         heap_has_room [98]
+-----------------------------------------------
+                             2718340             reset_all_been_visited [6]
+                1.95    7.62    9287/9287        move [4]
+[6]     79.7    1.95    7.62    9287+2718340 reset_all_been_visited [6]
+                2.77    1.69 3513318/3953463     is_valid_ptr [13]
+                0.35    0.50 2727627/3035908     is_format_vector [21]
+                0.68    0.00 1591009/1771990     get_size_format_vector [23]
+                0.46    0.18 2727627/2727627     reset_been_visited [25]
+                0.19    0.21 1136618/1310570     is_data_size [30]
+                0.31    0.00 4432928/5292131     get_format_vector_idx [35]
+                0.18    0.10 1591009/1942753     is_been_visited [36]
+                             2718340             reset_all_been_visited [6]
+-----------------------------------------------
+                0.00    4.49      48/99          TUI_inventory_remove_merch [14]
+                0.00    4.77      51/99          TUI_inventory_replenish_stock [12]
+[7]     77.1    0.00    9.25      99         TUI_inventory_list_merch [7]
+                0.00    8.76      99/99          ioopm_inventory_get_merchandise_list [11]
+                0.00    0.27     138/189         ioopm_ask_question_string [34]
+                0.00    0.22      99/100         ioopm_list_iterator [41]
+                0.00    0.00    3822/3822        ioopm_iterator_current [92]
+                0.00    0.00    3822/3873        ioopm_hash_table_lookup [91]
+                0.00    0.00    3822/3822        ioopm_iterator_has_next [93]
+                0.00    0.00    3723/3723        ioopm_iterator_next [94]
+                0.00    0.00      99/99          ioopm_linked_list_is_empty [109]
+-----------------------------------------------
+                0.00    0.03      15/3939        event_loop [3]
+                0.00    0.23     102/3939        ioopm_inventory_replenish_new_shelf_stock [29]
+                0.01    8.53    3822/3939        ioopm_hash_table_keys [10]
+[8]     73.3    0.01    8.79    3939         ioopm_linked_list_append [8]
+                0.00    8.79    3939/3939        create_link [9]
+-----------------------------------------------
+                0.00    8.79    3939/3939        ioopm_linked_list_append [8]
+[9]     73.2    0.00    8.79    3939         create_link [9]
+                0.00    8.79    3939/4511        h_alloc_struct [5]
+-----------------------------------------------
+                0.00    8.76      99/99          ioopm_inventory_get_merchandise_list [11]
+[10]    73.0    0.00    8.76      99         ioopm_hash_table_keys [10]
+                0.01    8.53    3822/3939        ioopm_linked_list_append [8]
+                0.00    0.22      99/201         ioopm_linked_list_create [31]
+                0.00    0.00    1881/6754        get_sentinel_bucket [84]
+-----------------------------------------------
+                0.00    8.76      99/99          TUI_inventory_list_merch [7]
+[11]    73.0    0.00    8.76      99         ioopm_inventory_get_merchandise_list [11]
+                0.00    8.76      99/99          ioopm_hash_table_keys [10]
+-----------------------------------------------
+                0.00    5.68      51/51          event_loop [3]
+[12]    47.3    0.00    5.68      51         TUI_inventory_replenish_stock [12]
+                0.00    4.77      51/99          TUI_inventory_list_merch [7]
+                0.00    0.51      51/51          ioopm_inventory_replenish_new_shelf_stock [29]
+                0.00    0.10      51/189         ioopm_ask_question_string [34]
+                0.00    0.10      51/51          ioopm_ask_new_shelf [49]
+                0.00    0.10      51/51          ioopm_ask_question_u_int [50]
+                0.00    0.10      51/99          ioopm_ask_existing_inventory_merch [45]
+                0.00    0.00      51/51          ioopm_hash_table_is_empty [112]
+-----------------------------------------------
+                0.01    0.00    9287/3953463     get_valid_ptrs [58]
+                0.34    0.21  430858/3953463     do_move [15]
+                2.77    1.69 3513318/3953463     reset_all_been_visited [6]
+[13]    41.8    3.12    1.90 3953463         is_valid_ptr [13]
+                1.63    0.27 21863026/22906112     is_ptr_to_page [16]
+-----------------------------------------------
+                0.00    4.58      48/48          event_loop [3]
+[14]    38.2    0.00    4.58      48         TUI_inventory_remove_merch [14]
+                0.00    4.49      48/99          TUI_inventory_list_merch [7]
+                0.00    0.09      48/99          ioopm_ask_existing_inventory_merch [45]
+                0.00    0.00      48/48          ioopm_inventory_remove_merchandise [118]
+-----------------------------------------------
+                              342457             do_move [15]
+                0.40    1.69    9287/9287        move [4]
+[15]    17.4    0.40    1.69    9287+342457  do_move [15]
+                0.34    0.21  430858/3953463     is_valid_ptr [13]
+                0.16    0.07  252978/252978      is_movable [40]
+                0.04    0.16  110849/115360      page_alloc_struct [44]
+                0.09    0.10  157501/157501      get_moveto_page [46]
+                0.04    0.06  308281/3035908     is_format_vector [21]
+                0.08    0.00  180981/1771990     get_size_format_vector [23]
+                0.02    0.05   46652/47241       page_alloc_data [52]
+                0.04    0.02  351744/1942753     is_been_visited [36]
+                0.06    0.00  859203/5292131     get_format_vector_idx [35]
+                0.02    0.02  127300/1310570     is_data_size [30]
+                0.02    0.02   46652/46652       get_data_size [59]
+                0.01    0.02  157501/157501      move_data_block [60]
+                0.01    0.01   95477/95477       set_been_visited [65]
+                0.00    0.01   55303/55303       is_forward_address [66]
+                0.01    0.00   55303/55303       get_forward_address [69]
+                              342457             do_move [15]
+-----------------------------------------------
+                0.00    0.00   54248/22906112     move [4]
+                0.01    0.00  157501/22906112     move_data_block [60]
+                0.06    0.01  831337/22906112     is_movable [40]
+                1.63    0.27 21863026/22906112     is_valid_ptr [13]
+[16]    16.6    1.71    0.28 22906112         is_ptr_to_page [16]
+                0.28    0.00 3324907/3324907     get_bit_alloc_map [38]
+-----------------------------------------------
+                0.00    0.17      51/589         ioopm_inventory_replenish_new_shelf_stock [29]
+                0.00    1.76     538/589         str_to_str [19]
+[17]    16.0    0.00    1.92     589         h_alloc_data [17]
+                0.00    1.92      75/467         h_gc [2]
+                0.00    0.00     589/6034        used_space [63]
+                0.00    0.00     589/589         h_alloc_data_internal [75]
+                0.00    0.00      75/467         heap_has_room [98]
+-----------------------------------------------
+                0.00    0.00       1/888         ask_question_int [74]
+                0.00    0.10      51/888         ioopm_ask_new_shelf [49]
+                0.00    0.20      99/888         ioopm_ask_new_inventory_merch [27]
+                0.00    0.20      99/888         ioopm_ask_existing_inventory_merch [45]
+                0.00    0.30     150/888         ask_question_u_int [37]
+                0.00    0.39     199/888         ioopm_ask_menu [33]
+                0.00    0.57     289/888         ask_question_string [28]
+[18]    14.6    0.00    1.76     888         ask_question [18]
+                0.00    1.76     538/538         str_to_str [19]
+                0.00    0.00     946/946         read_string [96]
+                0.00    0.00     350/350         str_to_int [100]
+                0.00    0.00     289/289         not_empty_ [102]
+                0.00    0.00     199/199         is_menu_choice [105]
+                0.00    0.00     157/157         is_existing_inv_merch [106]
+                0.00    0.00     150/150         is_pos_number_ [108]
+                0.00    0.00      99/99          is_new_inv_merch [110]
+                0.00    0.00      51/51          is_new_shelf [114]
+                0.00    0.00       1/1           is_number_ [129]
+-----------------------------------------------
+                0.00    1.76     538/538         ask_question [18]
+[19]    14.6    0.00    1.76     538         str_to_str [19]
+                0.00    1.76     538/589         h_alloc_data [17]
+-----------------------------------------------
+                0.00    1.25      99/99          event_loop [3]
+[20]    10.4    0.00    1.25      99         TUI_inventory_add_merch [20]
+                0.00    0.66      99/99          ioopm_inventory_add_merchandise [24]
+                0.00    0.59      99/99          ioopm_ask_new_inventory_merch [27]
+                0.00    0.00      99/355         ioopm_hash_table_has_key [99]
+-----------------------------------------------
+                0.04    0.06  308281/3035908     do_move [15]
+                0.35    0.50 2727627/3035908     reset_all_been_visited [6]
+[21]     7.9    0.39    0.55 3035908         is_format_vector [21]
+                0.36    0.20 3035908/4401781     get_data_id [22]
+-----------------------------------------------
+                0.01    0.00   55303/4401781     is_forward_address [66]
+                0.15    0.08 1310570/4401781     is_data_size [30]
+                0.36    0.20 3035908/4401781     is_format_vector [21]
+[22]     6.7    0.52    0.28 4401781         get_data_id [22]
+                0.28    0.00 4401781/9330239     is_little_end [26]
+-----------------------------------------------
+                0.08    0.00  180981/1771990     do_move [15]
+                0.68    0.00 1591009/1771990     reset_all_been_visited [6]
+[23]     6.3    0.76    0.00 1771990         get_size_format_vector [23]
+-----------------------------------------------
+                0.00    0.66      99/99          TUI_inventory_add_merch [20]
+[24]     5.5    0.00    0.66      99         ioopm_inventory_add_merchandise [24]
+                0.00    0.44      99/99          create_merchandise [32]
+                0.00    0.22      99/99          ioopm_hash_table_insert [43]
+-----------------------------------------------
+                0.46    0.18 2727627/2727627     reset_all_been_visited [6]
+[25]     5.3    0.46    0.18 2727627         reset_been_visited [25]
+                0.18    0.00 2727627/9330239     is_little_end [26]
+-----------------------------------------------
+                0.00    0.00   47241/9330239     set_data_size [61]
+                0.01    0.00   95477/9330239     set_been_visited [65]
+                0.01    0.00  115360/9330239     set_format_vector [47]
+                0.12    0.00 1942753/9330239     is_been_visited [36]
+                0.18    0.00 2727627/9330239     reset_been_visited [25]
+                0.28    0.00 4401781/9330239     get_data_id [22]
+[26]     5.0    0.60    0.00 9330239         is_little_end [26]
+-----------------------------------------------
+                0.00    0.59      99/99          TUI_inventory_add_merch [20]
+[27]     4.9    0.00    0.59      99         ioopm_ask_new_inventory_merch [27]
+                0.00    0.20      99/150         ask_question_u_int [37]
+                0.00    0.20      99/888         ask_question [18]
+                0.00    0.20      99/289         ask_question_string [28]
+-----------------------------------------------
+                0.00    0.00       1/289         ioopm_ask_admin_access [71]
+                0.00    0.20      99/289         ioopm_ask_new_inventory_merch [27]
+                0.00    0.37     189/289         ioopm_ask_question_string [34]
+[28]     4.8    0.00    0.57     289         ask_question_string [28]
+                0.00    0.57     289/888         ask_question [18]
+-----------------------------------------------
+                0.00    0.51      51/51          TUI_inventory_replenish_stock [12]
+[29]     4.2    0.00    0.51      51         ioopm_inventory_replenish_new_shelf_stock [29]
+                0.00    0.23     102/3939        ioopm_linked_list_append [8]
+                0.00    0.17      51/589         h_alloc_data [17]
+                0.00    0.11      51/4511        h_alloc_struct [5]
+                0.00    0.00      51/3873        ioopm_hash_table_lookup [91]
+-----------------------------------------------
+                0.01    0.01   46652/1310570     get_data_size [59]
+                0.02    0.02  127300/1310570     do_move [15]
+                0.19    0.21 1136618/1310570     reset_all_been_visited [6]
+[30]     3.8    0.22    0.24 1310570         is_data_size [30]
+                0.15    0.08 1310570/4401781     get_data_id [22]
+-----------------------------------------------
+                0.00    0.00       1/201         event_loop [3]
+                0.00    0.00       1/201         main [1]
+                0.00    0.00       1/201         ioopm_inventory_create [54]
+                0.00    0.22      99/201         ioopm_hash_table_keys [10]
+                0.00    0.22      99/201         create_merchandise [32]
+[31]     3.7    0.00    0.45     201         ioopm_linked_list_create [31]
+                0.00    0.45     201/4511        h_alloc_struct [5]
+-----------------------------------------------
+                0.00    0.44      99/99          ioopm_inventory_add_merchandise [24]
+[32]     3.7    0.00    0.44      99         create_merchandise [32]
+                0.00    0.22      99/4511        h_alloc_struct [5]
+                0.00    0.22      99/201         ioopm_linked_list_create [31]
+-----------------------------------------------
+                0.00    0.39     199/199         event_loop [3]
+[33]     3.3    0.00    0.39     199         ioopm_ask_menu [33]
+                0.00    0.39     199/888         ask_question [18]
+-----------------------------------------------
+                0.00    0.10      51/189         TUI_inventory_replenish_stock [12]
+                0.00    0.27     138/189         TUI_inventory_list_merch [7]
+[34]     3.1    0.00    0.37     189         ioopm_ask_question_string [34]
+                0.00    0.37     189/289         ask_question_string [28]
+-----------------------------------------------
+                0.06    0.00  859203/5292131     do_move [15]
+                0.31    0.00 4432928/5292131     reset_all_been_visited [6]
+[35]     3.1    0.37    0.00 5292131         get_format_vector_idx [35]
+-----------------------------------------------
+                0.04    0.02  351744/1942753     do_move [15]
+                0.18    0.10 1591009/1942753     reset_all_been_visited [6]
+[36]     2.9    0.22    0.12 1942753         is_been_visited [36]
+                0.12    0.00 1942753/9330239     is_little_end [26]
+-----------------------------------------------
+                0.00    0.10      51/150         ioopm_ask_question_u_int [50]
+                0.00    0.20      99/150         ioopm_ask_new_inventory_merch [27]
+[37]     2.5    0.00    0.30     150         ask_question_u_int [37]
+                0.00    0.30     150/888         ask_question [18]
+-----------------------------------------------
+                0.28    0.00 3324907/3324907     is_ptr_to_page [16]
+[38]     2.3    0.28    0.00 3324907         get_bit_alloc_map [38]
+-----------------------------------------------
+                0.25    0.00    2365/2365        move [4]
+[39]     2.1    0.25    0.00    2365         make_passive [39]
+-----------------------------------------------
+                0.16    0.07  252978/252978      do_move [15]
+[40]     1.9    0.16    0.07  252978         is_movable [40]
+                0.06    0.01  831337/22906112     is_ptr_to_page [16]
+-----------------------------------------------
+                0.00    0.00       1/100         destroy_carts [73]
+                0.00    0.22      99/100         TUI_inventory_list_merch [7]
+[41]     1.9    0.00    0.22     100         ioopm_list_iterator [41]
+                0.00    0.22     100/4511        h_alloc_struct [5]
+-----------------------------------------------
+                0.00    0.22      99/99          ioopm_hash_table_insert [43]
+[42]     1.8    0.00    0.22      99         entry_create [42]
+                0.00    0.22      99/4511        h_alloc_struct [5]
+-----------------------------------------------
+                0.00    0.22      99/99          ioopm_inventory_add_merchandise [24]
+[43]     1.8    0.00    0.22      99         ioopm_hash_table_insert [43]
+                0.00    0.22      99/99          entry_create [42]
+                0.00    0.00      99/4020        get_sentinel [89]
+                0.00    0.00      99/4020        find_previous_entry_for_key [88]
+-----------------------------------------------
+                0.00    0.01    4511/115360      h_alloc_struct_internal [64]
+                0.04    0.16  110849/115360      do_move [15]
+[44]     1.7    0.04    0.17  115360         page_alloc_struct [44]
+                0.12    0.01  115360/115360      set_format_vector [47]
+                0.03    0.01  115360/162601      alloc_mem_block [53]
+                0.00    0.00  115360/162601      alloc_metadata [78]
+-----------------------------------------------
+                0.00    0.09      48/99          TUI_inventory_remove_merch [14]
+                0.00    0.10      51/99          TUI_inventory_replenish_stock [12]
+[45]     1.6    0.00    0.20      99         ioopm_ask_existing_inventory_merch [45]
+                0.00    0.20      99/888         ask_question [18]
+-----------------------------------------------
+                0.09    0.10  157501/157501      do_move [15]
+[46]     1.6    0.09    0.10  157501         get_moveto_page [46]
+                0.05    0.05  496049/542640      has_room [48]
+                0.00    0.00    6999/772853      is_active [67]
+                0.00    0.00    2294/2373        make_active [95]
+-----------------------------------------------
+                0.12    0.01  115360/115360      page_alloc_struct [44]
+[47]     1.1    0.12    0.01  115360         set_format_vector [47]
+                0.01    0.00  115360/9330239     is_little_end [26]
+-----------------------------------------------
+                0.00    0.01   46591/542640      get_alloc_page [70]
+                0.05    0.05  496049/542640      get_moveto_page [46]
+[48]     0.9    0.05    0.06  542640         has_room [48]
+                0.05    0.00  477696/640297      avail_space_page [51]
+                0.01    0.00  542640/772853      is_active [67]
+-----------------------------------------------
+                0.00    0.10      51/51          TUI_inventory_replenish_stock [12]
+[49]     0.8    0.00    0.10      51         ioopm_ask_new_shelf [49]
+                0.00    0.10      51/888         ask_question [18]
+-----------------------------------------------
+                0.00    0.10      51/51          TUI_inventory_replenish_stock [12]
+[50]     0.8    0.00    0.10      51         ioopm_ask_question_u_int [50]
+                0.00    0.10      51/150         ask_question_u_int [37]
+-----------------------------------------------
+                0.02    0.00  162601/640297      alloc_mem_block [53]
+                0.05    0.00  477696/640297      has_room [48]
+[51]     0.6    0.07    0.00  640297         avail_space_page [51]
+-----------------------------------------------
+                0.00    0.00     589/47241       h_alloc_data_internal [75]
+                0.02    0.05   46652/47241       do_move [15]
+[52]     0.6    0.02    0.05   47241         page_alloc_data [52]
+                0.03    0.00   47241/47241       set_data_size [61]
+                0.01    0.01   47241/162601      alloc_mem_block [53]
+                0.00    0.00   47241/162601      alloc_metadata [78]
+-----------------------------------------------
+                0.01    0.01   47241/162601      page_alloc_data [52]
+                0.03    0.01  115360/162601      page_alloc_struct [44]
+[53]     0.5    0.04    0.02  162601         alloc_mem_block [53]
+                0.02    0.00  162601/640297      avail_space_page [51]
+                0.00    0.00  162601/162601      set_bit_alloc_map [79]
+-----------------------------------------------
+                0.00    0.05       1/1           ioopm_inventory_load [55]
+[54]     0.4    0.00    0.05       1         ioopm_inventory_create [54]
+                0.00    0.05       1/1           ioopm_hash_table_create_spec [56]
+                0.00    0.00       1/201         ioopm_linked_list_create [31]
+                0.00    0.00       1/4511        h_alloc_struct [5]
+                0.00    0.00       1/1           get_password [121]
+-----------------------------------------------
+                0.00    0.05       1/1           main [1]
+[55]     0.4    0.00    0.05       1         ioopm_inventory_load [55]
+                0.00    0.05       1/1           ioopm_inventory_create [54]
+-----------------------------------------------
+                0.00    0.05       1/1           ioopm_inventory_create [54]
+[56]     0.4    0.00    0.05       1         ioopm_hash_table_create_spec [56]
+                0.00    0.04       1/1           set_NO_buckets [57]
+                0.00    0.00       1/4511        h_alloc_struct [5]
+-----------------------------------------------
+                0.00    0.04       1/1           ioopm_hash_table_create_spec [56]
+[57]     0.4    0.00    0.04       1         set_NO_buckets [57]
+                0.00    0.04      20/4511        h_alloc_struct [5]
+-----------------------------------------------
+                0.00    0.04     467/467         h_gc [2]
+[58]     0.3    0.00    0.04     467         get_valid_ptrs [58]
+                0.03    0.00     467/467         stack_addresses [62]
+                0.01    0.00    9287/3953463     is_valid_ptr [13]
+-----------------------------------------------
+                0.02    0.02   46652/46652       do_move [15]
+[59]     0.3    0.02    0.02   46652         get_data_size [59]
+                0.01    0.01   46652/1310570     is_data_size [30]
+-----------------------------------------------
+                0.01    0.02  157501/157501      do_move [15]
+[60]     0.3    0.01    0.02  157501         move_data_block [60]
+                0.01    0.00  157501/22906112     is_ptr_to_page [16]
+                0.01    0.00  157501/157501      set_forward_address [68]
+-----------------------------------------------
+                0.03    0.00   47241/47241       page_alloc_data [52]
+[61]     0.3    0.03    0.00   47241         set_data_size [61]
+                0.00    0.00   47241/9330239     is_little_end [26]
+-----------------------------------------------
+                0.03    0.00     467/467         get_valid_ptrs [58]
+[62]     0.2    0.03    0.00     467         stack_addresses [62]
+-----------------------------------------------
+                0.00    0.00     589/6034        h_alloc_data [17]
+                0.00    0.00     934/6034        h_used [72]
+                0.01    0.00    4511/6034        h_alloc_struct [5]
+[63]     0.2    0.02    0.00    6034         used_space [63]
+                0.00    0.00  193088/772853      is_active [67]
+                0.00    0.00   47481/47481       used_space_page [80]
+-----------------------------------------------
+                0.00    0.02    4511/4511        h_alloc_struct [5]
+[64]     0.1    0.00    0.02    4511         h_alloc_struct_internal [64]
+                0.00    0.01    4511/5100        get_alloc_page [70]
+                0.00    0.01    4511/115360      page_alloc_struct [44]
+                0.00    0.00    4511/9022        get_size_and_format_vector [82]
+-----------------------------------------------
+                0.01    0.01   95477/95477       do_move [15]
+[65]     0.1    0.01    0.01   95477         set_been_visited [65]
+                0.01    0.00   95477/9330239     is_little_end [26]
+-----------------------------------------------
+                0.00    0.01   55303/55303       do_move [15]
+[66]     0.1    0.00    0.01   55303         is_forward_address [66]
+                0.01    0.00   55303/4401781     get_data_id [22]
+-----------------------------------------------
+                0.00    0.00     238/772853      get_alloc_page [70]
+                0.00    0.00    6999/772853      get_moveto_page [46]
+                0.00    0.00   14944/772853      get_active_pages [76]
+                0.00    0.00   14944/772853      get_passive_pages [77]
+                0.00    0.00  193088/772853      used_space [63]
+                0.01    0.00  542640/772853      has_room [48]
+[67]     0.1    0.01    0.00  772853         is_active [67]
+-----------------------------------------------
+                0.01    0.00  157501/157501      move_data_block [60]
+[68]     0.1    0.01    0.00  157501         set_forward_address [68]
+-----------------------------------------------
+                0.01    0.00   55303/55303       do_move [15]
+[69]     0.1    0.01    0.00   55303         get_forward_address [69]
+-----------------------------------------------
+                0.00    0.00     589/5100        h_alloc_data_internal [75]
+                0.00    0.01    4511/5100        h_alloc_struct_internal [64]
+[70]     0.1    0.00    0.01    5100         get_alloc_page [70]
+                0.00    0.01   46591/542640      has_room [48]
+                0.00    0.00     238/772853      is_active [67]
+                0.00    0.00      79/2373        make_active [95]
+-----------------------------------------------
+                0.00    0.00       1/1           event_loop [3]
+[71]     0.0    0.00    0.00       1         ioopm_ask_admin_access [71]
+                0.00    0.00       1/289         ask_question_string [28]
+                0.00    0.00       1/1           ask_question_int [74]
+-----------------------------------------------
+                0.00    0.00     934/934         h_gc [2]
+[72]     0.0    0.00    0.00     934         h_used [72]
+                0.00    0.00     934/6034        used_space [63]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[73]     0.0    0.00    0.00       1         destroy_carts [73]
+                0.00    0.00       1/100         ioopm_list_iterator [41]
+                0.00    0.00       1/1           ioopm_linked_list_size [128]
+-----------------------------------------------
+                0.00    0.00       1/1           ioopm_ask_admin_access [71]
+[74]     0.0    0.00    0.00       1         ask_question_int [74]
+                0.00    0.00       1/888         ask_question [18]
+-----------------------------------------------
+                0.00    0.00     589/589         h_alloc_data [17]
+[75]     0.0    0.00    0.00     589         h_alloc_data_internal [75]
+                0.00    0.00     589/5100        get_alloc_page [70]
+                0.00    0.00     589/47241       page_alloc_data [52]
+-----------------------------------------------
+                0.00    0.00     467/467         move [4]
+[76]     0.0    0.00    0.00     467         get_active_pages [76]
+                0.00    0.00   14944/772853      is_active [67]
+-----------------------------------------------
+                0.00    0.00     467/467         move [4]
+[77]     0.0    0.00    0.00     467         get_passive_pages [77]
+                0.00    0.00   14944/772853      is_active [67]
+-----------------------------------------------
+                0.00    0.00   47241/162601      page_alloc_data [52]
+                0.00    0.00  115360/162601      page_alloc_struct [44]
+[78]     0.0    0.00    0.00  162601         alloc_metadata [78]
+-----------------------------------------------
+                0.00    0.00  162601/162601      alloc_mem_block [53]
+[79]     0.0    0.00    0.00  162601         set_bit_alloc_map [79]
+-----------------------------------------------
+                0.00    0.00   47481/47481       used_space [63]
+[80]     0.0    0.00    0.00   47481         used_space_page [80]
+-----------------------------------------------
+                0.00    0.00      48/15889       ioopm_hash_table_remove [117]
+                0.00    0.00    1275/15889       ioopm_linked_list_contains [113]
+                0.00    0.00    3873/15889       ioopm_hash_table_lookup [91]
+                0.00    0.00   10693/15889       ioopm_hash_table_has_key [99]
+[81]     0.0    0.00    0.00   15889         string_compare_function [81]
+-----------------------------------------------
+                0.00    0.00    4511/9022        get_size_of_struct [86]
+                0.00    0.00    4511/9022        h_alloc_struct_internal [64]
+[82]     0.0    0.00    0.00    9022         get_size_and_format_vector [82]
+-----------------------------------------------
+                0.00    0.00    8652/8652        find_previous_entry_for_key [88]
+[83]     0.0    0.00    0.00    8652         string_lt [83]
+-----------------------------------------------
+                0.00    0.00    1881/6754        ioopm_hash_table_keys [10]
+                0.00    0.00    4873/6754        ioopm_hash_table_has_key [99]
+[84]     0.0    0.00    0.00    6754         get_sentinel_bucket [84]
+-----------------------------------------------
+                0.00    0.00    4511/4511        handle_input [87]
+[85]     0.0    0.00    0.00    4511         calc_buf_length [85]
+-----------------------------------------------
+                0.00    0.00    4511/4511        h_alloc_struct [5]
+[86]     0.0    0.00    0.00    4511         get_size_of_struct [86]
+                0.00    0.00    4511/9022        get_size_and_format_vector [82]
+-----------------------------------------------
+                0.00    0.00    4511/4511        h_alloc_struct [5]
+[87]     0.0    0.00    0.00    4511         handle_input [87]
+                0.00    0.00    4511/4511        calc_buf_length [85]
+-----------------------------------------------
+                0.00    0.00      48/4020        ioopm_hash_table_remove [117]
+                0.00    0.00      99/4020        ioopm_hash_table_insert [43]
+                0.00    0.00    3873/4020        ioopm_hash_table_lookup [91]
+[88]     0.0    0.00    0.00    4020         find_previous_entry_for_key [88]
+                0.00    0.00    8652/8652        string_lt [83]
+-----------------------------------------------
+                0.00    0.00      48/4020        ioopm_hash_table_remove [117]
+                0.00    0.00      99/4020        ioopm_hash_table_insert [43]
+                0.00    0.00    3873/4020        ioopm_hash_table_lookup [91]
+[89]     0.0    0.00    0.00    4020         get_sentinel [89]
+                0.00    0.00    4020/4020        string_sum_hash [90]
+-----------------------------------------------
+                0.00    0.00    4020/4020        get_sentinel [89]
+[90]     0.0    0.00    0.00    4020         string_sum_hash [90]
+-----------------------------------------------
+                0.00    0.00      51/3873        ioopm_inventory_replenish_new_shelf_stock [29]
+                0.00    0.00    3822/3873        TUI_inventory_list_merch [7]
+[91]     0.0    0.00    0.00    3873         ioopm_hash_table_lookup [91]
+                0.00    0.00    3873/4020        get_sentinel [89]
+                0.00    0.00    3873/4020        find_previous_entry_for_key [88]
+                0.00    0.00    3873/15889       string_compare_function [81]
+-----------------------------------------------
+                0.00    0.00    3822/3822        TUI_inventory_list_merch [7]
+[92]     0.0    0.00    0.00    3822         ioopm_iterator_current [92]
+-----------------------------------------------
+                0.00    0.00    3822/3822        TUI_inventory_list_merch [7]
+[93]     0.0    0.00    0.00    3822         ioopm_iterator_has_next [93]
+-----------------------------------------------
+                0.00    0.00    3723/3723        TUI_inventory_list_merch [7]
+[94]     0.0    0.00    0.00    3723         ioopm_iterator_next [94]
+-----------------------------------------------
+                0.00    0.00      79/2373        get_alloc_page [70]
+                0.00    0.00    2294/2373        get_moveto_page [46]
+[95]     0.0    0.00    0.00    2373         make_active [95]
+-----------------------------------------------
+                0.00    0.00     946/946         ask_question [18]
+[96]     0.0    0.00    0.00     946         read_string [96]
+-----------------------------------------------
+                0.00    0.00     511/511         ioopm_linked_list_any [104]
+[97]     0.0    0.00    0.00     511         is_menu_choice_list [97]
+-----------------------------------------------
+                0.00    0.00      75/467         h_alloc_data [17]
+                0.00    0.00     392/467         h_alloc_struct [5]
+[98]     0.0    0.00    0.00     467         heap_has_room [98]
+-----------------------------------------------
+                0.00    0.00      99/355         TUI_inventory_add_merch [20]
+                0.00    0.00      99/355         is_new_inv_merch [110]
+                0.00    0.00     157/355         is_existing_inv_merch [106]
+[99]     0.0    0.00    0.00     355         ioopm_hash_table_has_key [99]
+                0.00    0.00   10693/15889       string_compare_function [81]
+                0.00    0.00    4873/6754        get_sentinel_bucket [84]
+-----------------------------------------------
+                0.00    0.00     350/350         ask_question [18]
+[100]    0.0    0.00    0.00     350         str_to_int [100]
+-----------------------------------------------
+                0.00    0.00     289/289         not_empty_ [102]
+[101]    0.0    0.00    0.00     289         not_empty [101]
+-----------------------------------------------
+                0.00    0.00     289/289         ask_question [18]
+[102]    0.0    0.00    0.00     289         not_empty_ [102]
+                0.00    0.00     289/289         not_empty [101]
+-----------------------------------------------
+                0.00    0.00       1/252         get_password [121]
+                0.00    0.00       1/252         is_number_ [129]
+                0.00    0.00      51/252         is_new_shelf [114]
+                0.00    0.00     199/252         is_menu_choice [105]
+[103]    0.0    0.00    0.00     252         is_number [103]
+-----------------------------------------------
+                0.00    0.00     199/199         is_menu_choice [105]
+[104]    0.0    0.00    0.00     199         ioopm_linked_list_any [104]
+                0.00    0.00     511/511         is_menu_choice_list [97]
+-----------------------------------------------
+                0.00    0.00     199/199         ask_question [18]
+[105]    0.0    0.00    0.00     199         is_menu_choice [105]
+                0.00    0.00     199/252         is_number [103]
+                0.00    0.00     199/199         ioopm_linked_list_any [104]
+-----------------------------------------------
+                0.00    0.00     157/157         ask_question [18]
+[106]    0.0    0.00    0.00     157         is_existing_inv_merch [106]
+                0.00    0.00     157/355         ioopm_hash_table_has_key [99]
+-----------------------------------------------
+                0.00    0.00     150/150         is_pos_number_ [108]
+[107]    0.0    0.00    0.00     150         is_pos_number [107]
+-----------------------------------------------
+                0.00    0.00     150/150         ask_question [18]
+[108]    0.0    0.00    0.00     150         is_pos_number_ [108]
+                0.00    0.00     150/150         is_pos_number [107]
+-----------------------------------------------
+                0.00    0.00      99/99          TUI_inventory_list_merch [7]
+[109]    0.0    0.00    0.00      99         ioopm_linked_list_is_empty [109]
+-----------------------------------------------
+                0.00    0.00      99/99          ask_question [18]
+[110]    0.0    0.00    0.00      99         is_new_inv_merch [110]
+                0.00    0.00      99/355         ioopm_hash_table_has_key [99]
+-----------------------------------------------
+                0.00    0.00       1/52          ioopm_inventory_save [127]
+                0.00    0.00      51/52          save_storage_locs_to_file [116]
+[111]    0.0    0.00    0.00      52         ioopm_linked_list_save_to_file [111]
+-----------------------------------------------
+                0.00    0.00      51/51          TUI_inventory_replenish_stock [12]
+[112]    0.0    0.00    0.00      51         ioopm_hash_table_is_empty [112]
+-----------------------------------------------
+                0.00    0.00      51/51          is_new_shelf [114]
+[113]    0.0    0.00    0.00      51         ioopm_linked_list_contains [113]
+                0.00    0.00    1275/15889       string_compare_function [81]
+-----------------------------------------------
+                0.00    0.00      51/51          ask_question [18]
+[114]    0.0    0.00    0.00      51         is_new_shelf [114]
+                0.00    0.00      51/252         is_number [103]
+                0.00    0.00      51/51          ioopm_linked_list_contains [113]
+-----------------------------------------------
+                0.00    0.00      51/51          ioopm_inventory_save [127]
+[115]    0.0    0.00    0.00      51         save_merch_to_file [115]
+                0.00    0.00      51/51          save_storage_locs_to_file [116]
+-----------------------------------------------
+                0.00    0.00      51/51          save_merch_to_file [115]
+[116]    0.0    0.00    0.00      51         save_storage_locs_to_file [116]
+                0.00    0.00      51/52          ioopm_linked_list_save_to_file [111]
+-----------------------------------------------
+                0.00    0.00      48/48          ioopm_inventory_remove_merchandise [118]
+[117]    0.0    0.00    0.00      48         ioopm_hash_table_remove [117]
+                0.00    0.00      48/4020        get_sentinel [89]
+                0.00    0.00      48/4020        find_previous_entry_for_key [88]
+                0.00    0.00      48/15889       string_compare_function [81]
+-----------------------------------------------
+                0.00    0.00      48/48          TUI_inventory_remove_merch [14]
+[118]    0.0    0.00    0.00      48         ioopm_inventory_remove_merchandise [118]
+                0.00    0.00      48/48          ioopm_hash_table_remove [117]
+-----------------------------------------------
+                0.00    0.00      32/32          h_delete_internal [123]
+[119]    0.0    0.00    0.00      32         page_delete [119]
+-----------------------------------------------
+                0.00    0.00      32/32          h_init_internal [125]
+[120]    0.0    0.00    0.00      32         page_init [120]
+-----------------------------------------------
+                0.00    0.00       1/1           ioopm_inventory_create [54]
+[121]    0.0    0.00    0.00       1         get_password [121]
+                0.00    0.00       1/252         is_number [103]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[122]    0.0    0.00    0.00       1         h_delete [122]
+                0.00    0.00       1/1           h_delete_internal [123]
+-----------------------------------------------
+                0.00    0.00       1/1           h_delete [122]
+[123]    0.0    0.00    0.00       1         h_delete_internal [123]
+                0.00    0.00      32/32          page_delete [119]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[124]    0.0    0.00    0.00       1         h_init [124]
+                0.00    0.00       1/1           h_init_internal [125]
+-----------------------------------------------
+                0.00    0.00       1/1           h_init [124]
+[125]    0.0    0.00    0.00       1         h_init_internal [125]
+                0.00    0.00      32/32          page_init [120]
+-----------------------------------------------
+                0.00    0.00       1/1           ioopm_inventory_save [127]
+[126]    0.0    0.00    0.00       1         ioopm_hash_table_save_to_file [126]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[127]    0.0    0.00    0.00       1         ioopm_inventory_save [127]
+                0.00    0.00      51/51          save_merch_to_file [115]
+                0.00    0.00       1/1           ioopm_hash_table_save_to_file [126]
+                0.00    0.00       1/52          ioopm_linked_list_save_to_file [111]
+-----------------------------------------------
+                0.00    0.00       1/1           destroy_carts [73]
+[128]    0.0    0.00    0.00       1         ioopm_linked_list_size [128]
+-----------------------------------------------
+                0.00    0.00       1/1           ask_question [18]
+[129]    0.0    0.00    0.00       1         is_number_ [129]
+                0.00    0.00       1/252         is_number [103]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [20] TUI_inventory_add_merch [125] h_init_internal      [66] is_forward_address
+   [7] TUI_inventory_list_merch [72] h_used               [26] is_little_end
+  [14] TUI_inventory_remove_merch [87] handle_input      [105] is_menu_choice (ask.c)
+  [12] TUI_inventory_replenish_stock [48] has_room        [97] is_menu_choice_list (ask.c)
+  [53] alloc_mem_block        [98] heap_has_room          [40] is_movable
+  [78] alloc_metadata         [71] ioopm_ask_admin_access [110] is_new_inv_merch
+  [18] ask_question           [45] ioopm_ask_existing_inventory_merch [114] is_new_shelf (ask.c)
+  [74] ask_question_int       [33] ioopm_ask_menu        [103] is_number
+  [28] ask_question_string    [27] ioopm_ask_new_inventory_merch [129] is_number_
+  [37] ask_question_u_int     [49] ioopm_ask_new_shelf   [107] is_pos_number
+  [51] avail_space_page       [34] ioopm_ask_question_string [108] is_pos_number_
+  [85] calc_buf_length        [50] ioopm_ask_question_u_int [16] is_ptr_to_page
+   [9] create_link (linked_list.c) [56] ioopm_hash_table_create_spec [13] is_valid_ptr
+  [32] create_merchandise (inventory.c) [99] ioopm_hash_table_has_key [95] make_active
+  [73] destroy_carts          [43] ioopm_hash_table_insert [39] make_passive
+  [15] do_move               [112] ioopm_hash_table_is_empty [4] move
+  [42] entry_create (hash_table.c) [10] ioopm_hash_table_keys [60] move_data_block
+   [3] event_loop             [91] ioopm_hash_table_lookup [101] not_empty
+  [88] find_previous_entry_for_key (hash_table.c) [117] ioopm_hash_table_remove [102] not_empty_
+  [76] get_active_pages      [126] ioopm_hash_table_save_to_file [52] page_alloc_data
+  [70] get_alloc_page         [24] ioopm_inventory_add_merchandise [44] page_alloc_struct
+  [38] get_bit_alloc_map      [54] ioopm_inventory_create [119] page_delete
+  [22] get_data_id            [11] ioopm_inventory_get_merchandise_list [120] page_init
+  [59] get_data_size          [55] ioopm_inventory_load   [96] read_string
+  [35] get_format_vector_idx [118] ioopm_inventory_remove_merchandise [6] reset_all_been_visited
+  [69] get_forward_address    [29] ioopm_inventory_replenish_new_shelf_stock [25] reset_been_visited
+  [46] get_moveto_page       [127] ioopm_inventory_save  [115] save_merch_to_file (inventory.c)
+  [77] get_passive_pages      [92] ioopm_iterator_current [116] save_storage_locs_to_file (inventory.c)
+ [121] get_password (inventory.c) [93] ioopm_iterator_has_next [57] set_NO_buckets (hash_table.c)
+  [89] get_sentinel (hash_table.c) [94] ioopm_iterator_next [65] set_been_visited
+  [84] get_sentinel_bucket (hash_table.c) [104] ioopm_linked_list_any [79] set_bit_alloc_map
+  [82] get_size_and_format_vector [8] ioopm_linked_list_append [61] set_data_size
+  [23] get_size_format_vector [113] ioopm_linked_list_contains [47] set_format_vector
+  [86] get_size_of_struct     [31] ioopm_linked_list_create [68] set_forward_address
+  [58] get_valid_ptrs        [109] ioopm_linked_list_is_empty [62] stack_addresses
+  [17] h_alloc_data          [111] ioopm_linked_list_save_to_file [100] str_to_int
+  [75] h_alloc_data_internal [128] ioopm_linked_list_size [19] str_to_str
+   [5] h_alloc_struct         [41] ioopm_list_iterator    [81] string_compare_function (inventory.c)
+  [64] h_alloc_struct_internal [67] is_active             [83] string_lt (inventory.c)
+ [122] h_delete               [36] is_been_visited        [90] string_sum_hash (inventory.c)
+ [123] h_delete_internal      [30] is_data_size           [63] used_space
+   [2] h_gc                  [106] is_existing_inv_merch  [80] used_space_page
+ [124] h_init                 [21] is_format_vector
+
+memory usage: total heap usage: 6,963 allocs, 6,963 frees, 660,989 bytes allocated
