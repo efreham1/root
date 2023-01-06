@@ -22,7 +22,7 @@ internal_heap_t *h_init_internal (unsigned int No_pages, unsigned int page_size)
 
   for (int i = 0; i < new_iheap->num_pages; i++)
     {
-      void *start_of_page = new_iheap->memory_block + padding + No_pages * page_size * (i) / new_iheap->num_pages;
+      void *start_of_page = new_iheap->memory_block + padding + page_size * (i);
       new_iheap->page_arr[i] = page_init (page_size, start_of_page);
     }
   return new_iheap;

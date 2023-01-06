@@ -3,6 +3,7 @@ EDIR = exe
 ODIR = obj
 TDIR = test
 DDIR = demo
+PDIR = perf_comparison
 
 CC = gcc
 
@@ -26,6 +27,9 @@ $(EDIR)/%: $(SDIR)/%.c $(OBJS)
 	$(CC) $(FLAGS) $^ -o $@
 
 $(EDIR)/test_%: $(TDIR)/test_%.c $(OBJS)
+	$(CC) $(FLAGS) $^ -lcunit  -o $@
+
+$(PDIR)/%: $(PDIR)/%.c $(OBJS)
 	$(CC) $(FLAGS) $^ -lcunit  -o $@
 
 test_%: $(EDIR)/test_%
@@ -52,6 +56,11 @@ $(DDIR)/inlupp2/%.o: $(DDIR)/inlupp2/%.c $(DDIR)/inlupp2/%.h
 $(DDIR)/inlupp2/store: $(DDIR)/inlupp2/store.c $(OBJS) $(INLUPP2_OBJS)
 	$(CC) $(FLAGS) $^ -o $@
 
+perf_alloc: $(PDIR)/alloc
+	./$(PDIR)/alloc
+	rm -rf $(PDIR)/*.gcno
+	rm -rf $(PDIR)/*.gcda
+
 demo: $(DDIR)/inlupp2/store
 	valgrind --gen-suppressions=all --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./$(DDIR)/inlupp2/store
 
@@ -70,6 +79,7 @@ clean:
 	rm -rf obj/*
 	rm -rf cov/*
 	rm -f gmon.out
+	rm -rf $(PDIR)/alloc
 	make -C demo/inlupp2 clean
 
 .PHONY: clean test_% demo inv_clear
