@@ -11,6 +11,6 @@
 /// @param top_valid_address the stack top adress
 /// @param bottom_valid_address the stack bottom adress
 /// @param len the number of adresses gets saved to this adress
-void ***stack_addresses(void *top_valid_address, void *bottom_valid_address, int *len);
+void ***stack_addresses (void *top_valid_address, void *bottom_valid_address, int *len);
 
 #endif

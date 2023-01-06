@@ -17,18 +17,18 @@ typedef struct external_heap heap_t;
 /// \param unsafe_stack true if pointers on the stack are to be considered unsafe pointers
 /// \param gc_threshold the memory pressure at which gc should be triggered (1.0 = full memory)
 /// \return the new heap
-heap_t *h_init(unsigned long bytes, bool unsafe_stack, float gc_threshold);
+heap_t *h_init (unsigned long bytes, bool unsafe_stack, float gc_threshold);
 
 /// Delete a heap.
 ///
 /// \param h the heap
-void h_delete(heap_t *h);
+void h_delete (heap_t *h);
 
 /// Delete a heap and trace, killing off stack pointers.
 ///
 /// \param h the heap 
 /// \param dbg_value a value to be written into every pointer into h on the stack
-void h_delete_dbg(heap_t *h, void *dbg_value);
+void h_delete_dbg (heap_t *h, void *dbg_value);
 
 /// Allocate a new object on a heap with a given format string.
 ///
@@ -46,7 +46,7 @@ void h_delete_dbg(heap_t *h, void *dbg_value);
 /// \return the newly allocated object
 ///
 /// Note: the heap does *not* retain an alias to layout.
-void *h_alloc_struct(heap_t *h, char *layout);
+void *h_alloc_struct (heap_t *h, char *layout);
 
 /// Allocate a new object on a heap with a given size.
 ///
@@ -56,7 +56,7 @@ void *h_alloc_struct(heap_t *h, char *layout);
 /// \param h the heap
 /// \param bytes the size in bytes
 /// \return the newly allocated object
-void *h_alloc_data(heap_t *h, unsigned int bytes);
+void *h_alloc_data (heap_t *h, unsigned int bytes);
 
 /// Manually trigger garbage collection.
 ///
@@ -65,7 +65,7 @@ void *h_alloc_data(heap_t *h, unsigned int bytes);
 ///
 /// \param h the heap
 /// \return the number of bytes collected
-unsigned int h_gc(heap_t *h);
+unsigned int h_gc (heap_t *h);
 
 /// Manually trigger garbage collection with the ability to 
 /// override the setting for how stack pointers are treated. 
@@ -76,13 +76,13 @@ unsigned int h_gc(heap_t *h);
 /// \param h the heap
 /// \param unsafe_stack true if pointers on the stack are to be considered unsafe pointers
 /// \return the number of bytes collected
-unsigned int h_gc_dbg(heap_t *h, bool unsafe_stack);
+unsigned int h_gc_dbg (heap_t *h, bool unsafe_stack);
 
 /// Returns the available free memory. 
 ///
 /// \param h the heap
 /// \return the available free memory. 
-unsigned int h_avail(heap_t *h);
+unsigned int h_avail (heap_t *h);
 
 /// Returns the bytes currently in use by user structures. This
 /// should not include the collector's own meta data. Notably,
@@ -91,8 +91,8 @@ unsigned int h_avail(heap_t *h);
 /// 
 /// \param h the heap
 /// \return the bytes currently in use by user structures. 
-unsigned int h_used(heap_t *h);
+unsigned int h_used (heap_t *h);
 
-size_t get_heap_actual_size(heap_t *h);
+size_t get_heap_actual_size (heap_t *h);
 
 #endif
