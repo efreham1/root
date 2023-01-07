@@ -60,6 +60,32 @@ perf_alloc: $(PDIR)/alloc
 	./$(PDIR)/alloc
 	rm -rf $(PDIR)/*.gcno
 	rm -rf $(PDIR)/*.gcda
+	python3 ./$(PDIR)/perf_allocs.py
+
+perf_gc: $(PDIR)/GC
+	./$(PDIR)/GC
+	rm -rf $(PDIR)/*.gcno
+	rm -rf $(PDIR)/*.gcda
+	python3 ./$(PDIR)/perf_GC.py
+
+perf_gc_vs_free: $(PDIR)/GC_vs_free
+	./$(PDIR)/GC_vs_free
+	rm -rf $(PDIR)/*.gcno
+	rm -rf $(PDIR)/*.gcda
+	python3 ./$(PDIR)/perf_GC_vs_free.py
+
+perf_lls: $(PDIR)/linked_lists.c $(PDIR)/linked_list_malloc.c $(OBJS)
+	$(CC) $(FLAGS) $^ -lcunit  -o $(PDIR)/linked_lists
+	./$(PDIR)/linked_lists
+	rm -rf $(PDIR)/*.gcno
+	rm -rf $(PDIR)/*.gcda
+	python3 ./$(PDIR)/perf_linked_lists.py
+
+graphs:
+	python3 ./$(PDIR)/perf_allocs.py
+	python3 ./$(PDIR)/perf_GC.py
+	python3 ./$(PDIR)/perf_GC_vs_free.py
+	python3 ./$(PDIR)/perf_linked_lists.py
 
 demo: $(DDIR)/inlupp2/store
 	valgrind --gen-suppressions=all --error-exitcode=1 --leak-check=full --suppressions=./test/Cond_jump.supp --track-origins=yes --show-leak-kinds=all ./$(DDIR)/inlupp2/store
@@ -80,6 +106,9 @@ clean:
 	rm -rf cov/*
 	rm -f gmon.out
 	rm -rf $(PDIR)/alloc
+	rm -rf $(PDIR)/GC
+	rm -rf $(PDIR)/GC_vs_free
+	rm -rf $(PDIR)/linked_lists
 	make -C demo/inlupp2 clean
 
 .PHONY: clean test_% demo inv_clear
