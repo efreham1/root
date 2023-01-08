@@ -6,7 +6,7 @@ We have followed the GNU C standard and therefore the code is easy to read.
 We began with the easiest tasks and pushed the harder ones into the future, this ensured that we knew more about the
 code and the problem when we evetaully got to the harder tasks.
 ### #3
-We left optimization to the end. Because of this we could focus on writing functioning code instad of fast code.
+We mostly left optimization to the end. Because of this we could focus on writing functioning code instad of fast code.
 ### #4
 All code was either written in a group or explained to a group which meant that bad implementaions and potential
 bugs were more easily caught.
