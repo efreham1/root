@@ -40,7 +40,7 @@ src/stack_scanner.c                           20      20   100%
 TOTAL                                        528     519    98%
 ------------------------------------------------------------------------------
 ```
-ll non-executed lines and almost all non-executed branches are code that handles crashing the program when
+All non-executed lines and almost all non-executed branches are code that handles crashing the program when
 something is not as it should. This is done via asserts which is difficult to automatically test.
 
 ## Most Nasty Bugs
