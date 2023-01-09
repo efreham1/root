@@ -10,7 +10,7 @@ The GC is designed to be the head of the garbage collector. It is where all the 
 The heap is designed as a long array of consecutively allocated pages.
 
 # Metadata
-The metadata is an array of 64 bits, where the first two bits determine if it is to be interpreted as a format vector, a pointer, or a forwarding address. If the first two bits are 0,1, the metadata is the size of some data. If the metadata is a format vector, the first two bits are 1,1, and the third bit is a visiting bit, determining if we have visited this data before or not. The next six bits are an integer representing the size of the next 55 bits. If it is a forwarding address, the first two bits are 0,0, and the rest is a void pointer.
+The metadata is an array of 64 bits, where the first two bits determine if it is to be interpreted as a format vector, a pointer, or a forwarding address. If the first two bits are 0,1, the metadata is the size of some data. If the metadata is a format vector, the first two bits are 1,1, and the third bit is a visiting bit, determining if we have visited this data before or not. The next six bits are an integer representing the size of the next 55 bits. If it is a forwarding address, the first two bits are 0,0, and the whole metadata is a void pointer.
 
 # Mover 
 ![Screenshot from 2023-01-06 15-52-18](https://user-images.githubusercontent.com/90697986/211036548-2833027e-c08f-4966-8ed5-7befe726baef.png)
