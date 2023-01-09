@@ -12,7 +12,7 @@ for row in csvreader:
     ratio.append(float(row[0]))
     times.append(float(row[1]))
 
-plt.plot(ratio, times, 'b', label="h_alloc_data of 24MB")
+plt.plot(ratio, times, 'b', label="h_alloc_data of 24 B")
 plt.xlabel("Ratio of actual data to allocated space [%]")
 plt.ylabel("Time for one garbage collection [s]")
 plt.legend()
