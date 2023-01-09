@@ -16,7 +16,11 @@ To build and run the demo use the command
 	`$ make demo`
 
 ## Information about the calculator
-Largest allowed allocation is 2040 bytes.
+#### Largest allowed allocation is 2040 bytes.
+#### Unions are not explicitly supported.
+They can still be used by allocating them as raw data if the union doesn't have a pointer in it and as a struct 
+that is only a pointer if the union has a pointer in it. If the second approch is chosen and the union also contains
+a long integer there is a risk of the long iteger being overwritten in the garbage collection proccess.
 
 ---
 
