@@ -39,5 +39,5 @@ void *page_alloc_data (page_t *page, unsigned int bytes, bool visitation_bit)
 }
 ```
 This function is for allocating raw data on a page. This code is very well abstracted, separate functions are used
-for all complicated tasks meaning that the function itself becomes vewry simple. It's also very easy to read and
+for all complicated tasks meaning that the function itself becomes very simple. It's also very easy to read and
 understand the formatting and naming of functions and varaibles.
