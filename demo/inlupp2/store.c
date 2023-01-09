@@ -138,7 +138,6 @@ void TUI_inventory_list_merch (ioopm_inventory_t *inventory, heap_t *h)
     {
 
       char *current_name = ioopm_iterator_current (iterator).ptr_v;
-      printf ("\n%d\n", current_name == NULL);
       inventory_merch_t *current_merch = ioopm_hash_table_lookup (inventory->warehouse, (elem_t) {.ptr_v = current_name})->ptr_v;
       int current_price = current_merch->price;
       printf ("%d) %s %d.%d SEK  %d in stock\n", i, current_name,
