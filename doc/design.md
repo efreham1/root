@@ -3,7 +3,7 @@ Our program consists of six different modules that together build our garbage co
 ![IOOPM_PROJ18](https://user-images.githubusercontent.com/90697986/211035376-ea3d5eb9-286f-46f9-b07a-9bae8dea0cf6.png)
 
 # GC 
-The GC is designed to be the head of the garbage collector. It is where all the other modules are tied together and where data is allocated and the garbage collection function is defined.
+The GC is designed to be the head of the garbage collector. It is where all the other modules are tied together and where the user interacts with the program.
 
 # Heap 
 The heap is designed as a long array of consecutively allocated pages.
