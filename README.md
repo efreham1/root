@@ -15,12 +15,12 @@ To build and run the demo use the command
 
 	`$ make demo`
 
-### Information about the calculator
+## Information about the calculator
 Largest allowed allocation is 2040 bytes.
 
 ---
 
-####  Tests
+##  Tests
 
 To run all tests for the garbage collector use the command
 
@@ -30,6 +30,12 @@ To run the tests for a specific module use the command
 
 	`$ make test_<module_name>`
 
-Both 
+Both commands runs unit and integration tests.
+
+To run a more demanding integration test use the command
+
+	`$ make stock`
+	
+Which runs a script for assignment 2 which creates and removes a bunch of data
 
 ---
