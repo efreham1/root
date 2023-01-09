@@ -19,7 +19,7 @@ No unneccasary one-liners or global variables or any other ugly hacks. This ensu
 and ease of debugging.
 ### #7
 The specification was almost followed completly and the code works very well in all the tests and integrations.
-The code also passes all thests in the quite extensive testing-library. This leads us to belive that not only is
+The code also passes all tests in the quite extensive testing-library. This leads us to belive that not only is
 the code well written but it is also very functional.
 ### #8
 The entire program is very defensivly programmed. This is done by having multiple asserts in the code that ensures
