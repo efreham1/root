@@ -1,6 +1,7 @@
 # Design
 Our program consists of six different modules that together build our garbage collector: gc, heap, metadata, mover, page, and stack_scanner.
-![IOOPM_PROJ18](https://user-images.githubusercontent.com/90697986/211035376-ea3d5eb9-286f-46f9-b07a-9bae8dea0cf6.png)
+![Screenshot from 2023-01-09 12-47-35](https://user-images.githubusercontent.com/86603710/211301669-2f14d046-1ce0-41a2-b45a-796b4891d630.png)
+
 
 # GC 
 The GC is designed to be the head of the garbage collector. It is where all the other modules are tied together and where the user interacts with the program.
