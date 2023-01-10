@@ -11,8 +11,8 @@ stack scanner. Hence, compared to other parts of the course, my acquired knowled
 I also became more skillful in visualizing and simplifying complex systems, as having a shared responsibility over the project 
 presentation, we had to analyze and understand the GC on multiple levels, in order to deliver a meaningful and comprehensible presentation. This
 very task was also something that differed compared to other tasks throughout the course with its various achievements and assignments.
-In summary, other parts of the course delivered a broader set of knowledge, while the project,
-gave a deeper understanding.
+In summary, other parts of the course delivered a broader set of knowledge, while this project,
+it a deeper meaning.
 ## How has logging your time worked?
 I didn't log my time, it is one of the things that we didn't do correctly.
 ## What was your "Biggest fail" and "Biggest win"?
