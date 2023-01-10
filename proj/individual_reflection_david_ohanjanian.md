@@ -12,7 +12,7 @@ I also became more skillful in visualizing and simplifying complex systems, as h
 presentation, we had to analyze and understand the GC on multiple levels, in order to deliver a meaningful and comprehensible presentation. This
 very task was also something that differed compared to other tasks throughout the course with its various achievements and assignments.
 In summary, other parts of the course delivered a broader set of knowledge, while this project,
-it a deeper meaning.
+gave it a deeper meaning.
 ## How has logging your time worked?
 I didn't log my time, it is one of the things that we didn't do correctly.
 ## What was your "Biggest fail" and "Biggest win"?
