@@ -1,9 +1,9 @@
 # Test Report
 
 ## Testing Overview
-The code is primarly tested from several CUint files. Each file has unit tests for a specific module as well as
+The code is primarily tested from several CUnit files. Each file has unit tests for a specific module as well as
 some simpler integration tests. The more severe integration test is tested via two makefile scripts and uses the
-code from assigment 2. Regression testing has been implemented in two ways, first via makefile scripts so that when
+code from assignment 2. Regression testing has been implemented in two ways, first via makefile scripts so that when
 "make test_all" is written all new and prior tests are run. Second, via github actions' support for CI. The
 automation of these tests were done in the same ways as regression testing, via makefile and github CI.
 
