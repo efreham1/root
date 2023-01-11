@@ -9,7 +9,7 @@ Olof Lindström & Fredrik Hammarberg & Viktor Wallstén & Viktor Kangasniemi & E
 ## Building and running
 
 To build any c-file in /src with a main function use the command
-  `$ make exe/<name>`
+	`$ make exe/<name>`
 
 To build and run the demo use the command
 
