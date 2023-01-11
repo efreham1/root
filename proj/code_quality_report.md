@@ -12,7 +12,7 @@ All code was either written in a group or explained to a group which meant that 
 bugs were more easily caught.
 ### #5
 All code is well abstracted into modules and functions. All functions have clear purposes and a name that reflects
-that purpose. All variables also has clear names. This means that the code is easy to understand if one understands
+that purpose. All variables also have clear names. This means that the code is easy to understand if one understands
 C-syntax. The abstraction also helps if the code is to be refactored.
 ### #6
 No unneccasary one-liners or global variables or any other ugly hacks. This ensures readability, maintainability,
