@@ -11,4 +11,4 @@ was that the need for that indication never arose and it was therefore never imp
 
 ## Memory Footprint of GC not Contained within Specified Size
 When the size of the heap is specified by the user that size is the usable size. The actual size of the heap is
-larger and can be gotten via a function.
+larger and can be obtained via a function.
