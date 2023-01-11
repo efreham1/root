@@ -8,7 +8,7 @@ code and the problem when we evetaully got to the harder tasks.
 ### #3
 We mostly left optimization to the end. Because of this we could focus on writing functioning code instad of fast code.
 ### #4
-All code was either written in a group or explained to a group which meant that bad implementaions and potential
+All code was either written in a group or explained to a group which meant that bad implementations and potential
 bugs were more easily caught.
 ### #5
 All code is well abstracted into modules and functions. All functions have clear purposes and a name that reflects
