@@ -18,7 +18,7 @@ C-syntax. The abstraction also helps if the code is to be refactored.
 No unneccasary one-liners or global variables or any other ugly hacks. This ensures readability, maintainability,
 and ease of debugging.
 ### #7
-The specification was almost followed completly and the code works very well in all the tests and integrations.
+The specification was almost followed completely and the code works very well in all the tests and integrations.
 The code also passes all tests in the quite extensive testing-library. This leads us to belive that not only is
 the code well written but it is also very functional.
 ### #8
